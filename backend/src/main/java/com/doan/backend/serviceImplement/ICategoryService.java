@@ -1,16 +1,16 @@
 package com.doan.backend.serviceImplement;
 
-import com.doan.backend.dto.ApiResponse;
-import com.doan.backend.dto.CategoryDTO;
-import org.springframework.stereotype.Service;
+import com.doan.backend.dto.request.CategoryDTO;
+import com.doan.backend.dto.response.ApiResponse;
+import com.doan.backend.dto.response.CategoryResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ICategoryService {
-    ApiResponse<CategoryDTO> createCategory(CategoryDTO categoryDTO);
-    ApiResponse<CategoryDTO> updateCategory(UUID id, CategoryDTO categoryDTO);
-    ApiResponse<Void> deleteCategory(UUID id);
-    ApiResponse<CategoryDTO> getCategoryById(UUID id);
-    ApiResponse<List<CategoryDTO>> getAllCategories();
+    ApiResponse<CategoryResponse> createCategory(CategoryDTO categoryDTO);
+    ApiResponse<CategoryResponse> updateCategory(String id, CategoryDTO categoryDTO);
+    //ApiResponse<CategoryResponse> updateCategory_IsActive(String id, Boolean isActive);
+    ApiResponse<Void> deleteCategory(String id);
+    ApiResponse<CategoryResponse> getCategoryById(String id);
+    ApiResponse<List<CategoryResponse>> getAllCategories();
 }

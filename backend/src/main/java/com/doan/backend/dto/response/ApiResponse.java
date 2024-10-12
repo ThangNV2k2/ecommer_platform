@@ -1,4 +1,4 @@
-package com.doan.backend.dto;
+package com.doan.backend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

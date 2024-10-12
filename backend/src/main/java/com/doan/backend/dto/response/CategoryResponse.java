@@ -1,19 +1,17 @@
-package com.doan.backend.dto;
+package com.doan.backend.dto.response;
 
-import jakarta.persistence.GeneratedValue;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryDTO {
-    UUID id;
+public class CategoryResponse {
+    String id;
     String name;
     String description;
     Boolean isActive;

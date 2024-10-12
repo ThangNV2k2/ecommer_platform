@@ -1,7 +1,7 @@
 package com.doan.backend.mappers;
-import com.doan.backend.dto.CategoryDTO;
+import com.doan.backend.dto.request.CategoryDTO;
+import com.doan.backend.dto.response.CategoryResponse;
 import com.doan.backend.entity.Category;
-import com.doan.backend.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -9,5 +9,5 @@ import org.mapstruct.factory.Mappers;
 public interface CategoryMapper {
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
     Category toCategory(CategoryDTO categoryDTO);
-    CategoryDTO toCategoryDTO(Category category);
+    CategoryResponse toCategoryResponse(Category category);
 }

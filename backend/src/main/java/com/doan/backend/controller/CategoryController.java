@@ -1,42 +1,46 @@
 package com.doan.backend.controller;
 
-import com.doan.backend.dto.ApiResponse;
-import com.doan.backend.dto.CategoryDTO;
+import com.doan.backend.dto.request.CategoryDTO;
+import com.doan.backend.dto.response.ApiResponse;
+import com.doan.backend.dto.response.CategoryResponse;
 import com.doan.backend.serviceImplement.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/category")
 public class CategoryController {
     @Autowired
-    private ICategoryService categoryService;
+    private ICategoryService _iCategoryService;
 
     @PostMapping
-    public ApiResponse<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
-        return categoryService.createCategory(categoryDTO);
+    public ApiResponse<CategoryResponse> createCategory(@RequestBody CategoryDTO categoryDTO) {
+        return _iCategoryService.createCategory(categoryDTO);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<CategoryDTO> updateCategory(@PathVariable UUID id, @RequestBody CategoryDTO categoryDTO) {
-        return categoryService.updateCategory(id, categoryDTO);
+    public ApiResponse<CategoryResponse> updateCategory(@PathVariable String id, @RequestBody CategoryDTO categoryDTO) {
+        return _iCategoryService.updateCategory(id, categoryDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteCategory(@PathVariable UUID id) {
-        return categoryService.deleteCategory(id);
+    public ApiResponse<Void> deleteCategory(@PathVariable String id) {
+        return _iCategoryService.deleteCategory(id);
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<CategoryDTO> getCategoryById(@PathVariable UUID id) {
-        return categoryService.getCategoryById(id);
+    public ApiResponse<CategoryResponse> getCategoryById(@PathVariable String id) {
+        return _iCategoryService.getCategoryById(id);
     }
 
     @GetMapping
-    public ApiResponse<List<CategoryDTO>> getAllCategories() {
-        return categoryService.getAllCategories();
+    public ApiResponse<List<CategoryResponse>> getAllCategories() {
+        return _iCategoryService.getAllCategories();
     }
+//    @PutMapping("/update_isActive/{id}")
+//    public ApiResponse<CategoryResponse> updateCategory(@PathVariable String id, @RequestBody Boolean isActive) {
+//        return _iCategoryService.updateCategory_IsActive(id, isActive);
+//    }
 }
