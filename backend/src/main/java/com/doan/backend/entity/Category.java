@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -21,7 +22,11 @@ import java.util.UUID;
 public class Category {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
     UUID id;
 
     @Column(name = "name", nullable = false)
@@ -31,7 +36,7 @@ public class Category {
     String description;
 
     @Column(name = "active", nullable = false)
-    Boolean active = true;
+    Boolean isActive = true;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -39,5 +44,5 @@ public class Category {
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    LocalDateTime updatedAt;
+    LocalDateTime updatedAt=null;
 }
