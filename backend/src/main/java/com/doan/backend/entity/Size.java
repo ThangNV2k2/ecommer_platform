@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
@@ -18,8 +19,8 @@ import java.util.UUID;
 public class Size {
 
     @Id
-    @GeneratedValue
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
     @Column(name = "name", nullable = false)
     String name;

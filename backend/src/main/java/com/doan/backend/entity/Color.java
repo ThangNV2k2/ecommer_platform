@@ -18,8 +18,8 @@ import java.util.UUID;
 public class Color {
 
     @Id
-    @GeneratedValue
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
     @Column(name = "name", nullable = false)
     String name;
