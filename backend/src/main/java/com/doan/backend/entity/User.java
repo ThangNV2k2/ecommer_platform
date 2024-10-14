@@ -3,30 +3,27 @@ import com.doan.backend.enums.LoyaltyTierEnum;
 import com.doan.backend.enums.RoleEnum;
 import com.doan.backend.enums.UserStatusEnum;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
     @Column(name = "email", unique = true, nullable = false)
     String email;
@@ -37,11 +34,14 @@ public class User {
     @Column(name = "name")
     String name;
 
-    @Column(name = "address")
-    String address;
-
     @Column(name = "google_id")
     String googleId;
+
+    @Column(name = "is_active")
+    Boolean isActive;
+
+    @Column(name = "verification_token")
+    String verificationToken;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loyalty_tier")
@@ -53,9 +53,9 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     @Column(name = "role")
-    Set<RoleEnum> roles = new HashSet<>();
+    Set<RoleEnum> roles;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
