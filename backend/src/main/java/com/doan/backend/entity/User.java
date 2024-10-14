@@ -40,6 +40,9 @@ public class User {
     @Column(name = "is_active")
     Boolean isActive;
 
+    @Column(name = "verification_token")
+    String verificationToken;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "loyalty_tier")
     LoyaltyTierEnum loyaltyTier;

@@ -37,4 +37,9 @@ public class AuthController {
     ApiResponse<UserResponse> getUser() {
         return authService.getUser();
     }
+
+    @GetMapping("/verify")
+    ApiResponse<String> verify(@RequestParam String token) {
+        return authService.verifyAccount(token);
+    }
 }

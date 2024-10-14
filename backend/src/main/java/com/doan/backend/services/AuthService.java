@@ -23,12 +23,14 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
 @Service
 public class AuthService {
 
+    EmailService emailService;
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     JwtTokenProvider jwtTokenProvider;
@@ -42,6 +44,10 @@ public class AuthService {
         // Kiểm tra mật khẩu
         if (!passwordEncoder.matches(loginEmailRequest.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Invalid password");
+        }
+
+        if (!user.getIsActive()) {
+            throw new BadCredentialsException("Account is not activated");
         }
 
         // Tạo JWT cho người dùng
@@ -71,6 +77,9 @@ public class AuthService {
         User user;
         if (existingUser.isPresent()) {
             user = existingUser.get();
+            if (!user.getIsActive()) {
+                throw new BadCredentialsException("Account has been locked");
+            }
         } else {
             // Tạo tài khoản mới nếu người dùng chưa tồn tại
             user = new User();
@@ -101,17 +110,23 @@ public class AuthService {
             throw new IllegalArgumentException("Email is already taken");
         }
 
+        String verificationToken = UUID.randomUUID().toString();
+
         // Tạo tài khoản mới
         User newUser = User.builder()
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword())) // Mã hóa mật khẩu
                 .name(registerRequest.getName())
                 .roles(registerRequest.getRoles() != null ? registerRequest.getRoles() : Set.of(RoleEnum.CUSTOMER)) // Vai trò mặc định là CUSTOMER nếu không được cung cấp
-                .isActive(true)
+                .isActive(false)
+                .verificationToken(verificationToken)
                 .build();
 
         // Lưu vào cơ sở dữ liệu
         User savedUser = userRepository.save(newUser);
+
+        String verificationUrl = "http://localhost:8080/auth/verify?token=" + verificationToken;
+        emailService.sendVerificationEmail(registerRequest.getEmail(), "Verify your account", verificationUrl);
 
         // Chuyển đổi sang UserResponse
         UserResponse userResponse = userMapper.toUserResponse(savedUser);
@@ -121,6 +136,21 @@ public class AuthService {
                 .code(201)
                 .message("User registered successfully")
                 .result(userResponse)
+                .build();
+    }
+
+    public ApiResponse<String> verifyAccount(String token) {
+        User user = userRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
+
+        // Kích hoạt tài khoản
+        user.setIsActive(true);
+        user.setVerificationToken(null); // Xóa token sau khi xác thực
+        userRepository.save(user);
+
+        return ApiResponse.<String>builder()
+                .code(200)
+                .message("Account verified successfully")
                 .build();
     }
 
