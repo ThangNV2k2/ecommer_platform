@@ -21,8 +21,8 @@ import java.util.UUID;
 public class Discount {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue
+    UUID id;
 
     @Column(name = "code", unique = true, nullable = false)
     String code;

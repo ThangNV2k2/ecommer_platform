@@ -19,8 +19,8 @@ import java.util.UUID;
 public class OrderItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue
+    UUID id;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

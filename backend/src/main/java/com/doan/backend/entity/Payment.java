@@ -20,8 +20,8 @@ import java.util.UUID;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue
+    UUID id;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

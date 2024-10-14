@@ -1,6 +1,5 @@
 package com.doan.backend.entity;
 
-import com.doan.backend.enums.OrderStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,8 +22,8 @@ import java.util.UUID;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue
+    UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -39,7 +38,7 @@ public class Order {
     Promotion promotion;
 
     @Column(name = "status", nullable = false)
-    OrderStatusEnum status;
+    String status;
 
     @Column(name = "total_price_before_discount")
     BigDecimal totalPriceBeforeDiscount;
