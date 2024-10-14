@@ -18,8 +18,8 @@ import java.util.UUID;
 public class ProductInventory {
 
     @Id
-    @GeneratedValue
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
