@@ -15,6 +15,6 @@ public class CategoryDTO {
     String name;
     String description;
     Boolean isActive;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt=null;
+    //LocalDateTime createdAt;
+    //LocalDateTime updatedAt=null;
 }
