@@ -8,6 +8,7 @@ import com.doan.backend.dto.response.JwtResponse;
 import com.doan.backend.dto.response.UserResponse;
 import com.doan.backend.entity.User;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.enums.UserStatusEnum;
 import com.doan.backend.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;

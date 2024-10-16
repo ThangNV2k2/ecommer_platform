@@ -1,9 +1,8 @@
 package com.doan.backend.services;
 
-import com.doan.backend.dto.request.CategoryDTO;
+import com.doan.backend.dto.request.CategoryRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.CategoryResponse;
-import com.doan.backend.dto.response.JwtResponse;
 import com.doan.backend.entity.Category;
 import com.doan.backend.mappers.CategoryMapper;
 import com.doan.backend.repositoryImplement.CategoryRepository;
@@ -12,8 +11,6 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,36 +28,39 @@ public class CategoryService implements ICategoryService {
     private static final Logger logger = LoggerFactory.getLogger(CategoryService.class);
 
     @Override
-    public ApiResponse<CategoryResponse> createCategory(CategoryDTO categoryDTO) {
-        if (isNameExist(categoryDTO.getName())){
-            throw new IllegalArgumentException(categoryDTO.getName()+"already existed!");
+    public ApiResponse<CategoryResponse> createCategory(CategoryRequest categoryRequest) {
+        if (isNameExist(categoryRequest.getName())){
+            throw new IllegalArgumentException(categoryRequest.getName()+"already existed!");
         }
-        Category category = categoryMapper.toCategory(categoryDTO);
-        category = categoryRepository.save(category);
-        //return new ApiResponse<>(200, "Category created successfully", categoryMapper.toCategoryResponse(category));
+
+        Category newCategory = Category.builder()
+                .name(categoryRequest.getName())
+                .description(categoryRequest.getDescription())
+                .isActive(true)
+                .build();
+        Category saveCategory = categoryRepository.save(newCategory);
 
         // Trả về ApiResponse
         return ApiResponse.<CategoryResponse>builder()
                 .code(200)
                 .message("Category created successfully")
-                .result(categoryMapper.toCategoryResponse(category))
+                .result(categoryMapper.toCategoryResponse(saveCategory))
                 .build();
-
     }
 
     @Override
-    public ApiResponse<CategoryResponse> updateCategory(String id, CategoryDTO categoryDTO) {
+    public ApiResponse<CategoryResponse> updateCategory(String id, CategoryRequest categoryRequest) {
         Optional<Category> infoCategory = categoryRepository.findById(id);
         if (!infoCategory.isPresent()) {
             throw new IllegalArgumentException(id+" does not exist");
         }
-        if(isNameExist(categoryDTO.getName())){
-            throw new IllegalArgumentException(categoryDTO.getName()+"already existed!");
+        if(isNameExist(categoryRequest.getName())){
+            throw new IllegalArgumentException(categoryRequest.getName()+"already existed!");
         }
 
         Category category = infoCategory.get();
-        category.setName(categoryDTO.getName());
-        category.setDescription(categoryDTO.getDescription());
+        category.setName(categoryRequest.getName());
+        category.setDescription(categoryRequest.getDescription());
         category = categoryRepository.save(category);
         //return new ApiResponse<>(200, "Category updated successfully", categoryMapper.toCategoryResponse(category));
         // Trả về ApiResponse

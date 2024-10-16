@@ -1,6 +1,6 @@
 package com.doan.backend.controllers;
 
-import com.doan.backend.dto.request.CategoryDTO;
+import com.doan.backend.dto.request.CategoryRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.CategoryResponse;
 import com.doan.backend.serviceImplement.ICategoryService;
@@ -19,13 +19,13 @@ public class CategoryController {
     private ICategoryService iCategoryService;
 
     @PostMapping
-    public ApiResponse<CategoryResponse> createCategory(@RequestBody CategoryDTO categoryDTO) {
-        return iCategoryService.createCategory(categoryDTO);
+    public ApiResponse<CategoryResponse> createCategory(@RequestBody CategoryRequest categoryRequest) {
+        return iCategoryService.createCategory(categoryRequest);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<CategoryResponse> updateCategory(@PathVariable @Valid String id, @RequestBody CategoryDTO categoryDTO) {
-        return iCategoryService.updateCategory(id, categoryDTO);
+    public ApiResponse<CategoryResponse> updateCategory(@PathVariable @Valid String id, @RequestBody CategoryRequest categoryRequest) {
+        return iCategoryService.updateCategory(id, categoryRequest);
     }
 
     @DeleteMapping("/{id}")
