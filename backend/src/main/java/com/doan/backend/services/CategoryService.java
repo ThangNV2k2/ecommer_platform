@@ -24,8 +24,7 @@ public class CategoryService implements ICategoryService {
     private CategoryRepository categoryRepository;
     @Autowired
     private CategoryMapper categoryMapper;
-    @Autowired
-    private static final Logger logger = LoggerFactory.getLogger(CategoryService.class);
+
 
     @Override
     public ApiResponse<CategoryResponse> createCategory(CategoryRequest categoryRequest) {
@@ -62,7 +61,6 @@ public class CategoryService implements ICategoryService {
         category.setName(categoryRequest.getName());
         category.setDescription(categoryRequest.getDescription());
         category = categoryRepository.save(category);
-        //return new ApiResponse<>(200, "Category updated successfully", categoryMapper.toCategoryResponse(category));
         // Trả về ApiResponse
         return ApiResponse.<CategoryResponse>builder()
                 .code(200)
@@ -109,7 +107,7 @@ public class CategoryService implements ICategoryService {
        // return new ApiResponse<>(200, "Category retrieved successfully", categoryMapper.toCategoryResponse(category.get()));
         return ApiResponse.<CategoryResponse>builder()
                 .code(200)
-                .message("Category deleted successfully")
+                .message("")
                 .result(categoryMapper.toCategoryResponse(infoCategory.get()))
                 .build();
     }
