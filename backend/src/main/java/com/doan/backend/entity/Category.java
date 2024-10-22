@@ -10,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -30,8 +29,8 @@ public class Category {
     @Column(name = "description")
     String description;
 
-    @Column(name = "active", nullable = false)
-    Boolean active = true;
+    @Column(name = "is_active", nullable = false)
+    Boolean isActive;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -1,12 +1,10 @@
 package com.doan.backend.entity;
 import com.doan.backend.enums.LoyaltyTierEnum;
 import com.doan.backend.enums.RoleEnum;
-import com.doan.backend.enums.UserStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -47,9 +45,11 @@ public class User {
     @Column(name = "loyalty_tier")
     LoyaltyTierEnum loyaltyTier;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    UserStatusEnum status;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Address> addresses;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<PhoneNumber> phones;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)

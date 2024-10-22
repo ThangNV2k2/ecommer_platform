@@ -29,7 +29,6 @@ public class JwtTokenProvider {
         signingKey = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
     }
 
-    // Tạo JWT từ thông tin người dùng (sử dụng cho cả đăng nhập Google và email/password)
     public String generateToken(String email, Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -40,7 +39,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // Giải mã JWT token để lấy thông tin người dùng
     public Claims getClaimsFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(signingKey)
@@ -49,7 +47,6 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
-    // Xác thực token
     public boolean validateToken(String token) {
         try {
             getClaimsFromToken(token);
