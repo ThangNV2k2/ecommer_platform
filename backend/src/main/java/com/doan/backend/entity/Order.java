@@ -38,6 +38,14 @@ public class Order {
     @JoinColumn(name = "promotion_id")
     Promotion promotion;
 
+    @ManyToOne
+    @JoinColumn(name = "address_id", nullable = false)  // Liên kết đến bảng Address
+    Address address;
+
+    @ManyToOne
+    @JoinColumn(name = "phone_number_id", nullable = false)  // Liên kết đến bảng PhoneNumber
+    PhoneNumber phoneNumber;
+
     @Column(name = "status", nullable = false)
     OrderStatusEnum status;
 

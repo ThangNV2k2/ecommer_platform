@@ -1,13 +1,13 @@
 package com.doan.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Builder
 @Table(name = "products")
 public class Product {
 
@@ -37,4 +38,18 @@ public class Product {
 
     @Column(name = "rating")
     Integer rating;
+
+    @Column(name = "main_image")
+    String mainImage;
+
+    @Column(name = "is_active")
+    Boolean isActive = true;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    LocalDateTime updatedAt;
 }

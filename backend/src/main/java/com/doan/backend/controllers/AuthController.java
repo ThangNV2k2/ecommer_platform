@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PUBLIC, makeFinal = true)
 public class AuthController {
     AuthService authService;
 
@@ -26,11 +26,6 @@ public class AuthController {
     @PostMapping("/login")
     ApiResponse<JwtResponse> login(@RequestBody LoginEmailRequest loginEmailRequest) {
         return authService.loginWithEmail(loginEmailRequest);
-    }
-
-    @PostMapping("/login/google")
-    ApiResponse<JwtResponse> loginWithGoogle(@RequestParam String token) throws Exception {
-        return authService.loginWithGoogle(token);
     }
 
     @GetMapping("/get-user")

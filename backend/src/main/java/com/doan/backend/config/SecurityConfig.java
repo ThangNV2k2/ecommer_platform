@@ -1,6 +1,11 @@
 package com.doan.backend.config;
 
 import com.doan.backend.services.CustomUserDetailService;
+import com.doan.backend.services.oauth2.CustomOAuth2UserService;
+import com.doan.backend.services.oauth2.OAuth2AuthenticationFailureHandler;
+import com.doan.backend.services.oauth2.OAuth2AuthenticationSuccessHandler;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,17 +33,29 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_ENDPOINTS = {
-            "/auth/register", "/auth/login/google", "/auth/login", "auth/get-user", "/auth/verify"
+    private static final String[] GET_PUBLIC_ENDPOINTS = {
+            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**"
     };
 
-    @Autowired
-    private CustomUserDetailService customUserDetailsService;
+    private static final String[] PUT_PUBLIC_ENDPOINTS = { };
 
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+    private static final String[] POST_PUBLIC_ENDPOINTS = {
+            "/auth/register", "/auth/login", "/images/upload"
+    };
+
+    private static final String[] DELETE_Public_ENDPOINTS = {
+            "/images/delete"
+    };
+
+    CustomUserDetailService customUserDetailsService;
+    JwtAuthenticationEntryPoint unauthorizedHandler;
+    CustomOAuth2UserService customOAuth2UserService;
+    OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -52,8 +69,25 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.POST, POST_PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.DELETE, DELETE_Public_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.PUT, PUT_PUBLIC_ENDPOINTS).permitAll()
+
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authorization -> authorization
+                                .baseUri("/oauth2/authorization")
+                        )
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/oauth2/callback/*")
+                        )
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -64,7 +98,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
