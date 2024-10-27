@@ -7,7 +7,7 @@ export const categoryApi = createApi({
     reducerPath: "categoryApi",
     baseQuery: fetchBaseQuery({ baseUrl: baseApi }),
     endpoints: (builder) => ({
-        getAllCategory: builder.query<BaseResponse<CategoryResponse>, undefined>({
+        getAllCategory: builder.query<BaseResponse<CategoryResponse[]>, void>({
             query: () => ({
                 url: "category",
                 method: "GET"

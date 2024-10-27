@@ -7,8 +7,8 @@ import {PageResponse} from "../../types/page";
 interface ProductFilterRequest {
     search?: string,
     categoryId?: string,
-    page: number,
-    limit: number
+    page?: number,
+    limit?: number
 }
 
 export const productApi = createApi({
@@ -18,7 +18,7 @@ export const productApi = createApi({
         getProductFilter: builder.query<BaseResponse<PageResponse<ProductResponse>>, ProductFilterRequest>({
             query: (productFilter) => {
                 const { search, categoryId, page, limit } = productFilter;
-                let url = `product/?search=${search}&page=${page}&limit=${limit}`;
+                let url = `product?search=${search}&page=${page}&limit=${limit}`;
                 if (categoryId) {
                     url += `&categoryId=${categoryId}`;
                 }

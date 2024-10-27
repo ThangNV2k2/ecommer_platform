@@ -36,7 +36,6 @@ const Login: React.FC = () => {
     const [getUserInfo] = useLazyGetUserInfoQuery();
 
     const handleGetUserInfo = async () => {
-        debugger;
         try {
             const result = await getUserInfo().unwrap();
             if(result?.result) {
