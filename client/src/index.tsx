@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.scss';
+import './App.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ConfigProvider } from 'antd';
@@ -16,7 +17,7 @@ root.render(
     <ConfigProvider theme={{
       token: {
         colorPrimary: '#5ec9ff',
-          fontFamily: 'futura, sans-serif'
+          fontFamily: 'roboto sans-serif'
       }
     }}>
       <Provider store={store}>

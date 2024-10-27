@@ -8,7 +8,6 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setUser(state, action: PayloadAction<UserInfo>) {
-            debugger;
             state.user = action.payload;
         },
         clearUser(state) {

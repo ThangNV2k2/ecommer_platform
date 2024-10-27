@@ -4,7 +4,6 @@ import {RootState} from "../../redux/store";
 
 const ProtectedRoute = () => {
     const userInfo = useSelector((state: RootState) => state.user.user);
-    debugger;
     if (userInfo) {
         return <Outlet />;
     }
