@@ -41,9 +41,6 @@ public class Promotion {
     @Column(name = "end_date", nullable = false)
     LocalDateTime endDate;
 
-    @Column(name = "is_global")
-    Boolean isGlobal;
-
     @Column(name = "is_active")
     Boolean isActive;
 

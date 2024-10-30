@@ -1,7 +1,5 @@
 package com.doan.backend.dto.response;
 
-import com.doan.backend.entity.Address;
-import com.doan.backend.entity.PhoneNumber;
 import com.doan.backend.enums.LoyaltyTierEnum;
 import com.doan.backend.enums.RoleEnum;
 import lombok.*;
@@ -21,8 +19,6 @@ public class UserResponse {
     String name;
     Boolean isActive;
     LoyaltyTierEnum loyaltyTier;
-    Set<PhoneNumber> phones;
-    Set<Address> addresses;
     Set<RoleEnum> roles;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

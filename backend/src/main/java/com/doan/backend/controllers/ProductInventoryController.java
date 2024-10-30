@@ -4,15 +4,17 @@ import com.doan.backend.dto.request.ProductInventoryRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.services.ProductInventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/product-inventory")
-public class ProductInventory {
+public class ProductInventoryController {
     @Autowired
     private ProductInventoryService productInventoryService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<?> createProductInventory(@RequestBody ProductInventoryRequest productInventoryRequest) {
         return productInventoryService.createProductInventory(productInventoryRequest);
     }
@@ -22,13 +24,15 @@ public class ProductInventory {
         return productInventoryService.getProductInventoryByProductId(productId);
     }
 
-    @PutMapping
-    ApiResponse<?> updateProductInventory(@RequestBody ProductInventoryRequest productInventoryRequest) {
-        return productInventoryService.updateProductInventory(productInventoryRequest);
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    ApiResponse<?> updateProductInventory(@PathVariable String id, @RequestBody ProductInventoryRequest productInventoryRequest) {
+        return productInventoryService.updateProductInventory(id, productInventoryRequest);
     }
 
-    @DeleteMapping
-    ApiResponse<?> deleteProductInventory(@RequestParam String id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    ApiResponse<?> deleteProductInventory(@PathVariable String id) {
         return productInventoryService.deleteProductInventory(id);
     }
 }

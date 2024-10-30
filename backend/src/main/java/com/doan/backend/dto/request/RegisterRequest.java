@@ -17,11 +17,11 @@ public class RegisterRequest {
     @Email(message = "Email is invalid")
     String email;
 
-    @NotNull(message = "Password is required")
+    @NotBlank(message = "Password is required")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,16}$", message = "Password must be contain a UPPERCASE, a lowercase, a number, a special character and at least 8 letter")
     String password;
 
-    @NotEmpty
+    @NotBlank(message = "Name is required")
     @Size(min = 5, max = 50)
     String name;
 

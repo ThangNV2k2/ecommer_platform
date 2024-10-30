@@ -1,4 +1,10 @@
 package com.doan.backend.mapper;
 
-public class SizeMapper {
+import com.doan.backend.dto.request.SizeRequest;
+import com.doan.backend.entity.Size;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface SizeMapper {
+    Size toSize(SizeRequest sizeRequest);
 }

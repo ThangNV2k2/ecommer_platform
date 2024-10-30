@@ -30,6 +30,12 @@ public class Discount {
     @Column(name = "discount_percentage", nullable = false)
     BigDecimal discountPercentage;
 
+    @Column(name = "max_discount_value", nullable = false)
+    BigDecimal maxDiscountValue;
+
+    @Column(name = "min_order_value", nullable = false)
+    BigDecimal minOrderValue;
+
     @Column(name = "max_uses", nullable = false)
     Integer maxUses;
 
