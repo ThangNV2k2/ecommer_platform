@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/category")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 @FieldDefaults(level = AccessLevel.PUBLIC, makeFinal = true)
 public class CategoryController {
     CategoryService categoryService;
@@ -38,7 +39,7 @@ public class CategoryController {
         return categoryService.getPageAllCategories(page, size);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping
     ApiResponse<CategoryResponse> createCategory(
             @RequestBody CategoryRequest categoryRequest) {
