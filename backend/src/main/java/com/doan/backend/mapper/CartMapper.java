@@ -1,4 +1,11 @@
 package com.doan.backend.mapper;
 
-public class CartMapper {
+import com.doan.backend.dto.response.CartResponse;
+import com.doan.backend.entity.Cart;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface CartMapper {
+
+    CartResponse toCartResponse(Cart Cart);
 }

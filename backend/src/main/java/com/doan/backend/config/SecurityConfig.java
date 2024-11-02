@@ -39,7 +39,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] GET_PUBLIC_ENDPOINTS = {
-            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**"
+            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**"
     };
 
     private static final String[] PUT_PUBLIC_ENDPOINTS = {
@@ -47,11 +47,11 @@ public class SecurityConfig {
     };
 
     private static final String[] POST_PUBLIC_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/images/upload", "shipping-address/**"
+            "/auth/register", "/auth/login", "/images/upload", "shipping-address/**", "cart/**"
     };
 
     private static final String[] DELETE_Public_ENDPOINTS = {
-            "/images/delete", "shipping-address/**"
+            "/images/delete", "shipping-address/**", "cart/**"
     };
 
     CustomUserDetailService customUserDetailsService;

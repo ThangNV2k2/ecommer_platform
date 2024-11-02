@@ -12,6 +12,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -31,12 +33,8 @@ public class Order {
     User user;
 
     @ManyToOne
-    @JoinColumn(name = "discount_id")
-    Discount discount;
-
-    @ManyToOne
-    @JoinColumn(name = "promotion_id")
-    Promotion promotion;
+    @JoinColumn(name = "user_discount_id")
+    UserDiscount userDiscount;
 
     @ManyToOne
     @JoinColumn(name = "shipping_address_id", nullable = false)
@@ -50,6 +48,9 @@ public class Order {
 
     @Column(name = "total_price_after_discount")
     BigDecimal totalPriceAfterDiscount;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<OrderItem> orderItems;
 
     @CreationTimestamp
     @Column(name = "created_at")

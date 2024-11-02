@@ -1,6 +1,7 @@
 package com.doan.backend.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,6 @@ public class ProductInventoryRequest {
     @NotBlank(message = "Size is required")
     String idSize;
 
-    @NotBlank(message = "Quantity is required")
+    @Positive(message = "Quantity must be greater than 0")
     Integer quantity;
 }

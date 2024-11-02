@@ -1,4 +1,8 @@
 package com.doan.backend.repositories;
 
-public class PromotionRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface PromotionRepository extends JpaRepository<PromotionRepository, String> {
 }
