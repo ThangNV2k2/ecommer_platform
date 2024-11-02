@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/promtion")
+@RequestMapping("/promotion")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 @FieldDefaults(level = AccessLevel.PUBLIC, makeFinal = true)
