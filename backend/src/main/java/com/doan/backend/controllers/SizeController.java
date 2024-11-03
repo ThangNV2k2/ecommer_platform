@@ -6,6 +6,7 @@ import com.doan.backend.entity.Size;
 import com.doan.backend.services.SizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,13 +34,13 @@ public class SizeController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<?> updateSize(@PathVariable  String id, @RequestBody SizeRequest sizeRequest) {
+    public ApiResponse<?> updateSize(@PathVariable  String id, @RequestBody @Validated SizeRequest sizeRequest) {
         return sizeService.updateSize(id, sizeRequest);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<Size> createSize(@RequestBody SizeRequest sizeRequest) {
+    public ApiResponse<Size> createSize(@RequestBody @Validated SizeRequest sizeRequest) {
         return sizeService.createSize(sizeRequest);
     }
 }

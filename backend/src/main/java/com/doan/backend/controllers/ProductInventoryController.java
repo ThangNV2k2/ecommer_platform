@@ -5,6 +5,7 @@ import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.services.ProductInventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,7 +16,7 @@ public class ProductInventoryController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    ApiResponse<?> createProductInventory(@RequestBody ProductInventoryRequest productInventoryRequest) {
+    ApiResponse<?> createProductInventory(@RequestBody @Validated ProductInventoryRequest productInventoryRequest) {
         return productInventoryService.createProductInventory(productInventoryRequest);
     }
 
@@ -26,7 +27,7 @@ public class ProductInventoryController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    ApiResponse<?> updateProductInventory(@PathVariable String id, @RequestBody ProductInventoryRequest productInventoryRequest) {
+    ApiResponse<?> updateProductInventory(@PathVariable String id, @RequestBody @Validated ProductInventoryRequest productInventoryRequest) {
         return productInventoryService.updateProductInventory(id, productInventoryRequest);
     }
 

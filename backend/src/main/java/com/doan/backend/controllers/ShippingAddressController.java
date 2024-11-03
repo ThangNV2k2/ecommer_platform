@@ -5,6 +5,7 @@ import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.entity.ShippingAddress;
 import com.doan.backend.services.ShippingAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -15,12 +16,12 @@ public class ShippingAddressController {
     private ShippingAddressService shippingAddressService;
 
     @PostMapping
-    public ApiResponse<Void> createShippingAddress(@RequestBody ShippingAddressRequest shippingAddressRequest) {
+    public ApiResponse<Void> createShippingAddress(@RequestBody @Validated ShippingAddressRequest shippingAddressRequest) {
         return shippingAddressService.createShippingAddress(shippingAddressRequest);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<Void> updateShippingAddress(@PathVariable String id, @RequestBody ShippingAddressRequest shippingAddressRequest) {
+    public ApiResponse<Void> updateShippingAddress(@PathVariable String id, @RequestBody @Validated ShippingAddressRequest shippingAddressRequest) {
         return shippingAddressService.updateShippingAddress(id, shippingAddressRequest);
     }
 

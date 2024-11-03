@@ -30,6 +30,7 @@ public class DiscountRequest {
 
     BigDecimal maxDiscountValue;
 
+    @NotBlank(message = "Min Order Value is required")
     BigDecimal minOrderValue;
 
     @NotBlank(message = "Max uses is required")
@@ -38,5 +39,5 @@ public class DiscountRequest {
     @NotBlank(message = "Expiry date is required")
     LocalDateTime expiryDate;
 
-    LocalDateTime createdAt;
+    LocalDateTime startDate;
 }

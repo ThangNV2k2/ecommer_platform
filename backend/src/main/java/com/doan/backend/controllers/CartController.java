@@ -6,6 +6,7 @@ import com.doan.backend.dto.response.CartResponse;
 import com.doan.backend.entity.CartItem;
 import com.doan.backend.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +21,7 @@ public class CartController {
     }
 
     @PostMapping("/{id}")
-    public ApiResponse<CartItem> createOrUpdateCartItem(@PathVariable String id, @RequestBody CartItemRequest cartItemRequest) {
+    public ApiResponse<CartItem> createOrUpdateCartItem(@PathVariable String id, @RequestBody @Validated CartItemRequest cartItemRequest) {
         return cartService.addOrUpdateCartItem(id, cartItemRequest);
     }
 

@@ -18,6 +18,4 @@ public class OrderItemRequest {
 
     @Positive(message = "quantity must be greater than 0")
     Integer quantity;
-
-    String promotionId;
 }

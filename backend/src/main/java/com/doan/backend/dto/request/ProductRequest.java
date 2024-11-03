@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Validated
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -23,5 +24,6 @@ public class ProductRequest {
     @NotBlank(message = "IsActive is required")
     Boolean isActive;
 
+    List<String> promotionIds;
     String mainImage;
 }

@@ -9,6 +9,7 @@ import com.doan.backend.services.AuthService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,12 +20,12 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/register")
-    ApiResponse<UserResponse> register(@RequestBody RegisterRequest registerRequest) {
+    ApiResponse<UserResponse> register(@RequestBody @Validated RegisterRequest registerRequest) {
         return authService.registerWithEmail(registerRequest);
     }
 
     @PostMapping("/login")
-    ApiResponse<JwtResponse> login(@RequestBody LoginEmailRequest loginEmailRequest) {
+    ApiResponse<JwtResponse> login(@RequestBody @Validated LoginEmailRequest loginEmailRequest) {
         return authService.loginWithEmail(loginEmailRequest);
     }
 

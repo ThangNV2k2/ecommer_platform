@@ -63,6 +63,7 @@ public class CartService {
         } else {
             CartItem newCartItem = new CartItem();
             newCartItem.setProduct(productInventory.getProduct());
+            newCartItem.setSize(productInventory.getSize());
             newCartItem.setCart(cartRepository.findById(cartItemRequest.getCartId()).orElseThrow(() -> new RuntimeException("Cart not found")));
             newCartItem.setQuantity(cartItemRequest.getQuantity());
         }

@@ -62,6 +62,12 @@ public class Discount {
     @Column(name = "expiry_date")
     LocalDateTime expiryDate;
 
+    @Column(name = "start_date")
+    LocalDateTime startDate;
+
+    @Column(name = "auto-apply")
+    Boolean autoApply;
+
     @Column(name = "created_at")
     LocalDateTime createdAt;
 }

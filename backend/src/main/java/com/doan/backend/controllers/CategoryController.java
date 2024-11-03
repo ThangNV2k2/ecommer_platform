@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     ApiResponse<CategoryResponse> createCategory(
-            @RequestBody CategoryRequest categoryRequest) {
+            @RequestBody @Validated CategoryRequest categoryRequest) {
         return categoryService.createCategory(categoryRequest);
     }
 
@@ -49,7 +50,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     ApiResponse<String> updateCategory(
             @PathVariable String id,
-            @RequestBody CategoryRequest categoryRequest) {
+            @RequestBody @Validated CategoryRequest categoryRequest) {
         return categoryService.updateCategory(id, categoryRequest);
     }
 

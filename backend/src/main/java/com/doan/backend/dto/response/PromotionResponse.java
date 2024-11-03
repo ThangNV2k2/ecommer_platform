@@ -13,16 +13,15 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
-public class ProductResponse {
+public class PromotionResponse {
     String id;
     String name;
     String description;
-    BigDecimal price;
-    CategoryResponse categoryResponse;
-    Integer rating;
-    Boolean isActive;
     BigDecimal discountPercentage;
+    LocalDateTime startDate;
+    LocalDateTime endDate;
+    Boolean applyToAll;
+    Boolean isActive;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    String mainImage;
 }

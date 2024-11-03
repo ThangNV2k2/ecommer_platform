@@ -34,8 +34,11 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
-
     Product product;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "size_id")
+    Size size;
 
     @Column(name = "quantity", nullable = false)
     Integer quantity;
