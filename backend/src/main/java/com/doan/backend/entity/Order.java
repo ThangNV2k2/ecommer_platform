@@ -12,6 +12,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -31,20 +33,12 @@ public class Order {
     User user;
 
     @ManyToOne
-    @JoinColumn(name = "discount_id")
-    Discount discount;
+    @JoinColumn(name = "user_discount_id")
+    UserDiscount userDiscount;
 
     @ManyToOne
-    @JoinColumn(name = "promotion_id")
-    Promotion promotion;
-
-    @ManyToOne
-    @JoinColumn(name = "address_id", nullable = false)  // Liên kết đến bảng Address
-    Address address;
-
-    @ManyToOne
-    @JoinColumn(name = "phone_number_id", nullable = false)  // Liên kết đến bảng PhoneNumber
-    PhoneNumber phoneNumber;
+    @JoinColumn(name = "shipping_address_id", nullable = false)
+    ShippingAddress shippingAddress;
 
     @Column(name = "status", nullable = false)
     OrderStatusEnum status;
@@ -54,6 +48,9 @@ public class Order {
 
     @Column(name = "total_price_after_discount")
     BigDecimal totalPriceAfterDiscount;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<OrderItem> orderItems;
 
     @CreationTimestamp
     @Column(name = "created_at")

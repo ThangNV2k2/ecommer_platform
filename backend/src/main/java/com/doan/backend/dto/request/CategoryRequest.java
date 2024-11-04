@@ -1,6 +1,6 @@
 package com.doan.backend.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +13,9 @@ import org.springframework.validation.annotation.Validated;
 @Builder
 public class CategoryRequest {
 
-    @NotNull(message = "Name is required")
+    @NotBlank(message = "Name is required")
     String name;
     String description;
-    @NotNull(message = "isActive is required")
+    @NotBlank(message = "isActive is required")
     Boolean isActive;
 }

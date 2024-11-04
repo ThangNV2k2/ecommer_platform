@@ -15,7 +15,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "cart_items")
+@Table(
+        name = "cart_items",
+        indexes = {
+                @Index(name = "idx_cart_id", columnList = "cart_id"),
+                @Index(name = "idx_product_id", columnList = "product_id")
+        }
+)
 public class CartItem {
 
     @Id
@@ -26,11 +32,14 @@ public class CartItem {
     @JoinColumn(name = "cart_id")
     Cart cart;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     Product product;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "size_id")
+    Size size;
 
     @Column(name = "quantity", nullable = false)
     Integer quantity;
 }
-

@@ -26,7 +26,7 @@ public class Promotion {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     String name;
 
     @Column(name = "description")
@@ -41,11 +41,11 @@ public class Promotion {
     @Column(name = "end_date", nullable = false)
     LocalDateTime endDate;
 
-    @Column(name = "is_global")
-    Boolean isGlobal;
-
     @Column(name = "is_active")
     Boolean isActive;
+
+    @Column(name = "apply_to_all", nullable = false)
+    Boolean applyToAll = false;
 
     @CreationTimestamp
     @Column(name = "created_at")

@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,7 +37,7 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    ApiResponse<ProductResponse> createProduct(@RequestBody ProductRequest productRequest) {
+    ApiResponse<ProductResponse> createProduct(@RequestBody @Validated ProductRequest productRequest) {
         return productService.createProduct(productRequest);
     }
 
@@ -44,7 +45,7 @@ public class ProductController {
     @PutMapping("/{id}")
     ApiResponse<ProductResponse> updateProduct(
             @PathVariable String id,
-            @RequestBody ProductRequest productRequest) {
+            @RequestBody @Validated ProductRequest productRequest) {
         return productService.updateProduct(id, productRequest);
     }
 

@@ -12,9 +12,9 @@ import org.springframework.validation.annotation.Validated;
 @Builder
 public class LoginEmailRequest {
     @Email
-    @NotEmpty
+    @NotBlank(message = "Email is required")
     String email;
 
-    @NotEmpty
+    @NotBlank(message = "Password is required")
     String password;
 }

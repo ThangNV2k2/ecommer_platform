@@ -16,23 +16,18 @@ import java.util.UUID;
 @Entity
 @Table(name = "product_inventory")
 public class ProductInventory {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     Product product;
 
     @ManyToOne
-    @JoinColumn(name = "color_id")
-    Color color;
-
-    @ManyToOne
-    @JoinColumn(name = "size_id")
+    @JoinColumn(name = "size_id", nullable = false)
     Size size;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     Integer quantity;
 }

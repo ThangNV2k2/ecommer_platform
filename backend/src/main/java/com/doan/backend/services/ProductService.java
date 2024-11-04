@@ -5,29 +5,62 @@ import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.ProductResponse;
 import com.doan.backend.entity.Category;
 import com.doan.backend.entity.Product;
+import com.doan.backend.entity.Promotion;
+import com.doan.backend.entity.PromotionProduct;
 import com.doan.backend.mapper.ProductMapper;
 import com.doan.backend.repositories.CategoryRepository;
 import com.doan.backend.repositories.ProductRepository;
+import com.doan.backend.repositories.PromotionProductRepository;
+import com.doan.backend.repositories.PromotionRepository;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class ProductService {
-
     ProductRepository productRepository;
-
     CategoryRepository categoryRepository;
-
     ProductMapper productMapper;
+    PromotionService promotionService;
+    PromotionRepository promotionRepository;
+    PromotionProductRepository promotionProductRepository;
+
+    private void savePromotionProducts(Product product, List<String> promotionIds) {
+        Optional<Promotion> existingPromotion = promotionProductRepository.findActivePromotionByProductId(product.getId(), LocalDateTime.now());
+        if (existingPromotion.isPresent()) {
+            throw new RuntimeException("An active promotion already exists for this product.");
+        }
+
+        if (promotionIds != null && !promotionIds.isEmpty()) {
+            List<PromotionProduct> promotionProducts = new ArrayList<>();
+
+            for (String promotionId : promotionIds) {
+                Promotion promotion = promotionRepository.findById(promotionId)
+                        .orElseThrow(() -> new RuntimeException("Promotion not found"));
+
+                PromotionProduct promotionProduct = new PromotionProduct();
+                promotionProduct.setPromotion(promotion);
+                promotionProduct.setProduct(product);
+                promotionProducts.add(promotionProduct);
+            }
+
+            promotionProductRepository.saveAll(promotionProducts);
+        }
+    }
 
     public ApiResponse<ProductResponse> createProduct(ProductRequest productRequest) {
         Product product = productMapper.toProduct(productRequest);
+        savePromotionProducts(product, productRequest.getPromotionIds());
         product = productRepository.save(product);
         return ApiResponse.<ProductResponse>builder()
                 .code(200)
@@ -42,6 +75,11 @@ public class ProductService {
 
         Category category = categoryRepository.findById(productRequest.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        List<PromotionProduct> existingPromotionProducts = promotionProductRepository.findPromotionProductsByProductId(product.getId());
+        promotionProductRepository.deleteAll(existingPromotionProducts);
+        savePromotionProducts(product, productRequest.getPromotionIds());
+
 
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
@@ -71,6 +109,12 @@ public class ProductService {
                 .map(productMapper::toProductResponse)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
+        Optional<Promotion> promotionOptional = promotionProductRepository.findActivePromotionByProductId(id, LocalDateTime.now());
+
+        productResponse.setDiscountPercentage(
+                promotionOptional.map(Promotion::getDiscountPercentage).orElse(BigDecimal.ZERO)
+        );
+
         return ApiResponse.<ProductResponse>builder()
                 .code(200)
                 .message("Product retrieved successfully")
@@ -90,7 +134,12 @@ public class ProductService {
             products = productRepository.findAll(pageable);
         }
 
-        Page<ProductResponse> productResponsePage = products.map(productMapper::toProductResponse);
+        Page<ProductResponse> productResponsePage = products.map(product -> {
+            ProductResponse response = productMapper.toProductResponse(product);
+            BigDecimal discountPercentage = promotionProductRepository.findActivePromotionByProductId(product.getId(), LocalDateTime.now()).map(Promotion::getDiscountPercentage).orElse(BigDecimal.ZERO);
+            response.setDiscountPercentage(discountPercentage);
+            return response;
+        });
         return ApiResponse.<Page<ProductResponse>>builder()
                 .code(200)
                 .message("Products retrieved successfully")

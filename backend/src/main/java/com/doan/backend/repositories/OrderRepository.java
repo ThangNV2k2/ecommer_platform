@@ -1,0 +1,28 @@
+package com.doan.backend.repositories;
+
+import com.doan.backend.entity.Order;
+import com.doan.backend.enums.OrderStatusEnum;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface OrderRepository extends JpaRepository<Order, String> {
+    Iterable<Order> findByUserId(String userId);
+    Iterable<Order> findByStatus(OrderStatusEnum status);
+    Iterable<Order> findByUserIdAndStatus(String userId, OrderStatusEnum status);
+    Boolean existsByUserIdAndStatus(String userId, OrderStatusEnum status);
+    @Query("SELECT o FROM Order o JOIN o.orderItems oi JOIN o.user u " +
+            "WHERE (:productName IS NULL OR oi.product.name LIKE %:productName%) " +
+            "AND (:customerName IS NULL OR u.name LIKE %:customerName%) " +
+            "AND (:status IS NULL OR o.status = :status)")
+    Page<Order> findOrdersForAdmin(
+            @Param("productName") String productName,
+            @Param("customerName") String customerName,
+            @Param("status") OrderStatusEnum status,
+            Pageable pageable
+    );
+}

@@ -1,6 +1,6 @@
 package com.doan.backend.dto.request;
 
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +11,10 @@ import org.springframework.validation.annotation.Validated;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder
-public class PhoneRequest {
-
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Phone number is invalid")
-    String phoneNumber;
+public class UpdateOrderRequest {
+    @NotBlank(message = "User is required")
+    String userId;
+    @NotBlank(message = "Order is required")
+    String orderId;
+    String shippingAddressId;
 }

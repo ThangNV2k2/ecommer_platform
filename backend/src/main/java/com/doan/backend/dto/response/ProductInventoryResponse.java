@@ -1,5 +1,7 @@
 package com.doan.backend.dto.response;
 
+
+import com.doan.backend.entity.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,7 +10,12 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PhoneNumberResponse {
+public class ProductInventoryResponse {
     String id;
-    String phoneNumber;
+
+    String idProduct;
+
+    Size size;
+
+    Integer quantity;
 }

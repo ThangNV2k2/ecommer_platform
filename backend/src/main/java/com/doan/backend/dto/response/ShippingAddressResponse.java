@@ -8,8 +8,16 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AddressResponse {
+public class ShippingAddressResponse {
     String id;
+
+    String recipientName;
+
+    String phoneNumber;
+
     String addressDetail;
+
     String country;
+
+    Boolean isDefault;
 }

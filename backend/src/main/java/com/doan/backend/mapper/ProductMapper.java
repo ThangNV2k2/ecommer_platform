@@ -2,7 +2,6 @@ package com.doan.backend.mapper;
 
 import com.doan.backend.dto.request.ProductRequest;
 import com.doan.backend.dto.response.ProductResponse;
-import com.doan.backend.entity.Category;
 import com.doan.backend.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
