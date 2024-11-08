@@ -1,5 +1,7 @@
 package com.doan.backend.entity;
 
+import com.doan.backend.enums.PaymentMethodEnum;
+import com.doan.backend.enums.PaymentStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -23,20 +24,27 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    Order order;
+    @Column(name = "code")
+    String code;
 
-    @Column(name = "payment_method", nullable = false)
-    String paymentMethod;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_id", nullable = false)
+    Invoice invoice;
 
-    @Column(name = "amount", nullable = false)
+    @Column(name = "payment_method")
+    @Enumerated(EnumType.STRING)
+    PaymentMethodEnum paymentMethod;
+
+    @Column(name = "qr_code_url")
+    String qrCodeUrl;
+
+    @Column(name = "amount")
     BigDecimal amount;
 
     @Column(name = "payment_status", nullable = false)
-    String paymentStatus;
+    @Enumerated(EnumType.STRING)
+    PaymentStatusEnum paymentStatus;
 
     @Column(name = "payment_date")
     LocalDateTime paymentDate;
 }
-

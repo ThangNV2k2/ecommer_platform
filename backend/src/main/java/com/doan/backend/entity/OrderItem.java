@@ -24,22 +24,22 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "size_id", nullable = false)
     Size size;
 
     @Column(name = "quantity", nullable = false)
     Integer quantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "promotion_id")
     Promotion promotion;
 

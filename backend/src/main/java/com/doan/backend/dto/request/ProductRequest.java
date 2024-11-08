@@ -1,7 +1,10 @@
 package com.doan.backend.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 
@@ -16,12 +19,12 @@ public class ProductRequest {
     @NotBlank(message = "Name is required")
     String name;
     String description;
-    @NotBlank(message = "Price is required")
+    @NotNull(message = "Price is required")
     BigDecimal price;
     @NotBlank(message = "CategoryId is required")
     String categoryId;
 
-    @NotBlank(message = "IsActive is required")
+    @NotNull(message = "IsActive is required")
     Boolean isActive;
 
     List<String> promotionIds;

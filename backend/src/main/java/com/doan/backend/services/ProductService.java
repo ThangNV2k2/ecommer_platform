@@ -58,18 +58,17 @@ public class ProductService {
         }
     }
 
-    public ApiResponse<ProductResponse> createProduct(ProductRequest productRequest) {
+    public ApiResponse<Void> createProduct(ProductRequest productRequest) {
         Product product = productMapper.toProduct(productRequest);
         savePromotionProducts(product, productRequest.getPromotionIds());
-        product = productRepository.save(product);
-        return ApiResponse.<ProductResponse>builder()
+        productRepository.save(product);
+        return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Product created successfully")
-                .result(productMapper.toProductResponse(product))
                 .build();
     }
 
-    public ApiResponse<ProductResponse> updateProduct(String id, ProductRequest productRequest) {
+    public ApiResponse<Void> updateProduct(String id, ProductRequest productRequest) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -88,11 +87,10 @@ public class ProductService {
         product.setMainImage(productRequest.getMainImage());
         product.setCategory(category);
 
-        product = productRepository.save(product);
-        return ApiResponse.<ProductResponse>builder()
+        productRepository.save(product);
+        return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Product updated successfully")
-                .result(productMapper.toProductResponse(product))
                 .build();
     }
 

@@ -4,10 +4,8 @@ import com.doan.backend.services.CustomUserDetailService;
 import com.doan.backend.services.oauth2.CustomOAuth2UserService;
 import com.doan.backend.services.oauth2.OAuth2AuthenticationFailureHandler;
 import com.doan.backend.services.oauth2.OAuth2AuthenticationSuccessHandler;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,15 +37,15 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] GET_PUBLIC_ENDPOINTS = {
-            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**", "discounts/**"
+            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**", "discounts/**", "order/user/**", "promotion/client/**", "invoices/order/**", "invoices/get-id/**"
     };
 
     private static final String[] PUT_PUBLIC_ENDPOINTS = {
-            "shipping-address/**"
+            "shipping-address/**", "order/client/**", "cart/**"
     };
 
     private static final String[] POST_PUBLIC_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/images/upload", "shipping-address/**", "cart/**"
+            "/auth/register", "/auth/login", "/images/upload", "shipping-address/**", "cart/**", "order/**", "payment/payos"
     };
 
     private static final String[] DELETE_Public_ENDPOINTS = {

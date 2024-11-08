@@ -7,7 +7,12 @@ import com.doan.backend.services.PromotionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +24,7 @@ public class PromotionController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ApiResponse<PromotionResponse> createPromotion(@RequestBody PromotionRequest promotionRequest) {
+    public ApiResponse<PromotionResponse> createPromotion(@RequestBody @Validated PromotionRequest promotionRequest) {
         return promotionService.createPromotion(promotionRequest);
     }
 
@@ -27,7 +32,7 @@ public class PromotionController {
     @PutMapping("/{id}")
     public ApiResponse<PromotionResponse> updatePromotion(
             @PathVariable String id,
-            @RequestBody PromotionRequest promotionRequest) {
+            @RequestBody @Validated PromotionRequest promotionRequest) {
         return promotionService.updatePromotion(id, promotionRequest);
     }
 
@@ -38,9 +43,16 @@ public class PromotionController {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/client/{id}")
     public ApiResponse<PromotionResponse> getPromotionById(@PathVariable String id) {
         return promotionService.getPromotionById(id);
     }
 
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<Page<PromotionResponse>> getAllPromotions(
+            @RequestParam(required = false) String name,
+            @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+        return promotionService.getAllPromotions(name, pageable);
+    }
 }

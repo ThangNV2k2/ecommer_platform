@@ -13,8 +13,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -28,20 +26,23 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_discount_id")
     UserDiscount userDiscount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_address_id", nullable = false)
     ShippingAddress shippingAddress;
 
     @Column(name = "status", nullable = false)
     OrderStatusEnum status;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Invoice invoice;
 
     @Column(name = "total_price_before_discount")
     BigDecimal totalPriceBeforeDiscount;

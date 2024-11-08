@@ -1,6 +1,7 @@
 package com.doan.backend.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -19,11 +20,11 @@ public class PromotionRequest {
     String name;
     @NotBlank(message = "Description is required")
     String description;
-    @NotBlank(message = "DiscountPercentage is required")
+    @NotNull(message = "DiscountPercentage is required")
     BigDecimal discountPercentage;
-    @NotBlank(message = "Start-Date is not null")
+    @NotNull(message = "Start-Date is not null")
     LocalDateTime startDate;
-    @NotBlank(message = "End-Date is not null")
+    @NotNull(message = "End-Date is not null")
     LocalDateTime endDate;
 
     Boolean applyToAll;

@@ -3,14 +3,19 @@ package com.doan.backend.services;
 import com.doan.backend.dto.request.DiscountRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.entity.Discount;
+import com.doan.backend.enums.DiscountType;
 import com.doan.backend.mapper.DiscountMapper;
 import com.doan.backend.repositories.DiscountRepository;
 import com.doan.backend.repositories.UserDiscountRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,15 +35,26 @@ public class DiscountService {
     public ApiResponse<Discount> createDiscount(DiscountRequest discountRequest) {
         Discount discount = discountMapper.toDiscount(discountRequest);
 
-        if(discountRequest.getStartDate() == null) {
-            discount.setStartDate(LocalDateTime.now());
-        }
-
-        if(discountRepository.existsByCode(discountRequest.getCode())) {
+        if (discountRepository.existsByCode(discountRequest.getCode())) {
             throw new RuntimeException("Discount code already exists");
         }
-        if(discountRequest.getExpiryDate().isBefore(LocalDateTime.now())) {
+        if (discountRequest.getExpiryDate().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Expiry date is before current date");
+        }
+
+        if (discountRequest.getDiscountType() == DiscountType.PERCENTAGE && discountRequest.getDiscountPercentage() == null) {
+            throw new RuntimeException("Discount percentage is required");
+        }
+
+        if (discountRequest.getDiscountType() == DiscountType.VALUE && discountRequest.getDiscountValue() == null) {
+            throw new RuntimeException("Discount value is required");
+        }
+
+        if (discount.getDiscountPercentage() == null) {
+            discount.setDiscountPercentage(BigDecimal.ZERO);
+        }
+        if (discount.getDiscountValue() == null) {
+            discount.setDiscountValue(BigDecimal.ZERO);
         }
 
         return ApiResponse.<Discount>builder()
@@ -77,9 +93,10 @@ public class DiscountService {
                 .build();
     }
 
-    public ApiResponse<Iterable<Discount>> getAllDiscounts() {
-        Iterable<Discount> discounts = discountRepository.findAll();
-        return ApiResponse.<Iterable<Discount>>builder()
+    public ApiResponse<Page<Discount>> getAllDiscounts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Discount> discounts = discountRepository.findAll(pageable);
+        return ApiResponse.<Page<Discount>>builder()
                 .code(200)
                 .message("Discount retrieved successfully")
                 .result(discounts)
