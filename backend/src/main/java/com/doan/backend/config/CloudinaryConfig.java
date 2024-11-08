@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CloudinaryConfig implements WebMvcConfigurer {
+public class CloudinaryConfig {
 
     @Value("${cloudinary.cloud_name}")
     private String cloudName;
