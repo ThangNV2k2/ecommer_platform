@@ -37,13 +37,13 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    ApiResponse<ProductResponse> createProduct(@RequestBody @Validated ProductRequest productRequest) {
+    ApiResponse<Void> createProduct(@RequestBody @Validated ProductRequest productRequest) {
         return productService.createProduct(productRequest);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    ApiResponse<ProductResponse> updateProduct(
+    ApiResponse<Void> updateProduct(
             @PathVariable String id,
             @RequestBody @Validated ProductRequest productRequest) {
         return productService.updateProduct(id, productRequest);

@@ -1,12 +1,5 @@
 package com.doan.backend.dto.response;
 
-import com.doan.backend.entity.Order;
-import com.doan.backend.entity.Product;
-import com.doan.backend.entity.Promotion;
-import com.doan.backend.entity.Size;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,11 +17,11 @@ public class OrderItemResponse {
 
     ProductResponse productResponse;
 
-    Size size;
+    SizeResponse size;
 
     Integer quantity;
 
-    Promotion promotion;
+    PromotionResponse promotion;
 
     BigDecimal price;
 }

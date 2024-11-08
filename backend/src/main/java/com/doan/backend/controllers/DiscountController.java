@@ -7,6 +7,7 @@ import com.doan.backend.services.DiscountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,15 +38,17 @@ public class DiscountController {
         return discountService.deleteDiscount(id);
     }
 
-    @GetMapping("/getCode")
+    @GetMapping("/get-code")
     public ApiResponse<Discount> getDiscountByCode(@RequestParam String code, @RequestParam String userId) {
         return discountService.getDiscount(code, userId);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ApiResponse<Iterable<Discount>> getAllDiscounts() {
-        return discountService.getAllDiscounts();
+    public ApiResponse<Page<Discount>> getAllDiscounts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return discountService.getAllDiscounts(page, size);
     }
 
     @GetMapping("/auto-apply")

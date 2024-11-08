@@ -1,7 +1,6 @@
 package com.doan.backend.entity;
 
 import com.doan.backend.enums.DiscountType;
-import jakarta.persistence.Column;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
@@ -10,10 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -69,5 +68,6 @@ public class Discount {
     Boolean autoApply;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     LocalDateTime createdAt;
 }

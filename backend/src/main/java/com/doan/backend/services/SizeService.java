@@ -19,7 +19,7 @@ public class SizeService {
     SizeMapper sizeMapper;
 
     public ApiResponse<Size> createSize(SizeRequest sizeRequest) {
-        if(sizeRepository.existsByName(sizeRequest.getName())) {
+        if (sizeRepository.existsByName(sizeRequest.getName())) {
             throw new RuntimeException("Size is already exist");
         }
         Size size = sizeMapper.toSize(sizeRequest);

@@ -3,6 +3,7 @@ package com.doan.backend.services;
 import com.doan.backend.dto.request.PromotionRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.PromotionResponse;
+import com.doan.backend.entity.Product;
 import com.doan.backend.entity.Promotion;
 import com.doan.backend.mapper.PromotionMapper;
 import com.doan.backend.repositories.PromotionProductRepository;
@@ -10,8 +11,11 @@ import com.doan.backend.repositories.PromotionRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -43,6 +47,7 @@ public class PromotionService {
         promotion.setEndDate(promotionRequest.getEndDate());
         promotion.setApplyToAll(promotionRequest.getApplyToAll());
         promotion.setIsActive(promotionRequest.getIsActive());
+        promotion.setDiscountPercentage(promotionRequest.getDiscountPercentage());
 
         promotionRepository.save(promotion);
         return ApiResponse.<PromotionResponse>builder()
@@ -70,4 +75,29 @@ public class PromotionService {
                 .result(promotionResponse)
                 .build();
     }
+
+    public ApiResponse<Page<PromotionResponse>> getAllPromotions(String name, Pageable pageable) {
+        Page<Promotion> promotions = promotionRepository.findByNameContaining(name, pageable);
+        Page<PromotionResponse> promotionResponses = promotions.map(promotionMapper::toPromotionResponse);
+
+        return ApiResponse.<Page<PromotionResponse>>builder()
+                .code(200)
+                .message("Promotions retrieved successfully")
+                .result(promotionResponses)
+                .build();
+    }
+
+    public BigDecimal applyPromotionToProduct(Product product) {
+        Optional<Promotion> promotionOptional = promotionProductRepository.findActivePromotionByProductId(product.getId(), LocalDateTime.now());
+
+        if (promotionOptional.isPresent()) {
+            Promotion promotion = promotionOptional.get();
+
+            BigDecimal discount = product.getPrice().multiply(promotion.getDiscountPercentage().divide(BigDecimal.valueOf(100)));
+            return product.getPrice().subtract(discount);
+        }
+
+        return product.getPrice();
+    }
+
 }
