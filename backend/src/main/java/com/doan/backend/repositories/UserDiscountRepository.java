@@ -10,5 +10,8 @@ import java.util.Optional;
 @Repository
 public interface UserDiscountRepository extends JpaRepository<UserDiscount, String> {
     List<UserDiscount> findByUserId(String userId);
+
     Optional<UserDiscount> findByUserIdAndDiscount_Code(String userId, String code);
+
+    Optional<UserDiscount> findByUserIdAndDiscount_Id(String userId, String discountId);
 }

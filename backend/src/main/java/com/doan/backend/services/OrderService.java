@@ -42,6 +42,7 @@ public class OrderService {
     InvoiceRepository invoiceRepository;
     PaymentRepository paymentRepository;
     PaymentService paymentService;
+    UserDiscountRepository userDiscountRepository;
 
     @Transactional
     public ApiResponse<OrderResponse> createOrderFromCart(OrderRequest orderRequest) {
@@ -89,23 +90,43 @@ public class OrderService {
         }
 
         if (orderRequest.getDiscountId() != null && !orderRequest.getDiscountId().isEmpty()) {
-            Optional<Discount> discount = discountRepository.findById(orderRequest.getDiscountId());
-            if (discount.isPresent() && discount.get().getMinOrderValue().compareTo(totalPriceAfterDiscount) <= 0) {
-                BigDecimal discountValue = totalPriceAfterDiscount.multiply(discount.get().getDiscountPercentage().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP));
 
-                if (discount.get().getDiscountType() == DiscountType.PERCENTAGE) {
-                    if (discountValue.compareTo(discount.get().getMaxDiscountValue()) > 0) {
-                        discountValue = discount.get().getMaxDiscountValue();
+            Optional<UserDiscount> userDiscount = userDiscountRepository.findByUserIdAndDiscount_Id(orderRequest.getUserId(), orderRequest.getDiscountId());
+            if (userDiscount.isPresent()) {
+
+                if (userDiscount.get().getUsesCount() >= 1) {
+                    throw new RuntimeException("Discount has been used");
+                }
+            }
+            Optional<Discount> discount = discountRepository.findById(orderRequest.getDiscountId());
+
+            if (discount.isPresent()) {
+                if (discount.get().getMaxUses() <= discount.get().getUsedCount()) {
+                    throw new RuntimeException("Discount are out of stock");
+                }
+
+                if (discount.get().getStartDate().isAfter(LocalDateTime.now()) || discount.get().getExpiryDate().isBefore(LocalDateTime.now())) {
+                    throw new RuntimeException("Discount is not yet valid");
+                }
+
+                if (discount.get().getMinOrderValue().compareTo(totalPriceAfterDiscount) <= 0) {
+                    BigDecimal discountValue = totalPriceAfterDiscount.multiply(discount.get().getDiscountPercentage().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP));
+
+                    if (discount.get().getDiscountType() == DiscountType.PERCENTAGE) {
+                        if (discountValue.compareTo(discount.get().getMaxDiscountValue()) > 0) {
+                            discountValue = discount.get().getMaxDiscountValue();
+                        }
+                        totalPriceAfterDiscount = totalPriceAfterDiscount.subtract(discountValue);
+                    } else {
+                        totalPriceAfterDiscount = totalPriceAfterDiscount.subtract(discount.get().getDiscountValue());
                     }
-                    totalPriceAfterDiscount = totalPriceAfterDiscount.subtract(discountValue);
-                } else {
-                    totalPriceAfterDiscount = totalPriceAfterDiscount.subtract(discount.get().getDiscountValue());
                 }
             }
 
             if (totalPriceAfterDiscount.compareTo(BigDecimal.ZERO) <= 0) {
                 totalPriceAfterDiscount = BigDecimal.ZERO;
             }
+
         }
 
         Order order = new Order();
@@ -137,6 +158,8 @@ public class OrderService {
             invoiceRepository.save(invoice);
         }
 
+        cartItemRepository.deleteAll(cartItems);
+
         Payment payment = new Payment();
         payment.setInvoice(savedInvoice);
         payment.setAmount(BigDecimal.ZERO);
@@ -148,8 +171,6 @@ public class OrderService {
             payment.setPaymentStatus(PaymentStatusEnum.PENDING);
         }
         paymentRepository.save(payment);
-
-        cartItemRepository.deleteAll(cartItems);
 
         return ApiResponse.<OrderResponse>builder()
                 .code(200)

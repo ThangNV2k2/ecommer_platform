@@ -87,6 +87,7 @@ public class DiscountService {
     }
 
     public ApiResponse<Void> deleteDiscount(String id) {
+        discountRepository.deleteById(id);
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Discount deleted  successfully")
@@ -115,6 +116,14 @@ public class DiscountService {
         Discount discount = discountRepository.findByCodeAndExpiryDateAfter(code, LocalDateTime.now())
                 .orElseThrow(() -> new RuntimeException("Discount not found"));
 
+        if (discount.getUsedCount() >= discount.getMaxUses()) {
+            throw new RuntimeException("Discount has reached its maximum uses");
+        }
+
+        if (discount.getStartDate().isAfter(LocalDateTime.now()) || discount.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Discount is not yet valid");
+        }
+
         return ApiResponse.<Discount>builder()
                 .code(200)
                 .message("Discount retrieved successfully")
@@ -131,7 +140,7 @@ public class DiscountService {
                 .collect(Collectors.toSet());
 
         List<Discount> availableDiscounts = StreamSupport.stream(discounts.spliterator(), false)
-                .filter(discount -> !usedDiscountCodes.contains(discount.getCode()))
+                .filter(discount -> !usedDiscountCodes.contains(discount.getCode()) && (discount.getMaxUses() - discount.getUsedCount() > 0))
                 .collect(Collectors.toList());
 
         return ApiResponse.<Iterable<Discount>>builder()

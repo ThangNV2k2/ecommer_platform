@@ -37,7 +37,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] GET_PUBLIC_ENDPOINTS = {
-            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**", "discounts/**", "order/user/**", "promotion/client/**", "invoices/order/**", "invoices/get-id/**"
+            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**", "discounts/**", "order/user/**", "promotion/client/**", "invoices/order/**", "invoices/get-id/**", "payment/payos/**"
     };
 
     private static final String[] PUT_PUBLIC_ENDPOINTS = {
