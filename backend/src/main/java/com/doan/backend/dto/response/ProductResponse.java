@@ -19,7 +19,7 @@ public class ProductResponse {
     String description;
     BigDecimal price;
     CategoryResponse categoryResponse;
-    Integer rating;
+    Double rating;
     Boolean isActive;
     BigDecimal discountPercentage;
     LocalDateTime createdAt;
