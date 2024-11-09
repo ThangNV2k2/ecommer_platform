@@ -8,7 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -38,7 +37,7 @@ public class Product {
     Category category;
 
     @Column(name = "rating")
-    Integer rating;
+    Double rating;
 
     @Column(name = "main_image")
     String mainImage;
