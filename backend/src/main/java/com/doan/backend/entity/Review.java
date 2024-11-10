@@ -25,6 +25,13 @@ public class Review {
     @JoinColumn(name = "user_id")
     User user;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    Order order;
+
     @Column(name = "rating")
-    Integer rating;
+    Double rating;
+
+    @Column(name = "comment")
+    String content;
 }
