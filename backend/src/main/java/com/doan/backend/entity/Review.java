@@ -32,6 +32,6 @@ public class Review {
     @Column(name = "rating")
     Double rating;
 
-    @Column(name = "comment")
+    @Column(name = "content")
     String content;
 }

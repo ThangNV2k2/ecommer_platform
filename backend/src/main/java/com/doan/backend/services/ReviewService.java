@@ -33,12 +33,7 @@ public class ReviewService {
 
     public ApiResponse<ReviewResponse> createReview(ReviewRequest reviewRequest) {
         Optional<Product> product = productRepository.findById(reviewRequest.getProductId());
-        Optional<User> user = userRepository.findById(reviewRequest.getUserId());
         Optional<Order> order = orderRepository.findById(reviewRequest.getOrderId());
-
-        if (product.isEmpty() || user.isEmpty() || order.isEmpty()) {
-            throw new RuntimeException("Product or User or Order not found");
-        }
 
         // Kiểm tra nếu sản phẩm thuộc đơn hàng đã thanh toán của khách hàng
         boolean hasPaidOrderWithProduct = orderRepository.existsByUserIdAndIsPaidAndItemsProductId(
@@ -50,14 +45,14 @@ public class ReviewService {
 
         Review review = reviewMapper.toReview(reviewRequest);
         review.setProduct(product.get());
-        review.setUser(user.get());
+        review.setUser(order.get().getUser());
         review.setOrder(order.get());
         review.setRating(reviewRequest.getRating());
         review.setContent(reviewRequest.getContent());
 
         Review savedReview = reviewRepository.save(review);
         // Tính và cập nhật rating trung bình cho sản phẩm
-        calculateAndUpdateProductRating(reviewRequest.getProductId());
+        calculateAndUpdateProductRating(product.get());
 
         return ApiResponse.<ReviewResponse>builder()
                 .message("Create review successfully")
@@ -73,7 +68,7 @@ public class ReviewService {
 
         Review updatedReview = reviewRepository.save(review);
 
-        calculateAndUpdateProductRating(reviewRequest.getProductId());
+        calculateAndUpdateProductRating(review.getProduct());
         return  ApiResponse.<ReviewResponse>builder()
                 .message("Update review successfully")
                 .code(200)
@@ -100,12 +95,8 @@ public class ReviewService {
     }
 
     // Phương thức tính và cập nhật rating trung bình
-    public void calculateAndUpdateProductRating(String productId) {
-        Double averageRating = reviewRepository.calculateAverageRatingByProductId(productId);
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
+    public void calculateAndUpdateProductRating(Product product) {
+        Double averageRating = reviewRepository.calculateAverageRatingByProductId(product.getId());
         product.setRating(averageRating);
         productRepository.save(product);
     }

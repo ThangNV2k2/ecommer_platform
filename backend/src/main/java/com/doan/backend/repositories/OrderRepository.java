@@ -29,8 +29,8 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
             "FROM Order o JOIN o.orderItems oi " +
             "WHERE o.user.id = :userId " +
-            "AND o.status = 1 " + // Kiểm tra trạng thái đã thanh toán
-            "AND i.product.id = :productId")
+            "AND o.status = 5 " + // Kiểm tra trạng thái đã thanh toán
+            "AND oi.product.id = :productId")
     boolean existsByUserIdAndIsPaidAndItemsProductId(@Param("userId") String userId,
                                                          @Param("productId") String productId);
 }

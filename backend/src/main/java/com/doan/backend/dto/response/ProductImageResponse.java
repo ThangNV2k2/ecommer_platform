@@ -3,6 +3,8 @@ package com.doan.backend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,5 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class ProductImageResponse {
     String id;
     String idProduct;
-    String imageUrl;
+    List<String> imageUrl;
 }

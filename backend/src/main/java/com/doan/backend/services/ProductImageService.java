@@ -10,6 +10,7 @@ import com.doan.backend.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,20 +20,24 @@ public class ProductImageService {
     ImageService imageService;
     ProductImageMapper productImageMapper;
 
-    public ApiResponse<ProductImageResponse> updateProductImage(String id, MultipartFile file){
-        Optional<ProductImage> productImageOptional = productImageRepository.findById(id);
-        if(productImageOptional.isEmpty()){
-            throw new RuntimeException("ProductImage not found");
+    public ApiResponse<ProductImageResponse> updateProductImage(String id, List<MultipartFile> files){
+        Optional<Product> productOptional = productRepository.findById(id);
+        if(productOptional.isEmpty()){
+            throw new RuntimeException("Product not found");
         }
 
-        String newUrl = imageService.uploadImage(file).getResult();
-        ProductImage productImage = productImageOptional.get();
-        productImage.setImageUrl(newUrl);
+        for(MultipartFile file : files){
+            String newUrl = imageService.uploadImage(file).getResult();
+            ProductImage productImage = new ProductImage();
+            productImage.setProduct(productOptional.get());
+            productImage.setImageUrl(newUrl);
 
-        ProductImageResponse productImageResponse = productImageMapper.toProductImageResponse(productImageRepository.save(productImage));
+            ProductImageResponse productImageResponse = productImageMapper.toProductImageResponse(productImageRepository.save(productImage));
+        }
+
         return ApiResponse.<ProductImageResponse>builder()
                 .message("Update product inventory successfully")
-                .result(productImageResponse)
+                .code(200)
                 .build();
     }
 
