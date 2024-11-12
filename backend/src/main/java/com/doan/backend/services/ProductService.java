@@ -14,6 +14,7 @@ import com.doan.backend.repositories.PromotionProductRepository;
 import com.doan.backend.repositories.PromotionRepository;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -120,17 +121,9 @@ public class ProductService {
                 .build();
     }
 
+    @Cacheable(value = "searchProductsCache", key = "#name + '-' + #categoryId + '-' + #pageable.pageNumber")
     public ApiResponse<Page<ProductResponse>> searchProducts(String name, String categoryId, Pageable pageable) {
-        Page<Product> products;
-        if (name != null && categoryId != null) {
-            products = productRepository.findByNameContainingIgnoreCaseAndCategory_Id(name, categoryId, pageable);
-        } else if (name != null) {
-            products = productRepository.findByNameContainingIgnoreCase(name, pageable);
-        } else if (categoryId != null) {
-            products = productRepository.findByCategory_Id(categoryId, pageable);
-        } else {
-            products = productRepository.findAll(pageable);
-        }
+        Page<Product> products = productRepository.findByNameContainingIgnoreCaseAndCategory_Id(name, categoryId, pageable);
 
         Page<ProductResponse> productResponsePage = products.map(product -> {
             ProductResponse response = productMapper.toProductResponse(product);

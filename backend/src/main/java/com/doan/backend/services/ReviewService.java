@@ -36,7 +36,7 @@ public class ReviewService {
         Optional<Order> order = orderRepository.findById(reviewRequest.getOrderId());
 
         // Kiểm tra nếu sản phẩm thuộc đơn hàng đã thanh toán của khách hàng
-        boolean hasPaidOrderWithProduct = orderRepository.existsByUserIdAndIsPaidAndItemsProductId(
+        boolean hasPaidOrderWithProduct = orderRepository.existOrderCompletedByUserId(
                 reviewRequest.getUserId(), reviewRequest.getProductId());
 
         if (!hasPaidOrderWithProduct) {

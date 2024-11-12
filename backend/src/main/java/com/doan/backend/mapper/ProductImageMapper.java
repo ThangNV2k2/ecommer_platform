@@ -9,9 +9,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ProductImageMapper {
-    @Mapping(source = "idProduct", target = "product.id")
-    ProductImage toProductImage(ProductImageRequest productImageRequest);
-
-    @Mapping(source = "product.id", target = "idProduct")
-    ProductImageResponse toProductImageResponse(ProductImage productImage);
+//    @Mapping(source = "idProduct", target = "product.id")
+//    ProductImage toProductImage(ProductImageRequest productImageRequest);
+//
+//    @Mapping(source = "product.id", target = "idProduct")
+//    ProductImageResponse toProductImageResponse(ProductImage productImage);
 }
