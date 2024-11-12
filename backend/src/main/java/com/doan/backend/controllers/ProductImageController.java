@@ -7,6 +7,7 @@ import com.doan.backend.services.ProductImageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/product-image")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PUBLIC, makeFinal = true)
+@PreAuthorize("hasRole('ADMIN')")
 public class ProductImageController {
     ProductImageService productImageService;
 

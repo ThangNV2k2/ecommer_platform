@@ -75,13 +75,6 @@ public class ReviewService {
                 .result(reviewMapper.toReviewResponse(updatedReview))
                 .build();
     }
-    public ApiResponse<String> deleteReview(String reviewId) {
-        reviewRepository.deleteById(reviewId);
-        return ApiResponse.<String>builder()
-                .code(200)
-                .message("Review deleted successfully")
-                .build();
-    }
 
     public ApiResponse<List<ReviewResponse>> getReviewByProductId(String productId){
         List<Review> reviews = reviewRepository.findByProductId(productId);

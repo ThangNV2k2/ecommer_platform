@@ -31,11 +31,6 @@ public class ReviewController {
         return reviewService.updateReview(id, reviewRequest);
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<String> deleteReview(@PathVariable String id) {
-        return reviewService.deleteReview(id);
-    }
-
     @GetMapping("/{productId}")
     public ApiResponse<List<ReviewResponse>> getReviewByProductId(@PathVariable String productId){
         return reviewService.getReviewByProductId(productId);
