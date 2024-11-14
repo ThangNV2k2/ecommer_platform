@@ -36,6 +36,7 @@ public class ProductService {
     PromotionRepository promotionRepository;
     PromotionProductRepository promotionProductRepository;
 
+
     private void savePromotionProducts(Product product, List<String> promotionIds) {
         Optional<Promotion> existingPromotion = promotionProductRepository.findActivePromotionByProductId(product.getId(), LocalDateTime.now());
         if (existingPromotion.isPresent()) {
@@ -121,7 +122,7 @@ public class ProductService {
                 .build();
     }
 
-    @Cacheable(value = "searchProductsCache", key = "#name + '-' + #categoryId + '-' + #pageable.pageNumber")
+    @Cacheable(value = "searchProductsCache", key = "#name + '-' + #categoryId + '-' + #pageable")
     public ApiResponse<Page<ProductResponse>> searchProducts(String name, String categoryId, Pageable pageable) {
         Page<Product> products = productRepository.findByNameContainingIgnoreCaseAndCategory_Id(name, categoryId, pageable);
 
