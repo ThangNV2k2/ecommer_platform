@@ -14,11 +14,11 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
-    Page<Product> findByNameContainingIgnoreCaseAndCategory_Id(@Param("name") String name,
-                                                               @Param("categoryId") String categoryId,
-                                                               Pageable pageable);
+    Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Product> findByCategory_Id(String categoryId, Pageable pageable);
+    Page<Product> findByNameContainingIgnoreCaseAndCategory_Id(String name, String categoryId, Pageable pageable);
 
     @Query(nativeQuery = true, value = "CALL SearchProducts(:searchName, :categoryId)")
-    List<ProductSearch> searchProducts(@Param("searchName") String searchName,
-                                       @Param("categoryId") Integer categoryId);
+    List<Product> searchProducts(@Param("searchName") String searchName,
+                                       @Param("categoryId") String categoryId);
 }

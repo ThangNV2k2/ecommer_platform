@@ -124,7 +124,16 @@ public class ProductService {
 
     @Cacheable(value = "searchProductsCache", key = "#name + '-' + #categoryId + '-' + #pageable")
     public ApiResponse<Page<ProductResponse>> searchProducts(String name, String categoryId, Pageable pageable) {
-        Page<Product> products = productRepository.findByNameContainingIgnoreCaseAndCategory_Id(name, categoryId, pageable);
+        Page<Product> products;
+        if (name != null && categoryId != null) {
+            products = productRepository.findByNameContainingIgnoreCaseAndCategory_Id(name, categoryId, pageable);
+        } else if (name != null) {
+            products = productRepository.findByNameContainingIgnoreCase(name, pageable);
+        } else if (categoryId != null) {
+            products = productRepository.findByCategory_Id(categoryId, pageable);
+        } else {
+            products = productRepository.findAll(pageable);
+        }
 
         Page<ProductResponse> productResponsePage = products.map(product -> {
             ProductResponse response = productMapper.toProductResponse(product);

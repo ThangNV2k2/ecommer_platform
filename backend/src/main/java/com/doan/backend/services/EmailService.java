@@ -18,7 +18,7 @@ public class EmailService {
         message.setTo(toEmail);
         message.setSubject(subject);
         message.setText("Click the link below to verify your account: " + verificationUrl);
-        message.setFrom("thangnv24062002@gmail.com");
+        message.setFrom("nguyendacquang27042002@gmail.com");
         mailSender.send(message);
     }
 }
