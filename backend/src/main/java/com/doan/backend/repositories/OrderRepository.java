@@ -25,4 +25,12 @@ public interface OrderRepository extends JpaRepository<Order, String> {
             @Param("status") OrderStatusEnum status,
             Pageable pageable
     );
+
+    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
+            "FROM Order o JOIN o.orderItems oi " +
+            "WHERE o.user.id = :userId " +
+            "AND o.status = 5 " +
+            "AND oi.product.id = :productId")
+    boolean existOrderCompletedByUserId(@Param("userId") String userId,
+                                        @Param("productId") String productId);
 }
