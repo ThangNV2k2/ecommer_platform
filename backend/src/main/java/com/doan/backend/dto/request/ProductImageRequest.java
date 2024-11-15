@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+
 @Validated
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
@@ -15,5 +17,5 @@ public class ProductImageRequest {
     @NotBlank(message = "Product is required")
     String idProduct;
     @NotBlank(message = "ImageUrl is not null")
-    String imageUrl;
+    List<String> imageUrl;
 }

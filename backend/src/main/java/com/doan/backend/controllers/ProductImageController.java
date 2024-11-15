@@ -1,5 +1,6 @@
 package com.doan.backend.controllers;
 
+import com.doan.backend.dto.request.ProductImageRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.ProductImageResponse;
 import com.doan.backend.entity.ProductImage;
@@ -21,14 +22,13 @@ import java.util.List;
 public class ProductImageController {
     ProductImageService productImageService;
 
-    @PostMapping("/{productId}")
-    public ApiResponse<ProductImage> uploadImage(@PathVariable String productId,
-                                                 @RequestParam("files") List<MultipartFile> files){
-        return productImageService.updateProductImage(productId,files);
+    @PostMapping()
+    public ApiResponse<ProductImageResponse> createImage(@RequestBody ProductImageRequest productImageRequest){
+        return productImageService.createProductImage(productImageRequest);
     }
 
-    @PostMapping()
-    public ApiResponse<String> deleteImage(@RequestBody List<String> ids){
+    @DeleteMapping("/delete")
+    public ApiResponse<String> deleteImage(@RequestBody List<String>ids){
         return productImageService.deleteProductImage(ids);
     }
 }
