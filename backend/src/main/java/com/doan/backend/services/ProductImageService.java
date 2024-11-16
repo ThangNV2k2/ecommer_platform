@@ -1,11 +1,11 @@
 package com.doan.backend.services;
 
+import com.doan.backend.dto.request.DeleteProductImageRequest;
 import com.doan.backend.dto.request.ProductImageRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.ProductImageResponse;
 import com.doan.backend.entity.Product;
 import com.doan.backend.entity.ProductImage;
-import com.doan.backend.mapper.ProductImageMapper;
 import com.doan.backend.repositories.ProductImageRepository;
 import com.doan.backend.repositories.ProductRepository;
 import lombok.AccessLevel;
@@ -41,8 +41,10 @@ public class ProductImageService {
     }
 
     // Delete
-    public ApiResponse<String> deleteProductImage(List<String> ids) {
-        productImageRepository.deleteAllById(ids);
+    public ApiResponse<String> deleteProductImage(DeleteProductImageRequest deleteProductImageRequest) {
+        List<ProductImage> productImages = productImageRepository.findAllById(deleteProductImageRequest.getIds());
+
+        productImageRepository.deleteAll(productImages);
         return ApiResponse.<String>builder()
                 .message("Delete product image successfully")
                 .code(200)
