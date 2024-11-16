@@ -42,9 +42,7 @@ public class ProductImageService {
 
     // Delete
     public ApiResponse<String> deleteProductImage(DeleteProductImageRequest deleteProductImageRequest) {
-        List<ProductImage> productImages = productImageRepository.findAllById(deleteProductImageRequest.getIds());
-
-        productImageRepository.deleteAll(productImages);
+        productImageRepository.deleteAllById(deleteProductImageRequest.getIds());
         return ApiResponse.<String>builder()
                 .message("Delete product image successfully")
                 .code(200)
