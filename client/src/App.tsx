@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Layout, Menu, Button, Row, Col, Drawer, Image, Badge} from 'antd';
+import {Layout, Menu, Button, Row, Col, Drawer, Image, Badge, Spin} from 'antd';
 import logo from './img/logo.png';
 import {
     FacebookOutlined,
@@ -17,8 +17,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {useLazyGetUserInfoQuery} from "./redux/api/user-api";
 import {setUser} from "./redux/slice/userSlice";
 import {RootState} from "./redux/store";
-import ProtectedRoute from "./component/Auth/ProtectedRoute";
 import HomePage from "./component/Home/HomePage";
+import ProductDetail from "./component/Home/ProductDetail";
+import {useGetCartQuery} from "./redux/api/cart";
+import {setCart} from "./redux/slice/cartSlice";
+import Cart from "./component/Home/Cart";
+import ShippingAddress from "./component/Auth/ShippingAddress";
+import Checkout from './component/Home/Checkout';
 
 const {Header, Content, Footer} = Layout;
 
@@ -36,16 +41,28 @@ const App = () => {
 
     const dispatch = useDispatch();
     const userInfo = useSelector((state: RootState) => state.user.user);
-    const [getUserInfo] = useLazyGetUserInfoQuery();
+    const cart = useSelector((state: RootState) => state.cart.cart);
+    const [getUserInfo, {isFetching: isFetchingUser}] = useLazyGetUserInfoQuery();
+    const {data: cartData} = useGetCartQuery(userInfo?.id ?? "", {
+        skip: !userInfo?.id
+    });
 
     const handleGetUserInfo = async () => {
         try {
             const result = await getUserInfo().unwrap();
-            if(result?.result) {
+            if (result?.result) {
                 dispatch(setUser(result.result));
             }
         } catch (error) {
             console.error("Error getting user info:", error);
+        }
+    }
+
+    const handleNavigateAccount = () => {
+        if (userInfo) {
+            navigate('/account');
+        } else {
+            navigate('/account/login');
         }
     }
 
@@ -55,6 +72,12 @@ const App = () => {
             void handleGetUserInfo();
         }
     }, [dispatch, getUserInfo, userInfo]);
+
+    useEffect(() => {
+        if (cartData?.result) {
+            dispatch(setCart(cartData.result));
+        }
+    }, [cartData?.result, dispatch]);
 
     return (
         <div className="container">
@@ -67,7 +90,7 @@ const App = () => {
                                     <Button
                                         type="primary"
                                         shape="circle"
-                                        icon={<PhoneOutlined style={{ fontSize: 24 }} />}
+                                        icon={<PhoneOutlined style={{fontSize: 24}}/>}
                                     />
                                     <span className="text-primary fs-16 fw-600 ml-1">0373357405</span>
                                 </Col>
@@ -83,10 +106,16 @@ const App = () => {
                                 </Col>
 
                                 <Col xs={8} sm={8} md={6} lg={6} xl={6} className="flex justify-end align-center gap-1">
-                                    <Button type="text" shape="circle" icon={<SearchOutlined className="text-primary" style={{ fontSize: 24 }} />} />
-                                    <Button type="text" shape="circle" icon={<UserOutlined className="text-primary" style={{ fontSize: 24 }} />} onClick={() => navigate('/account')} />
-                                    <Badge count={0} showZero>
-                                        <Button type="text" shape="circle" icon={<ShoppingCartOutlined className="text-primary" style={{ fontSize: 24 }} />} />
+                                    <Button type="text" shape="circle"
+                                            icon={<SearchOutlined className="text-primary" style={{fontSize: 24}}/>}/>
+                                    <Button type="text" shape="circle"
+                                            icon={<UserOutlined className="text-primary" style={{fontSize: 24}}/>}
+                                            onClick={handleNavigateAccount}/>
+                                    <Badge count={cart?.cartItems.length ?? 0} showZero>
+                                        <Button type="text" shape="circle"
+                                                icon={<ShoppingCartOutlined className="text-primary"
+                                                                            onClick={() => navigate('/cart')}
+                                                                            style={{fontSize: 24}}/>}/>
                                     </Badge>
                                 </Col>
                             </Row>
@@ -121,18 +150,29 @@ const App = () => {
                         </Col>
                     </Row>
                     <Row align="middle" justify="center" gutter={[24, 24]} className="my-5">
-                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
-                            <Routes>
-                                <Route path="/" element={<HomePage />} />
-                                <Route path="/account" element={<Account />}>
-                                    <Route index element={<Account />} />
-                                </Route>
-
-                                <Route path="/account/login" element={<Login />} />
-                                <Route path="/account/register" element={<Registration />} />
-                                <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-                            </Routes>
-                        </Col>
+                        {
+                            isFetchingUser ? (
+                                <div className="flex justify-center w-100">
+                                    <Spin size="large" />
+                                </div>
+                            ) : (
+                                    <Col xs={24} sm={24} md={18} lg={18} xl={18}>
+                                        <Routes>
+                                            <Route path="/" element={<HomePage />} />
+                                            <Route path="/product/:id" element={<ProductDetail />} />
+                                            <Route path="/cart" element={<Cart />} />
+                                            <Route path="/account" element={<Account />}>
+                                                <Route index element={<Account />} />
+                                            </Route>
+                                            <Route path="account/address" element={<ShippingAddress />} />
+                                            <Route path="checkout" element={<Checkout />} />
+                                            <Route path="/account/login" element={<Login />} />
+                                            <Route path="/account/register" element={<Registration />} />
+                                            <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+                                        </Routes>
+                                    </Col>
+                           )
+                        }
                     </Row>
                 </Content>
 

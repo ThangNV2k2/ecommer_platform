@@ -41,7 +41,7 @@ public class PaymentService {
 
             final String productName = "Pay bills " + invoice.getInvoiceNumber();
             final String description = invoice.getInvoiceNumber();
-            final String returnUrl = "http://localhost:3000/payment/return";
+            final String returnUrl = "http://localhost:3000/account";
             final String cancelUrl = "https://localhost:3000/payment/cancel";
             int price = invoice.getTotalAmount().intValue();
 

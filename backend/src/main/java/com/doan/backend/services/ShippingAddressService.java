@@ -19,21 +19,22 @@ public class ShippingAddressService {
     ShippingAddressRepository shippingAddressRepository;
     ShippingAddressMapper shippingAddressMapper;
 
-    public ApiResponse<Void> createShippingAddress(ShippingAddressRequest shippingAddressRequest) {
-        if(shippingAddressRequest.getIsDefault() && shippingAddressRepository.existsByUserIdAndIsDefault(shippingAddressRequest.getUserId(), true)) {
+    public ApiResponse<ShippingAddressResponse> createShippingAddress(ShippingAddressRequest shippingAddressRequest) {
+        if (shippingAddressRequest.getIsDefault() && shippingAddressRepository.existsByUserIdAndIsDefault(shippingAddressRequest.getUserId(), true)) {
             throw new RuntimeException("Default shipping address already exists");
         }
         ShippingAddress shippingAddress = shippingAddressMapper.toShippingAddress(shippingAddressRequest);
-        shippingAddressRepository.save(shippingAddress);
-        return ApiResponse.<Void>builder()
+        ShippingAddressResponse shippingAddressResponse = shippingAddressMapper.toShippingAddressResponse(shippingAddressRepository.save(shippingAddress));
+        return ApiResponse.<ShippingAddressResponse>builder()
                 .code(200)
                 .message("Create shipping address successfully")
+                .result(shippingAddressResponse)
                 .build();
     }
 
-    public ApiResponse<Void> updateShippingAddress(String id, ShippingAddressRequest shippingAddressRequest) {
+    public ApiResponse<ShippingAddressResponse> updateShippingAddress(String id, ShippingAddressRequest shippingAddressRequest) {
         ShippingAddress shippingAddress = shippingAddressRepository.findById(id).orElseThrow(() -> new RuntimeException("Shipping address not found"));
-        if(shippingAddress.getIsDefault() && shippingAddressRequest.getIsDefault() && shippingAddressRepository.existsByUserIdAndIsDefault(shippingAddressRequest.getUserId(), true)) {
+        if (shippingAddressRequest.getIsDefault() && shippingAddressRepository.existsByUserIdAndIsDefault(shippingAddressRequest.getUserId(), true)) {
             throw new RuntimeException("Default shipping address already exists");
         }
         shippingAddress.setRecipientName(shippingAddressRequest.getRecipientName());
@@ -41,15 +42,16 @@ public class ShippingAddressService {
         shippingAddress.setAddressDetail(shippingAddressRequest.getAddressDetail());
         shippingAddress.setCountry(shippingAddressRequest.getCountry());
         shippingAddress.setIsDefault(shippingAddressRequest.getIsDefault());
-        shippingAddressRepository.save(shippingAddress);
-        return ApiResponse.<Void>builder()
+        ShippingAddressResponse shippingAddressResponse = shippingAddressMapper.toShippingAddressResponse(shippingAddressRepository.save(shippingAddress));
+        return ApiResponse.<ShippingAddressResponse>builder()
                 .code(200)
                 .message("Update shipping address successfully")
+                .result(shippingAddressResponse)
                 .build();
     }
 
     public ApiResponse<Iterable<ShippingAddressResponse>> getShippingAddressByUserId(String userId) {
-        Iterable<ShippingAddressResponse> shippingAddresses = shippingAddressMapper.toShippingAddressResponse(shippingAddressRepository.findByUserId(userId));
+        Iterable<ShippingAddressResponse> shippingAddresses = shippingAddressMapper.toShippingAddressResponseIterable(shippingAddressRepository.findByUserId(userId));
         return ApiResponse.<Iterable<ShippingAddressResponse>>builder()
                 .code(200)
                 .message("Get shipping address by user id successfully")

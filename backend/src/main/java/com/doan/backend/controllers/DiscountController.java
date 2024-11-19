@@ -55,4 +55,9 @@ public class DiscountController {
     public ApiResponse<Iterable<Discount>> getAllDiscountsByAutoApply(@RequestParam String userId) {
         return discountService.getAllDiscountsByAutoApply(userId);
     }
+
+    @GetMapping("/get-discount")
+    public ApiResponse<Discount> getDiscountById(@RequestParam String userId, @RequestParam String code) {
+        return discountService.getDiscount(code, userId);
+    }
 }

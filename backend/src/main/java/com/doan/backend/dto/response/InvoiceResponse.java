@@ -1,6 +1,5 @@
 package com.doan.backend.dto.response;
 
-import com.doan.backend.entity.Payment;
 import com.doan.backend.enums.InvoiceStatusEnum;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,7 +17,7 @@ import java.time.LocalDateTime;
 public class InvoiceResponse {
     String id;
 
-    Payment payment;
+    PaymentResponse payment;
 
     BigDecimal totalAmount;
 

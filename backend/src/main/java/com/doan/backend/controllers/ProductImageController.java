@@ -1,17 +1,15 @@
 package com.doan.backend.controllers;
 
+import com.doan.backend.dto.request.DeleteProductImageRequest;
+import com.doan.backend.dto.request.ProductImageRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.ProductImageResponse;
-import com.doan.backend.entity.ProductImage;
 import com.doan.backend.services.ProductImageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/product-image")
@@ -21,14 +19,13 @@ import java.util.List;
 public class ProductImageController {
     ProductImageService productImageService;
 
-    @PostMapping("/{productId}")
-    public ApiResponse<ProductImage> uploadImage(@PathVariable String productId,
-                                                 @RequestParam("files") List<MultipartFile> files){
-        return productImageService.updateProductImage(productId,files);
+    @PostMapping()
+    public ApiResponse<ProductImageResponse> createImage(@RequestBody ProductImageRequest productImageRequest) {
+        return productImageService.createProductImage(productImageRequest);
     }
 
-    @PostMapping()
-    public ApiResponse<String> deleteImage(@RequestBody List<String> ids){
-        return productImageService.deleteProductImage(ids);
+    @DeleteMapping("/delete")
+    public ApiResponse<String> deleteImage(@RequestBody DeleteProductImageRequest deleteProductImageRequest) {
+        return productImageService.deleteProductImage(deleteProductImageRequest);
     }
 }
