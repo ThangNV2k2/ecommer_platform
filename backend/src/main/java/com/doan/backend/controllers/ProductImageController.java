@@ -20,12 +20,12 @@ public class ProductImageController {
     ProductImageService productImageService;
 
     @PostMapping()
-    public ApiResponse<ProductImageResponse> createImage(@RequestBody ProductImageRequest productImageRequest){
+    public ApiResponse<ProductImageResponse> createImage(@RequestBody ProductImageRequest productImageRequest) {
         return productImageService.createProductImage(productImageRequest);
     }
 
-    @PostMapping("/delete")
-    public ApiResponse<String> deleteImage(@RequestBody DeleteProductImageRequest deleteProductImageRequest){
+    @DeleteMapping("/delete")
+    public ApiResponse<String> deleteImage(@RequestBody DeleteProductImageRequest deleteProductImageRequest) {
         return productImageService.deleteProductImage(deleteProductImageRequest);
     }
 }
