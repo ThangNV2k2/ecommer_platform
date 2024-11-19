@@ -144,7 +144,7 @@ public class OrderService {
             orderItemRepository.save(orderItem);
         }
 
-        String invoiceNumber = CodeUtils.generateUniqueCode(Constants.INVOICE_PREFIX, invoiceRepository.count() + 4);
+        String invoiceNumber = CodeUtils.generateUniqueCode(Constants.INVOICE_PREFIX, invoiceRepository.count() + 5);
 
         Invoice invoice = new Invoice();
         invoice.setOrder(savedOrder);
@@ -164,13 +164,17 @@ public class OrderService {
         payment.setInvoice(savedInvoice);
         payment.setAmount(BigDecimal.ZERO);
         payment.setPaymentMethod(PaymentMethodEnum.TRANSFER);
+        payment.setPaymentStatus(PaymentStatusEnum.PENDING);
         if (totalPriceAfterDiscount.equals(BigDecimal.ZERO)) {
             invoice.setStatus(InvoiceStatusEnum.PAID);
         } else {
-            payment.setQrCodeUrl(paymentService.createPaymentLink(savedInvoice.getId()));
             payment.setPaymentStatus(PaymentStatusEnum.PENDING);
         }
-        paymentRepository.save(payment);
+        Payment paymentResponse = paymentRepository.save(payment);
+        invoice.setPayment(paymentResponse);
+        paymentResponse.setQrCodeUrl(paymentService.createPaymentLink(savedInvoice.getId()));
+        invoiceRepository.save(invoice);
+        paymentRepository.save(paymentResponse);
 
         return ApiResponse.<OrderResponse>builder()
                 .code(200)

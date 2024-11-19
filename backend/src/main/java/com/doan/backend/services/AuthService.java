@@ -8,10 +8,11 @@ import com.doan.backend.dto.response.JwtResponse;
 import com.doan.backend.dto.response.UserResponse;
 import com.doan.backend.entity.User;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.exception.Unauthorized;
+import com.doan.backend.mapper.UserMapper;
 import com.doan.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import com.doan.backend.mapper.UserMapper;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -109,7 +110,7 @@ public class AuthService {
 
     public ApiResponse<UserResponse> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
             User user = userRepository.findByEmail(userDetails.getUsername())
@@ -119,7 +120,7 @@ public class AuthService {
                     .result(userMapper.toUserResponse(user))
                     .build();
         } else {
-            throw new BadCredentialsException("User not authenticated");
+            throw new Unauthorized("Unauthorized access");
         }
     }
 }

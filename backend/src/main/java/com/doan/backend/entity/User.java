@@ -1,4 +1,5 @@
 package com.doan.backend.entity;
+
 import com.doan.backend.enums.LoyaltyTierEnum;
 import com.doan.backend.enums.RoleEnum;
 import jakarta.persistence.*;
@@ -48,7 +49,7 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     Set<RoleEnum> roles;
 
     @CreationTimestamp

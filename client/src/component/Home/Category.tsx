@@ -35,7 +35,7 @@ const Category: React.FC<CategoryProps> = ({ categories, onCategorySelect }) => 
                 {!collapsed &&
                     categories.map((category) => (
                         <Menu.Item key={category.id}>
-                            <span className="fs-14 fw-600 text-primary">{category.name}</span>
+                            <span className="fs-14 fw-600 text-primary">{category.name.toUpperCase()}</span>
                         </Menu.Item>
                     ))}
             </Menu.SubMenu>

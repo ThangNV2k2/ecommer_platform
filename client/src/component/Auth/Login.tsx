@@ -1,13 +1,18 @@
 import React from 'react';
-import {Form, Input, Button, Row, Col} from 'antd';
+import { Form, Input, Button, Row, Col, Checkbox, Typography } from 'antd';
 import { Formik, Field, Form as FormikForm, FieldProps } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import {baseApi, useLoginEmailMutation} from "../../redux/api/auth-api";
-import {setUser} from "../../redux/slice/userSlice";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../redux/store";
-import {useLazyGetUserInfoQuery} from "../../redux/api/user-api";
+import { baseApi, useLoginEmailMutation } from "../../redux/api/auth-api";
+import { setUser } from "../../redux/slice/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { useLazyGetUserInfoQuery } from "../../redux/api/user-api";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { ReactComponent as GoogleIcon } from "../../img/svg/google.svg";
+import { showCustomNotification } from '../../utils/notification';
+
+const { Text, Title, Link } = Typography;
 
 interface FormValues {
     email: string;
@@ -16,10 +21,10 @@ interface FormValues {
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
-        .email('Email không hợp lệ')
-        .required('Vui lòng nhập email'),
+        .email('Invalid email')
+        .required('Please enter your email'),
     password: Yup.string()
-        .required('Vui lòng nhập mật khẩu')
+        .required('Please enter your password')
 });
 
 const Login: React.FC = () => {
@@ -35,32 +40,37 @@ const Login: React.FC = () => {
     const userInfo = useSelector((state: RootState) => state.user.user);
     const [getUserInfo] = useLazyGetUserInfoQuery();
 
-    const handleGetUserInfo = async () => {
-        try {
-            const result = await getUserInfo().unwrap();
-            if(result?.result) {
-                dispatch(setUser(result.result));
-            }
-        } catch (error) {
-            console.error("Error getting user info:", error);
-        }
+    const handleGetUserInfo = () => {
+        getUserInfo().unwrap()
+            .then((res) => {
+                if (res?.result) {
+                    dispatch(setUser(res.result));
+                }
+            })
+            .catch((error) => {
+                showCustomNotification({
+                    type: "error",
+                    message: error.data?.message || "Failed to get user info",
+                });
+            });
     }
 
-    const handleSubmit = async (values: FormValues) => {
-        try {
-            const result = await login({
-                email: values.email,
-                password: values.password,
-            }).unwrap();
-
-            localStorage.setItem("token", result.result?.token ?? "");
+    const handleSubmit = (values: FormValues) => {
+        login({
+            email: values.email,
+            password: values.password,
+        }).unwrap().then((res) => {
+            localStorage.setItem("token", res.result?.token ?? "");
             if (!userInfo) {
-                await handleGetUserInfo();
+                handleGetUserInfo();
             }
             navigate('/account');
-        } catch (error) {
-            console.error("Đăng nhập thất bại:", error);
-        }
+        }).catch((error) => {
+            showCustomNotification({
+                type: "error",
+                message: error.data?.message || "Login failed",
+            });
+        });
     };
 
     const handleGoogleLogin = async () => {
@@ -68,63 +78,85 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="auth-layout">
-            <Row align="middle" justify="center" gutter={[24, 24]} className="h-100">
-                <Col
-                    xs={20} sm={20} md={12} lg={8} xl={8}
-                    className="flex justify-center align-center"
+        <Row align="middle" justify="center" gutter={[24, 24]} className="h-100">
+            <Col
+                xs={20} sm={20} md={8} lg={8} xl={8}
+                className="flex justify-center align-center border"
+            >
+
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
                 >
+                    {({ errors, touched }) => (
+                        <FormikForm className="login-form">
+                            <Title level={5} className="text-center mt-0 pb-2">Login</Title>
+                            <Form.Item
+                                validateStatus={errors.email && touched.email ? 'error' : ''}
+                                help={touched.email && errors.email}
+                                style={{ marginBottom: "24px" }}
+                            >
+                                <Field name="email">
+                                    {({ field }: FieldProps) => (
+                                        <Input
+                                            {...field}
+                                            placeholder="Email"
+                                            prefix={<MailOutlined className="mr-1" />}
+                                        />
+                                    )}
+                                </Field>
+                            </Form.Item>
 
-                    <Formik
-                        initialValues={initialValues}
-                        validationSchema={validationSchema}
-                        onSubmit={handleSubmit}
-                    >
-                        {({errors, touched}) => (
-                            <FormikForm className="login-form">
-                                <Form.Item
-                                    validateStatus={errors.email && touched.email ? 'error' : ''}
-                                    help={touched.email && errors.email}
+                            <Form.Item
+                                validateStatus={errors.password && touched.password ? 'error' : ''}
+                                help={touched.password && errors.password}
+                                style={{ marginBottom: "24px" }}
+                            >
+                                <Field name="password">
+                                    {({ field }: FieldProps) => (
+                                        <Input.Password
+                                            {...field}
+                                            placeholder="Password"
+                                            prefix={<LockOutlined className="mr-1" />}
+                                        />
+                                    )}
+                                </Field>
+                            </Form.Item>
+
+                            <Form.Item className='mb-2'>
+                                <Checkbox>Remember me</Checkbox>
+                                <Link style={{ float: "right" }} href="#">
+                                    Forgot password?
+                                </Link>
+                            </Form.Item>
+
+                            <Form.Item className='mb-2'>
+                                <Button type="primary" htmlType="submit" className="fw-600" block>
+                                    Login
+                                </Button>
+                            </Form.Item>
+
+                            <Form.Item className='mb-2'>
+                                <Button
+                                    type="default"
+                                    onClick={handleGoogleLogin}
+                                    block
+                                    icon={<GoogleIcon className="fs-12" />}
+                                    className="fw-600 background-google"
                                 >
-                                    <Field name="email">
-                                        {({ field }: FieldProps) => (
-                                            <Input {...field} placeholder="Email" prefix={<i className="anticon anticon-mail" />} />
-                                        )}
-                                    </Field>
-                                </Form.Item>
+                                    Login with Google
+                                </Button>
+                            </Form.Item>
 
-                                <Form.Item
-                                    validateStatus={errors.password && touched.password ? 'error' : ''}
-                                    help={touched.password && errors.password}
-                                >
-                                    <Field name="password">
-                                        {({ field }: FieldProps) => (
-                                            <Input.Password {...field} placeholder="Mật khẩu" prefix={<i className="anticon anticon-lock" />} />
-                                        )}
-                                    </Field>
-                                </Form.Item>
-
-                                <Form.Item>
-                                    <Button type="primary" htmlType="submit" block>
-                                        Đăng nhập
-                                    </Button>
-                                </Form.Item>
-
-                                <Form.Item>
-                                    <Button type="default" onClick={handleGoogleLogin} block>
-                                        Đăng nhập bằng Google
-                                    </Button>
-                                </Form.Item>
-
-                                <Form.Item>
-                                    <a href="#">Quên mật khẩu?</a> hoặc <a href="/register">Đăng ký</a>
-                                </Form.Item>
-                            </FormikForm>
-                        )}
-                    </Formik>
-                </Col>
-            </Row>
-        </div>
+                            <Form.Item style={{ textAlign: "center" }}>
+                                <Text>Don't have an account?</Text> <Link href="/account/register">Sign up now</Link>
+                            </Form.Item>
+                        </FormikForm>
+                    )}
+                </Formik>
+            </Col>
+        </Row>
     );
 };
 
