@@ -12,9 +12,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
     Iterable<Order> findByUserId(String userId);
+
     Iterable<Order> findByStatus(OrderStatusEnum status);
+
     Iterable<Order> findByUserIdAndStatus(String userId, OrderStatusEnum status);
+
     Boolean existsByUserIdAndStatus(String userId, OrderStatusEnum status);
+
     @Query("SELECT o FROM Order o JOIN o.orderItems oi JOIN o.user u " +
             "WHERE (:productName IS NULL OR oi.product.name LIKE %:productName%) " +
             "AND (:customerName IS NULL OR u.name LIKE %:customerName%) " +
@@ -29,7 +33,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
             "FROM Order o JOIN o.orderItems oi " +
             "WHERE o.user.id = :userId " +
-            "AND o.status = 5 " +
+            "AND o.status = 4 " +
             "AND oi.product.id = :productId")
     boolean existOrderCompletedByUserId(@Param("userId") String userId,
                                         @Param("productId") String productId);

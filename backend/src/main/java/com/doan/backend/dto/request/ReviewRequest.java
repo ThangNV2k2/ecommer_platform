@@ -1,6 +1,7 @@
 package com.doan.backend.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class ReviewRequest {
     String userId;
     @NotBlank(message = "OrderId is required")
     String orderId;
+    @NotNull(message = "Rating is not null")
     Double rating;
     String content;
 }
