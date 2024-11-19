@@ -12,5 +12,7 @@ public interface ShippingAddressMapper {
     @Mapping(source = "userId", target = "user.id")
     ShippingAddress toShippingAddress(ShippingAddressRequest shippingAddressRequest);
 
-    Iterable<ShippingAddressResponse> toShippingAddressResponse(Iterable<ShippingAddress> shippingAddress);
+    ShippingAddressResponse toShippingAddressResponse(ShippingAddress shippingAddress);
+
+    Iterable<ShippingAddressResponse> toShippingAddressResponseIterable(Iterable<ShippingAddress> shippingAddress);
 }

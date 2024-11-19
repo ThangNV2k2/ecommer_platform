@@ -60,8 +60,8 @@ public class ProductService {
 
     public ApiResponse<Void> createProduct(ProductRequest productRequest) {
         Product product = productMapper.toProduct(productRequest);
-        savePromotionProducts(product, productRequest.getPromotionIds());
-        productRepository.save(product);
+        Product productSave = productRepository.save(product);
+        savePromotionProducts(productSave, productRequest.getPromotionIds());
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Product created successfully")
@@ -78,7 +78,6 @@ public class ProductService {
         List<PromotionProduct> existingPromotionProducts = promotionProductRepository.findPromotionProductsByProductId(product.getId());
         promotionProductRepository.deleteAll(existingPromotionProducts);
         savePromotionProducts(product, productRequest.getPromotionIds());
-
 
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());

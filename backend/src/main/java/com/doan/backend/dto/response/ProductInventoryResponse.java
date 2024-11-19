@@ -1,7 +1,6 @@
 package com.doan.backend.dto.response;
 
 
-import com.doan.backend.entity.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,7 +14,7 @@ public class ProductInventoryResponse {
 
     String idProduct;
 
-    Size size;
+    SizeResponse size;
 
     Integer quantity;
 }

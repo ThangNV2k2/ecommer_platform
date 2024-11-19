@@ -5,5 +5,6 @@ public enum OrderStatusEnum {
     CONFIRMED,
     SHIPPING,
     DELIVERED,
+    COMPLETED,
     CANCELLED
 }
