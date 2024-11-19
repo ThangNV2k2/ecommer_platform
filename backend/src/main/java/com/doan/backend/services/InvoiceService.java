@@ -6,10 +6,14 @@ import com.doan.backend.entity.Invoice;
 import com.doan.backend.enums.InvoiceStatusEnum;
 import com.doan.backend.mapper.InvoiceMapper;
 import com.doan.backend.repositories.InvoiceRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class InvoiceService {
 
     InvoiceRepository invoiceRepository;
@@ -48,5 +52,5 @@ public class InvoiceService {
         invoice.setStatus(invoiceStatusEnum);
         return invoiceRepository.save(invoice);
     }
-    
+
 }

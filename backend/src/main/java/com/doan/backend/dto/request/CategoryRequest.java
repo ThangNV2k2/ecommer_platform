@@ -1,6 +1,7 @@
 package com.doan.backend.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,6 @@ public class CategoryRequest {
     @NotBlank(message = "Name is required")
     String name;
     String description;
-    @NotBlank(message = "isActive is required")
+    @NotNull(message = "isActive is required")
     Boolean isActive;
 }

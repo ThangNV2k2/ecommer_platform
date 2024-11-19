@@ -26,6 +26,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;

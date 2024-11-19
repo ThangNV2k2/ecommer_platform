@@ -1,9 +1,10 @@
 import React from 'react';
-import {Form, Input, Button, Row, Col} from 'antd';
+import {Form, Input, Button, Row, Col, Typography} from 'antd';
 import { Formik, Field, Form as FormikForm, FieldProps } from 'formik';
 import * as Yup from 'yup';
 import {useRegisterMutation} from "../../redux/api/auth-api";
 import {useNavigate} from "react-router-dom";
+import {LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 
 interface FormValues {
     email: string;
@@ -11,6 +12,7 @@ interface FormValues {
     confirmPassword: string;
     name: string;
 }
+const { Text, Title, Link } = Typography;
 
 const validationSchema = Yup.object().shape({
     name: Yup.string()
@@ -65,14 +67,15 @@ const Registration: React.FC = () => {
                         onSubmit={handleSubmit}
                     >
                         {({errors, touched}) => (
-                            <FormikForm className="h-100 w-100">
+                            <FormikForm className="login-form">
+                                <Title level={5} className="text-center mt-0 pb-2">Register</Title>
                                 <Form.Item
                                     validateStatus={errors.name && touched.name ? 'error' : ''}
                                     help={touched.name && errors.name}
                                 >
                                     <Field name="name">
                                         {({ field }: FieldProps) => (
-                                            <Input {...field} placeholder="Full Name" prefix={<i className="anticon anticon-user" />} />
+                                            <Input {...field} placeholder="Full Name" prefix={<UserOutlined className="mr-1" />} />
                                         )}
                                     </Field>
                                 </Form.Item>
@@ -82,7 +85,7 @@ const Registration: React.FC = () => {
                                 >
                                     <Field name="email">
                                         {({ field }: FieldProps) => (
-                                            <Input {...field} placeholder="Email" prefix={<i className="anticon anticon-mail" />} />
+                                            <Input {...field} placeholder="Email" prefix={<MailOutlined className="mr-1" />} />
                                         )}
                                     </Field>
                                 </Form.Item>
@@ -93,7 +96,7 @@ const Registration: React.FC = () => {
                                 >
                                     <Field name="password">
                                         {({ field }: FieldProps) => (
-                                            <Input.Password {...field} placeholder="Password" prefix={<i className="anticon anticon-lock" />} />
+                                            <Input.Password {...field} placeholder="Password" prefix={<LockOutlined className="mr-1" />} />
                                         )}
                                     </Field>
                                 </Form.Item>
@@ -104,15 +107,18 @@ const Registration: React.FC = () => {
                                 >
                                     <Field name="confirmPassword">
                                         {({ field }: FieldProps) => (
-                                            <Input.Password {...field} placeholder="Confirm Password" prefix={<i className="anticon anticon-lock" />} />
+                                            <Input.Password {...field} placeholder="Confirm Password" prefix={<LockOutlined className="mr-1" />} />
                                         )}
                                     </Field>
                                 </Form.Item>
 
                                 <Form.Item>
-                                    <Button type="primary" htmlType="submit" block>
+                                    <Button type="primary" htmlType="submit" className="fw-600" block>
                                         Register
                                     </Button>
+                                </Form.Item>
+                                <Form.Item style={{ textAlign: "center" }}>
+                                    <Text>You already have an account?</Text> <Link href="/account/login">Sign in now</Link>
                                 </Form.Item>
                             </FormikForm>
                         )}

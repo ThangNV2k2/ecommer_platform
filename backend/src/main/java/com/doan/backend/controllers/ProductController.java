@@ -24,7 +24,6 @@ public class ProductController {
     @GetMapping("/{id}")
     ApiResponse<ProductResponse> getProductById(@PathVariable String id) {
         return productService.getProductById(id);
-
     }
 
     @GetMapping

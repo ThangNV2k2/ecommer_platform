@@ -81,19 +81,19 @@ public class CartService {
                 .build();
     }
 
-    public ApiResponse<CartItem> updateCartItem(String cartItemId, CartItemRequest cartItemRequest) {
+    public ApiResponse<CartItemResponse> updateCartItem(String cartItemId, CartItemRequest cartItemRequest) {
         ProductInventory productInventory = validateProductInventory(cartItemRequest);
 
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
-        cartItem.setQuantity(cartItem.getQuantity() + cartItemRequest.getQuantity());
+        cartItem.setQuantity(cartItemRequest.getQuantity());
         cartItem.setProduct(productInventory.getProduct());
         cartItem.setSize(productInventory.getSize());
-
-        return ApiResponse.<CartItem>builder()
+        CartItemResponse cartItemResponse = cartItemMapper.toCartItemResponse(cartItemRepository.save(cartItem));
+        return ApiResponse.<CartItemResponse>builder()
                 .code(200)
                 .message("Cart item updated successfully")
-                .result(cartItemRepository.save(cartItem))
+                .result(cartItemResponse)
                 .build();
     }
 
