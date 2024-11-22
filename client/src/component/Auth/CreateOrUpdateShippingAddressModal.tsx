@@ -51,7 +51,8 @@ const CreateOrUpdateShippingAddressModal: React.FC<ShippingAddressFormProps> = (
     const handleFormSubmit = async (values: ShippingAddress) => {
         if (editingAddress) {
             await updateShippingAddress({
-                id: editingAddress.id, shippingAddressRequest: {
+                id: editingAddress.id, 
+                shippingAddressRequest: {
                     userId: userInfo?.id ?? "",
                     ...values,
                 }
@@ -177,7 +178,8 @@ const CreateOrUpdateShippingAddressModal: React.FC<ShippingAddressFormProps> = (
                         <Form.Item className="mb-2">
                             <Field name="isDefault">
                                 {({field}: FieldProps) => (
-                                    <Checkbox {...field}>
+                                    <Checkbox {...field} checked={field.value}
+                                    >
                                         Set as default address
                                     </Checkbox>
                                 )}

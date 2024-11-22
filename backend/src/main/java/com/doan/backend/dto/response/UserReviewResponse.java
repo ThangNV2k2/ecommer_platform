@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductImageResponse {
+public class UserReviewResponse {
     String id;
-    String imageUrl;
+    String name;
 }

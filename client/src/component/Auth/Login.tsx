@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, Row, Col, Checkbox, Typography } from 'antd';
 import { Formik, Field, Form as FormikForm, FieldProps } from 'formik';
 import * as Yup from 'yup';
@@ -76,6 +76,12 @@ const Login: React.FC = () => {
     const handleGoogleLogin = async () => {
         window.location.href = `${baseApi}/oauth2/login/google`;
     };
+
+    useEffect(() => {
+        if (userInfo) {
+            navigate('/account');
+        }
+    }, [userInfo]);
 
     return (
         <Row align="middle" justify="center" gutter={[24, 24]} className="h-100">

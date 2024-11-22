@@ -1,18 +1,24 @@
 import {Menu} from "antd";
 import {CategoryResponse} from "../../types/category";
-import {MinusOutlined} from "@ant-design/icons";
 import {useState} from "react";
+import '../../sass/home-page.scss';
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface CategoryProps {
     categories: CategoryResponse[];
-    onCategorySelect: (categoryId: string) => void;
 }
 
-const Category: React.FC<CategoryProps> = ({ categories, onCategorySelect }) => {
+const Category: React.FC<CategoryProps> = ({ categories }) => {
     const [collapsed, setCollapsed] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const handleToggle = () => {
         setCollapsed(!collapsed);
+    };
+
+    const onCategorySelect = (categoryId: string) => {
+        const search = searchParams.get('search') || '';
+        setSearchParams({ categoryId, search });
     };
 
     return (

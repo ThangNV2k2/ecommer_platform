@@ -109,16 +109,20 @@ public class AuthService {
     }
 
     public ApiResponse<UserResponse> getUser() {
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userMapper.toUserResponse(getUserByToken()))
+                .build();
+
+    }
+
+    public User getUserByToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            User user = userRepository.findByEmail(userDetails.getUsername())
+            return userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userDetails.getUsername()));
-            return ApiResponse.<UserResponse>builder()
-                    .code(200)
-                    .result(userMapper.toUserResponse(user))
-                    .build();
         } else {
             throw new Unauthorized("Unauthorized access");
         }

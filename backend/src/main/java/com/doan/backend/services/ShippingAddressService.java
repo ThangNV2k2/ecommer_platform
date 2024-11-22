@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
@@ -34,8 +36,11 @@ public class ShippingAddressService {
 
     public ApiResponse<ShippingAddressResponse> updateShippingAddress(String id, ShippingAddressRequest shippingAddressRequest) {
         ShippingAddress shippingAddress = shippingAddressRepository.findById(id).orElseThrow(() -> new RuntimeException("Shipping address not found"));
-        if (shippingAddressRequest.getIsDefault() && shippingAddressRepository.existsByUserIdAndIsDefault(shippingAddressRequest.getUserId(), true)) {
-            throw new RuntimeException("Default shipping address already exists");
+        if (shippingAddressRequest.getIsDefault()) {
+            Optional<ShippingAddress> defaultShippingAddress = shippingAddressRepository.findByUserIdAndIsDefault(shippingAddressRequest.getUserId(), true);
+            if (defaultShippingAddress.isPresent() && !defaultShippingAddress.get().getId().equals(id)) {
+                throw new RuntimeException("Default shipping address already exists");
+            }
         }
         shippingAddress.setRecipientName(shippingAddressRequest.getRecipientName());
         shippingAddress.setPhoneNumber(shippingAddressRequest.getPhoneNumber());

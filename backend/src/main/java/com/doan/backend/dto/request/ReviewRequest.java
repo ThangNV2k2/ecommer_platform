@@ -16,8 +16,6 @@ public class ReviewRequest {
     @NotBlank(message = "ProductId is required")
     String productId;
 
-    @NotBlank(message = "UserId is required")
-    String userId;
     @NotBlank(message = "OrderId is required")
     String orderId;
     @NotNull(message = "Rating is not null")

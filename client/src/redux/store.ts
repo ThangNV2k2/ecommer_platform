@@ -13,6 +13,8 @@ import {discountApi} from "./api/discount";
 import {orderApi} from "./api/order";
 import {shippingAddressApi} from "./api/shipping-address";
 import {invoiceApi} from "./api/invoice";
+import { reviewApi } from "./api/review";
+import { productImageApi } from "./api/product-image";
 
 export const store = configureStore({
     reducer: {
@@ -26,6 +28,8 @@ export const store = configureStore({
         [orderApi.reducerPath]: orderApi.reducer,
         [shippingAddressApi.reducerPath]: shippingAddressApi.reducer,
         [invoiceApi.reducerPath]: invoiceApi.reducer,
+        [reviewApi.reducerPath]: reviewApi.reducer,
+        [productImageApi.reducerPath]: productImageApi.reducer,
         user: userReducer,
         cart: cartReducer,
     },
@@ -33,7 +37,8 @@ export const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(authApi.middleware, userApi.middleware, categoryApi.middleware,
             productApi.middleware, productInventoryApi.middleware, cartApi.middleware,
-            discountApi.middleware, shippingAddressApi.middleware, invoiceApi.middleware, orderApi.middleware
+            discountApi.middleware, shippingAddressApi.middleware, invoiceApi.middleware, orderApi.middleware,
+            reviewApi.middleware, productImageApi.middleware
         ).concat(invalidTokenMiddleware),
 })
 
