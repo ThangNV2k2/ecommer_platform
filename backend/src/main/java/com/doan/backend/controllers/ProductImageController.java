@@ -15,17 +15,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/product-image")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PUBLIC, makeFinal = true)
-@PreAuthorize("hasRole('ADMIN')")
 public class ProductImageController {
     ProductImageService productImageService;
 
     @PostMapping()
-    public ApiResponse<ProductImageResponse> createImage(@RequestBody ProductImageRequest productImageRequest) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<Void> createImage(@RequestBody ProductImageRequest productImageRequest) {
         return productImageService.createProductImage(productImageRequest);
     }
 
     @DeleteMapping("/delete")
-    public ApiResponse<String> deleteImage(@RequestBody DeleteProductImageRequest deleteProductImageRequest) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<Void> deleteImage(@RequestBody DeleteProductImageRequest deleteProductImageRequest) {
         return productImageService.deleteProductImage(deleteProductImageRequest);
+    }
+
+    @GetMapping()
+    public ApiResponse<Iterable<ProductImageResponse>> getProductImagesByProductId(@RequestParam String productId) {
+        return productImageService.getProductImagesByProductId(productId);
     }
 }

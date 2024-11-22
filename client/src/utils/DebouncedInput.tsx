@@ -35,13 +35,12 @@ const DebouncedInput: React.FC<DebouncedInputProps> = ({
     };
 
     return (
-        <Input.Search
+        <Input
             placeholder={placeholder}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            onSearch={() => onDebouncedChange(value)}
+            onPressEnter={() => onDebouncedChange(value)}
             className={className}
-            enterButton="Search"
             suffix={
                 value ? (
                     <CloseCircleFilled

@@ -6,6 +6,7 @@ import {useGetAutoApplyQuery, useLazyGetDiscountQuery} from "../../redux/api/dis
 import {DiscountResponse} from "../../types/discount";
 import {DiscountTypeEnum} from "../../types/enums";
 import DebouncedInput from "../../utils/DebouncedInput";
+import { CloseCircleFilled } from "@ant-design/icons";
 
 const {Text} = Typography;
 
@@ -46,6 +47,14 @@ const DiscountModal = ({onClose, selectedDiscount, onOke, total}: DiscountModalP
                 onSearch={handleSearch}
                 enterButton="Search"
                 className="mb-2"
+                suffix={
+                    searchCode? (
+                        <CloseCircleFilled
+                            onClick={() => setSearchCode('')}
+                            className='cursor-pointer text-color-secondary'
+                        />
+                    ) : null
+                }
             />
             <Divider/>
             <Text strong>Available Discounts:</Text>

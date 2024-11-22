@@ -1,5 +1,5 @@
 import { Button, Modal, Typography } from "antd";
-import { ExclamationCircleOutlined, WarningOutlined } from "@ant-design/icons";
+import { WarningOutlined } from "@ant-design/icons";
 
 interface ConfirmModalProps {
     isOpen: boolean;
@@ -10,12 +10,14 @@ interface ConfirmModalProps {
     icon?: React.ReactNode;
     confirmButtonText?: string;
     cancelButtonText?: string;
+    isSubmitLoading?: boolean;
 }
 
 const ConfirmModal = ({
     isOpen,
     onClose,
     onConfirm,
+    isSubmitLoading,
     title,
     message,
     icon = <WarningOutlined className="text-error fs-32" />,
@@ -45,7 +47,7 @@ const ConfirmModal = ({
                     <Button onClick={onClose} className="mr-2">
                         {cancelButtonText}
                     </Button>
-                    <Button onClick={onConfirm} type="primary" danger>
+                    <Button onClick={onConfirm} type="primary" danger loading={isSubmitLoading}>
                         {confirmButtonText}
                     </Button>
                 </div>

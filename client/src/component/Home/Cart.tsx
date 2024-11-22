@@ -18,8 +18,8 @@ const Cart = () => {
     const navigate = useNavigate()
     const cartData = useSelector((state: RootState) => state.cart.cart);
     const dispatch = useDispatch();
-    const [triggerUpdateCartItem] = useUpdateCartItemMutation();
-    const [triggerDeleteCartItem] = useDeleteCartItemMutation();
+    const [triggerUpdateCartItem, {isLoading: isUpdatingCartItem}] = useUpdateCartItemMutation();
+    const [triggerDeleteCartItem, {isLoading: isDeleting}] = useDeleteCartItemMutation();
     const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState<{
         isOpen: boolean;
         cartItemId: string;
@@ -39,6 +39,7 @@ const Cart = () => {
                     message: response.message,
                     type: "success"
                 });
+                setShowConfirmDeleteModal({isOpen: false, cartItemId: ""});
             }).catch((error) => {
             showCustomNotification({
                 message: error.data.message,
@@ -94,9 +95,13 @@ const Cart = () => {
                                 <Text delete className="original-price">{item.product.price}₫</Text>
                             </div>
                             <div className="product-quantity">
-                                <Button onClick={() => {
-                                    void handleUpdateCartItem(item, item.quantity - 1)
-                                }} icon={<MinusOutlined/>} size="small"/>
+                                <Button 
+                                    onClick={() => {
+                                        void handleUpdateCartItem(item, item.quantity - 1)
+                                    }}  
+                                    icon={<MinusOutlined/>} size="small"
+                                    loading={isUpdatingCartItem}
+                                />
                                 <Text>{item.quantity}</Text>
                                 <Button onClick={() => handleUpdateCartItem(item, item.quantity + 1)}
                                         icon={<PlusOutlined/>} size="small"/>
@@ -120,7 +125,7 @@ const Cart = () => {
             <Col xs={24} md={8} className="cart-summary">
                 <Title level={3}>Order Summary</Title>
                 <div className="final-total">
-                    <Text strong>Total:</Text>
+                    <Text strong>Total: {" "}</Text>
                     <Text strong className="total-amount">{calculateSubtotal(cartData)}₫</Text>
                 </div>
                 <Button type="primary" danger={true} block onClick={() => navigate("/checkout")}>CHECKOUT</Button>
@@ -128,12 +133,10 @@ const Cart = () => {
             <ConfirmModal 
                 title="Delete Cart Item"
                 message="Are you sure you want to delete this item?"
-                onConfirm={() => {
-                    setShowConfirmDeleteModal({isOpen: false, cartItemId: ""});
-                    handleDeleteCartItem(showConfirmDeleteModal.cartItemId);
-                }}
+                onConfirm={() => handleDeleteCartItem(showConfirmDeleteModal.cartItemId)}
                 onClose={() => setShowConfirmDeleteModal({isOpen: false, cartItemId: ""})}
                 isOpen={showConfirmDeleteModal.isOpen}
+                isSubmitLoading={isDeleting}
             />
         </Row>
     );

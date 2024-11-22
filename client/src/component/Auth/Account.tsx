@@ -13,7 +13,7 @@ const {Title, Text} = Typography;
 export const Account = () => {
 
     const userInfo = useSelector((state: RootState) => state.user.user);
-    const {data: getOrder, isFetching: orderFetching} = useGetOrdersByUserIdQuery(userInfo?.id ?? "");
+    const {data: getOrder, isFetching: orderFetching, refetch: refetchOrder} = useGetOrdersByUserIdQuery(userInfo?.id ?? "");
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -47,7 +47,7 @@ export const Account = () => {
                         </div>
                     ) : (
                         getOrder?.result ? (
-                            <OrderList orderList={getOrder.result}/>
+                                <OrderList orderList={getOrder.result} refetchOrder={refetchOrder}/>
                         ) : (
                                 <Card>
                                     <Text>You have not purchased any products.</Text>

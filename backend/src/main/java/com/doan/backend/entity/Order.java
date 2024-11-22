@@ -43,6 +43,7 @@ public class Order {
     OrderStatusEnum status;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_id")
     Invoice invoice;
 
     @Column(name = "total_price_before_discount")

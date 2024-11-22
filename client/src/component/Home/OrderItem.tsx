@@ -2,20 +2,33 @@ import { useState } from "react";
 import { OrderItemResponse, OrderResponse } from "../../types/order";
 import { OrderStatusEnum, PaymentStatusEnum } from "../../types/enums";
 import { Badge, Button, Card, Col, Divider, Image, List, Row, Space, Tag, Typography } from "antd";
-import { ClockCircleOutlined, CreditCardOutlined, ShoppingOutlined, TagOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, CreditCardOutlined, DeleteOutlined, ShoppingOutlined, TagOutlined } from "@ant-design/icons";
 import "../../sass/order.scss";
 import { formatDate } from "../../services/date";
 import { formatPrice } from "../../services/format-price";
 import { useGetInvoicesByOrderIdQuery } from "../../redux/api/invoice";
-import { useNavigate } from "react-router-dom";
 import { showCustomNotification } from "../../utils/notification";
+import CreateReviewModal from "./CreateReviewModal";
+import { useDeleteReviewMutation, useGetReviewByOrderIdQuery } from "../../redux/api/review";
+import ConfirmModal from "../../utils/ConfirmModal";
 
 const { Text } = Typography;
 
 const OrderItem: React.FC<{ order: OrderResponse }> = ({ order }) => {
-    const navigate = useNavigate();
     const [expanded, setExpanded] = useState(false);
     const { data: invoiceData } = useGetInvoicesByOrderIdQuery(order.id);
+    const canReviewOrder = order.status === OrderStatusEnum.COMPLETED;
+    const { data: getReviewByOrderId, refetch } = useGetReviewByOrderIdQuery(order.id, {
+        skip: !canReviewOrder,
+    });
+    const [deleteReview, {isLoading: isDeleting}] = useDeleteReviewMutation();
+    const [showConfirmDeleteReview, setShowConfirmDeleteReview] = useState<{
+        isShow: boolean;
+        reviewId: string;
+    }>({
+        isShow: false,
+        reviewId: "",
+    });
 
     const orderStatusColors = {
         [OrderStatusEnum.PENDING]: 'gold',
@@ -47,6 +60,28 @@ const OrderItem: React.FC<{ order: OrderResponse }> = ({ order }) => {
             });
         }
     };
+
+    const handleDeleteReview = () => {
+        deleteReview(showConfirmDeleteReview.reviewId)
+        .unwrap()
+        .then((res) => {
+            showCustomNotification({
+                type: "success",
+                message: res.message,
+            })
+            setShowConfirmDeleteReview({
+                isShow: false,
+                reviewId: "",
+            })
+            refetch();
+        })
+        .catch((error) => {
+            showCustomNotification({
+                type: "error",
+                message: error.data.message,
+            });
+        });
+    }
 
     return (
         <Card className="mb-4 order-card hover:shadow-md transition-shadow duration-300 w-100">
@@ -81,8 +116,8 @@ const OrderItem: React.FC<{ order: OrderResponse }> = ({ order }) => {
                     </Col>
                 </Row>
 
-                <Row gutter={[16, 16]} className="mt-1">
-                    <Col xs={24} sm={24} md={12} lg={8}>
+                <Row gutter={[24, 24]} className="mt-1">
+                    <Col xs={24} sm={24} md={24} lg={24}>
                         <Space direction="vertical" className="w-100">
                             <div className="flex items-center gap-1">
                                 <ClockCircleOutlined />
@@ -115,7 +150,7 @@ const OrderItem: React.FC<{ order: OrderResponse }> = ({ order }) => {
 
                             {expanded && (
                                 <List
-                                    className="mt-4"
+                                    className="mt-2"
                                     dataSource={order.orderItems}
                                     renderItem={(item: OrderItemResponse) => (
                                         <List.Item>
@@ -146,6 +181,28 @@ const OrderItem: React.FC<{ order: OrderResponse }> = ({ order }) => {
                                                     </div>
                                                 </div>
                                             </Space>
+                                            <div className="flex align-center flex-column gap-1">
+                                                {canReviewOrder && (
+                                                    <CreateReviewModal
+                                                        productId={item.productResponse.id}
+                                                        orderId={order.id}
+                                                        onSuccess={() => refetch()}
+                                                        review={getReviewByOrderId?.result?.find(review => review.productId === item.productResponse.id)}
+                                                    />
+                                                )}
+                                                {getReviewByOrderId?.result?.find(review => review.productId === item.productResponse.id)?.id && (
+                                                    <Button
+                                                        danger
+                                                        icon={<DeleteOutlined />}
+                                                        onClick={() => setShowConfirmDeleteReview({
+                                                            isShow: true,
+                                                            reviewId: getReviewByOrderId?.result?.find(review => review.productId === item.productResponse.id)?.id || ""
+                                                        })}
+                                                    >
+                                                        Delete Review
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </List.Item>
                                     )}
                                 />
@@ -188,6 +245,18 @@ const OrderItem: React.FC<{ order: OrderResponse }> = ({ order }) => {
                     </Col>
                 </Row>
             </Space>
+
+                <ConfirmModal
+                    title="Delete Review"
+                    message="Are you sure you want to delete this review?"
+                    onConfirm={handleDeleteReview}
+                    onClose={() => setShowConfirmDeleteReview({
+                        isShow: false,
+                        reviewId: "",
+                    })}
+                    isOpen={showConfirmDeleteReview.isShow}
+                    isSubmitLoading={isDeleting}
+                />
         </Card>
     );
 };

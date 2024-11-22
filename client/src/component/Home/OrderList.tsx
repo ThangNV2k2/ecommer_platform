@@ -7,9 +7,10 @@ import "../../sass/order.scss";
 
 interface OrderListProps {
     orderList: OrderResponse[];
+    refetchOrder: () => void;
 }
 
-const OrderList: React.FC<OrderListProps> = ({ orderList }) => {
+const OrderList: React.FC<OrderListProps> = ({ orderList, refetchOrder }) => {
     const [activeTab, setActiveTab] = useState('ALL');
 
     const filteredOrders = useMemo(() => {

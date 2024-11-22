@@ -613,6 +613,22 @@ code {
   cursor: pointer;
 }
 
+.max-height-400 {
+  max-height: 400px;
+}
+
+.height-400 {
+  height: 400px;
+}
+
+.object-cover {
+  object-fit: cover;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
 @media (max-width: 768px) {
   .hide-on-small {
     display: none;

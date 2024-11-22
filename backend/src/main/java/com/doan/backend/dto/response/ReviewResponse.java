@@ -12,7 +12,7 @@ public class ReviewResponse {
     String id;
     String orderId;
     String productId;
-    String userId;
+    UserReviewResponse userReviewResponse;
     Double rating;
     String content;
 }

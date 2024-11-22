@@ -2,6 +2,7 @@ import {ProductResponse} from "../../types/product";
 import {Card, Divider, Image, Rate, Typography} from "antd";
 import '../../sass/product.scss'
 import {useNavigate} from 'react-router-dom';
+import '../../sass/home-page.scss';
 
 const { Text, Title } = Typography;
 
@@ -31,7 +32,7 @@ const ProductItem = ({ product }: { product: ProductResponse }) => {
                 <Title level={5} className="m-0">{product.name}</Title>
                 <Text type="secondary">VERGENCY</Text>
 
-                <Rate disabled allowHalf defaultValue={product.rating || 5} className="fs-12 color-start" />
+                <Rate disabled allowHalf defaultValue={product.rating ?? 5} className="fs-12 color-start" />
             </div>
 
             <Divider/>

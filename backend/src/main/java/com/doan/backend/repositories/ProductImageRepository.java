@@ -4,8 +4,7 @@ import com.doan.backend.entity.ProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
-public interface ProductImageRepository extends JpaRepository<ProductImage,String> {
+public interface ProductImageRepository extends JpaRepository<ProductImage, String> {
+    Iterable<ProductImage> findAllByProductId(String productId);
 }

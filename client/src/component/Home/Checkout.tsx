@@ -1,22 +1,24 @@
-import {useNavigate} from "react-router-dom";
-import {useSelector} from "react-redux";
-import {RootState} from "../../redux/store";
-import {Field, FieldProps, Form as FormikForm, Formik} from 'formik';
-import {useCreateOrderFromCartMutation} from "../../redux/api/order";
-import {useEffect, useState} from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { Field, FieldProps, Form as FormikForm, Formik } from 'formik';
+import { useCreateOrderFromCartMutation } from "../../redux/api/order";
+import { useEffect, useState } from "react";
 import * as Yup from 'yup';
-import {Button, Col, Divider, Form, Image, Row, Select, Spin, Typography} from "antd";
-import {DiscountResponse} from "../../types/discount";
+import { Button, Col, Divider, Form, Image, Row, Select, Spin, Typography } from "antd";
+import { DiscountResponse } from "../../types/discount";
 import DiscountModal from "./DiscountModal";
-import {CartItemResponse} from "../../types/cart";
+import { CartItemResponse } from "../../types/cart";
 import CreateOrUpdateShippingAddressModal from "../Auth/CreateOrUpdateShippingAddressModal";
-import {useGetShippingAddressByUserIdQuery} from "../../redux/api/shipping-address";
-import {PlusOutlined} from "@ant-design/icons";
-import {ReactComponent as VoucherIcon} from "../../img/svg/voucher_icon.svg";
+import { useGetShippingAddressByUserIdQuery } from "../../redux/api/shipping-address";
+import { PlusOutlined } from "@ant-design/icons";
+import { ReactComponent as VoucherIcon } from "../../img/svg/voucher_icon.svg";
 import "../../sass/checkout.scss";
-import {showCustomNotification} from "../../utils/notification";
+import { showCustomNotification } from "../../utils/notification";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../../redux/slice/cartSlice";
 
-const {Title, Text} = Typography;
+const { Title, Text } = Typography;
 
 const CheckoutSchema = Yup.object().shape({
     shippingAddressId: Yup.string().required("Please select a shipping address"),
@@ -32,22 +34,23 @@ const Checkout = () => {
     const navigate = useNavigate();
     const cartData = useSelector((state: RootState) => state.cart.cart);
     const userInfo = useSelector((state: RootState) => state.user.user);
-    const {data: shippingAddressData, refetch, isLoading} = useGetShippingAddressByUserIdQuery(userInfo?.id ?? "");
-    const [createOrderFromCart, {isLoading: createOrderFromCartLoading}] = useCreateOrderFromCartMutation();
+    const dispatch = useDispatch();
+    const { data: shippingAddressData, refetch, isLoading } = useGetShippingAddressByUserIdQuery(userInfo?.id ?? "");
+    const [createOrderFromCart, { isLoading: createOrderFromCartLoading }] = useCreateOrderFromCartMutation();
     const [selectedDiscount, setSelectedDiscount] =
         useState<DiscountResponse>();
 
     const [showDiscountModal, setShowDiscountModal] = useState(false);
     const [showShippingAddressModal, setShowShippingAddressModal] =
         useState(false);
-    
-    const [initialValues, setInitialValues]  =useState<CreateOrderFromCartRequest>({
+
+    const [initialValues, setInitialValues] = useState<CreateOrderFromCartRequest>({
         shippingAddressId: "",
         discountId: "",
     });
 
     useEffect(() => {
-        if(shippingAddressData?.result){
+        if (shippingAddressData?.result) {
             setInitialValues({
                 shippingAddressId: shippingAddressData.result.find(address => address.isDefault)?.id ?? "",
                 discountId: "",
@@ -63,11 +66,12 @@ const Checkout = () => {
         })
             .unwrap()
             .then((response) => {
+                dispatch(clearCart());
                 showCustomNotification({
                     message: response.message,
                     type: "success"
                 });
-                navigate("/");
+                navigate("/account");
             })
             .catch((error) => {
                 showCustomNotification({
@@ -185,7 +189,7 @@ const Checkout = () => {
                                                         onBlur={() => form.setFieldTouched('shippingAddressId', true)}
                                                         onChange={(value) => form.setFieldValue('shippingAddressId', value)}
                                                         value={field.value}
-                                                        
+
                                                     >
                                                         {shippingAddressData?.result?.map(address => (
                                                             <Select.Option key={address.id} value={address.id} >
@@ -249,8 +253,8 @@ const Checkout = () => {
                     )}
                 </Formik>
             )
-            
-        }
+
+            }
 
             <CreateOrUpdateShippingAddressModal
                 isOpen={showShippingAddressModal}
