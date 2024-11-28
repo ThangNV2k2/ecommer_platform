@@ -69,7 +69,7 @@ public class OrderService {
                 throw new RuntimeException("Insufficient stock for product: " + cartItem.getProduct().getName());
             }
 
-            Optional<Promotion> promotionOptional = promotionProductRepository.findActivePromotionByProductId(cartItem.getProduct().getId(), LocalDateTime.now());
+            List<Promotion> promotions = promotionProductRepository.findPromotionApplyByProductId(cartItem.getProduct().getId(), LocalDateTime.now());
 
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(cartItem.getProduct());
@@ -78,7 +78,7 @@ public class OrderService {
             orderItem.setPrice(itemPrice);
             orderItem.setOrder(null);
 
-            orderItem.setPromotion(promotionOptional.orElse(null));
+            orderItem.setPromotion(promotions.isEmpty() ? null : promotions.getFirst());
 
             orderItems.add(orderItem);
 
@@ -136,6 +136,16 @@ public class OrderService {
         order.setTotalPriceBeforeDiscount(totalPriceBeforeDiscount);
         order.setTotalPriceAfterDiscount(totalPriceAfterDiscount);
         order.setShippingAddress(shippingAddress);
+
+        if (orderRequest.getDiscountId() != null && !orderRequest.getDiscountId().isEmpty()) {
+            Discount discount = discountRepository.findById(orderRequest.getDiscountId()).orElseThrow(() -> new RuntimeException("Discount not found"));
+            UserDiscount userDiscount = new UserDiscount();
+            userDiscount.setDiscount(discount);
+            userDiscount.setUser(cart.getUser());
+            userDiscount.setUsesCount(1);
+            UserDiscount userDiscountResponse = userDiscountRepository.save(userDiscount);
+            order.setUserDiscount(userDiscountResponse);
+        }
 
         Order savedOrder = orderRepository.save(order);
 
@@ -244,8 +254,8 @@ public class OrderService {
                 .build();
     }
 
-    public ApiResponse<Page<OrderResponse>> getOrdersForAdmin(String productName, String customerName, OrderStatusEnum status, Pageable pageable) {
-        Page<Order> ordersPage = orderRepository.findOrdersForAdmin(productName, customerName, status, pageable);
+    public ApiResponse<Page<OrderResponse>> getOrdersForAdmin(String productName, String customerEmail, OrderStatusEnum status, Pageable pageable) {
+        Page<Order> ordersPage = orderRepository.findOrdersForAdmin(productName, customerEmail, status, pageable);
         Page<OrderResponse> responsePage = ordersPage.map(orderMapper::toOrderResponse);
 
         return ApiResponse.<Page<OrderResponse>>builder()

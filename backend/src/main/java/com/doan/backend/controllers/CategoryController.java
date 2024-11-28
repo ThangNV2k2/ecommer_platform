@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +34,8 @@ public class CategoryController {
     }
 
     @GetMapping("/page")
-    ApiResponse<Page<CategoryResponse>> getPageAllCategories(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return categoryService.getPageAllCategories(page, size);
+    ApiResponse<Page<CategoryResponse>> getPageCategoriesByName(@RequestParam String name, Pageable pageable) {
+        return categoryService.getPageAllCategories(name, pageable);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

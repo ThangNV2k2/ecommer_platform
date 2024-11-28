@@ -17,7 +17,20 @@ export interface UserInfo {
     name: string;
     isActive: boolean;
     loyaltyTier: LoyaltyTierEnum;
-    roles: RoleEnum[];
+    roles: Set<RoleEnum>;
+    createdAt: Date;
+    updatedAt: Date;
+    phoneNumbers?: PhoneNumber[];
+    addresses?: Address[];
+}
+
+export interface User {
+    id: string;
+    email: string;
+    name: string;
+    isActive: boolean;
+    loyaltyTier: LoyaltyTierEnum;
+    roles: Set<RoleEnum>;
     createdAt: Date;
     updatedAt: Date;
     phoneNumbers?: PhoneNumber[];

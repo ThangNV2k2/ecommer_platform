@@ -18,6 +18,8 @@ import java.util.List;
 public class OrderResponse {
     String id;
 
+    UserResponse user;
+
     UserDiscountResponse userDiscount;
 
     ShippingAddressResponse shippingAddress;

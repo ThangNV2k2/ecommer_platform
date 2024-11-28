@@ -49,10 +49,10 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Page<OrderResponse>> getOrdersForAdmin(
             @RequestParam(required = false) String productName,
-            @RequestParam(required = false) String customerName,
+            @RequestParam(required = false) String customerEmail,
             @RequestParam(required = false) OrderStatusEnum status,
             Pageable pageable
     ) {
-        return orderService.getOrdersForAdmin(productName, customerName, status, pageable);
+        return orderService.getOrdersForAdmin(productName, customerEmail, status, pageable);
     }
 }
