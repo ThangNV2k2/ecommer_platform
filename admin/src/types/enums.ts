@@ -11,3 +11,36 @@ export enum RoleEnum {
     STAFF = "STAFF",
     SHIPPER = "SHIPPER"
 }
+
+export enum DiscountTypeEnum {
+    PERCENTAGE = "PERCENTAGE",
+    VALUE = "VALUE"
+}
+
+export enum OrderStatusEnum {
+    ALL = "ALL", 
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    SHIPPING = "SHIPPING",
+    DELIVERED = "DELIVERED",
+    COMPLETED = "COMPLETED",
+    CANCELLED = "CANCELLED"
+}
+
+export enum PaymentMethodEnum {
+    TRANSFER = "TRANSFER",
+    CASH = "CASH"
+}
+
+export enum PaymentStatusEnum {
+    PENDING = "PENDING",
+    COMPLETED = "COMPLETED",
+    FAILED = "FAILED",
+    CANCELED = "CANCELED"
+}
+
+export enum InvoiceStatusEnum {
+    UNPAID = "UNPAID",
+    PAID = "PAID",
+    CANCELED = "CANCELED"
+}

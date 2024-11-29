@@ -11,10 +11,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLazyGetUserInfoQuery } from '@/redux/api/user-api';
 import { RootState } from '@/redux/store';
 import { setUser } from '@/redux/slice/userSlice';
-import { RoleEnum } from '@/types/enums';
 import { useLoginEmailMutation } from '@/redux/api/auth-api';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { RoleEnum } from '@/types/enums';
 
 const formSchema = z.object({
     email: z.string().email({ message: "Invalid email address." }),
@@ -37,7 +37,7 @@ export default function LoginPage() {
                 const userRoles = result.result.roles;
 
                 const hasRequiredRole = [RoleEnum.ADMIN, RoleEnum.STAFF, RoleEnum.SHIPPER].some(role =>
-                    userRoles.includes(role)
+                    Array.from(userRoles).includes(role)
                 );
                 if(hasRequiredRole) {
                     dispatch(setUser(result.result));
@@ -71,13 +71,13 @@ export default function LoginPage() {
             await handleGetUserInfo();
         } catch (error) {
             localStorage.removeItem("token");
-            console.error("Đăng nhập thất bại:", error);
+            console.error("Login failed:", error);
         }
     };
 
     useEffect(() => {
         if(userInfo) {
-            router.push("/admin");
+            router.push("/dashboard");
         }
     }, [userInfo]);
 

@@ -2,12 +2,14 @@ package com.doan.backend.controllers;
 
 import com.doan.backend.dto.request.DiscountRequest;
 import com.doan.backend.dto.response.ApiResponse;
+import com.doan.backend.dto.response.DiscountResponse;
 import com.doan.backend.entity.Discount;
 import com.doan.backend.services.DiscountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,11 +46,17 @@ public class DiscountController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
-    public ApiResponse<Page<Discount>> getAllDiscounts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return discountService.getAllDiscounts(page, size);
+    @GetMapping("/admin")
+    public ApiResponse<Page<Discount>> getDiscountSearchByCode(
+            @RequestParam(required = false) String code,
+            Pageable pageable) {
+        return discountService.getDiscountSearchByCode(code, pageable);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("get-current-discount")
+    public ApiResponse<Iterable<DiscountResponse>> getCurrentDiscount() {
+        return discountService.getCurrentDiscount();
     }
 
     @GetMapping("/auto-apply")

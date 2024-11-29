@@ -2,6 +2,7 @@ package com.doan.backend.services;
 
 import com.doan.backend.dto.request.DiscountRequest;
 import com.doan.backend.dto.response.ApiResponse;
+import com.doan.backend.dto.response.DiscountResponse;
 import com.doan.backend.entity.Discount;
 import com.doan.backend.enums.DiscountType;
 import com.doan.backend.mapper.DiscountMapper;
@@ -11,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -94,9 +94,8 @@ public class DiscountService {
                 .build();
     }
 
-    public ApiResponse<Page<Discount>> getAllDiscounts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Discount> discounts = discountRepository.findAll(pageable);
+    public ApiResponse<Page<Discount>> getDiscountSearchByCode(String code, Pageable pageable) {
+        Page<Discount> discounts = discountRepository.findByCodeContaining(code, pageable);
         return ApiResponse.<Page<Discount>>builder()
                 .code(200)
                 .message("Discount retrieved successfully")
@@ -147,6 +146,16 @@ public class DiscountService {
                 .code(200)
                 .message("Discounts retrieved successfully")
                 .result(availableDiscounts)
+                .build();
+    }
+
+    public ApiResponse<Iterable<DiscountResponse>> getCurrentDiscount() {
+        Iterable<Discount> discounts = discountRepository.getCurrentDiscounts(LocalDateTime.now());
+
+        return ApiResponse.<Iterable<DiscountResponse>>builder()
+                .code(200)
+                .message("Discounts retrieved successfully")
+                .result(discountMapper.toDiscountResponseIterable(discounts))
                 .build();
     }
 }

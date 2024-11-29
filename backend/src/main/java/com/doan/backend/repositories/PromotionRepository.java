@@ -14,8 +14,8 @@ import java.util.List;
 @Repository
 public interface PromotionRepository extends JpaRepository<Promotion, String> {
 
-    @Query("SELECT p FROM Promotion p WHERE p.isActive = true AND p.startDate <= :currentDate AND p.endDate >= :currentDate")
-    List<Promotion> findActivePromotions(@Param("currentDate") LocalDateTime currentDate);
+    @Query("SELECT p FROM Promotion p WHERE p.applyToAll=false AND p.isActive = true AND p.startDate <= :currentDate AND p.endDate >= :currentDate")
+    List<Promotion> findActiveCurrentPromotionsExcludeApplyToAll(@Param("currentDate") LocalDateTime currentDate);
 
     @Query("SELECT p FROM Promotion p WHERE p.applyToAll = true AND p.isActive = true " +
             "AND p.startDate <= :currentDate AND p.endDate >= :currentDate")

@@ -1,53 +1,57 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 import {baseApi} from "./auth-api";
-import {BaseResponse} from "../../types/base-response";
-import {ProductResponse} from "../../types/product";
-import {PageResponse} from "../../types/page";
-
-interface ProductFilterRequest {
-    search?: string,
-    categoryId?: string,
-    page?: number,
-    limit?: number
-}
+import { BaseResponse } from "@/types/base-response";
+import { PageResponse, PaginationParams } from "@/types/page";
+import { ProductRequest, ProductResponse } from "@/types/product";
+import { getToken } from "@/redux/api/user-api";
 
 export const productApi = createApi({
     reducerPath: "productApi",
-    baseQuery: fetchBaseQuery({ baseUrl: baseApi }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: baseApi,
+        prepareHeaders: (headers) => {
+            headers.set("Authorization", getToken());
+            return headers;
+        }
+    }),
     endpoints: (builder) => ({
-        getProductFilter: builder.query<BaseResponse<PageResponse<ProductResponse>>, ProductFilterRequest>({
-            query: (productFilter) => {
-                const { search, categoryId, page, limit } = productFilter;
-                let url = `product?search=${search}&page=${page}&limit=${limit}`;
-                if (categoryId) {
-                    url += `&categoryId=${categoryId}`;
-                }
-                return {
-                    url,
-                    method: "GET"
-                };
-            },
-            // Kết hợp với `merge` để lưu trữ và kết hợp dữ liệu từ các trang
-            serializeQueryArgs: ({ queryArgs }) => {
-                const { search, categoryId } = queryArgs;
-                // Tạo key cho cache dựa trên search và categoryId
-                return `${search}-${categoryId}`;
-            },
-            merge: (currentCache: BaseResponse<PageResponse<ProductResponse>>, newData: BaseResponse<PageResponse<ProductResponse>>) => {
-                if (newData.result && currentCache.result) {
-                    currentCache.result.content.push(...(newData.result.content || []));
-                    currentCache.result.totalElements = newData.result.totalElements || currentCache.result.totalElements;
-                    currentCache.result.totalPages = newData.result.totalPages || currentCache.result.totalPages;
-                }
-            },
-            forceRefetch: ({ currentArg, previousArg }) => {
-                return (
-                    (currentArg?.search !== previousArg?.search) ||
-                    (currentArg?.categoryId !== previousArg?.categoryId)
-                );
-            }
+        getProductFilter: builder.query<BaseResponse<PageResponse<ProductResponse>>, PaginationParams>({
+            query: ({ page = 0, size = 10, sortBy = 'name', sortDirection = 'asc', search = '' }) => ({
+                url: `product?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}&name=${search}`,
+                method: "GET",
+            }),
         }),
+        getProductById: builder.query<BaseResponse<ProductResponse>, string>({
+            query: (id) => ({
+                url: `product/${id}`,
+                method: 'GET',
+            }),
+        }),
+
+        createProduct: builder.mutation<BaseResponse<void>, ProductRequest>({
+            query: (newProduct) => ({
+                url: 'product',
+                method: 'POST',
+                body: newProduct,
+            }),
+        }),
+
+        updateProduct: builder.mutation<BaseResponse<void>, { id: string; product: ProductRequest }>({
+            query: ({ id, product }) => ({
+                url: `product/${id}`,
+                method: 'PUT',
+                body: product,
+            }),
+        }),
+
+        deleteProduct: builder.mutation<BaseResponse<void>, string>({
+            query: (id) => ({
+                url: `product/${id}`,
+                method: 'DELETE',
+            }),
+        }),
+
     }),
 });
 
-export const { useGetProductFilterQuery, useLazyGetProductFilterQuery } = productApi;
+export const { useGetProductFilterQuery, useLazyGetProductFilterQuery, useCreateProductMutation, useDeleteProductMutation, useUpdateProductMutation } = productApi;

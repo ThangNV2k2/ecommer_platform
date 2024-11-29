@@ -21,5 +21,27 @@ public interface PromotionProductRepository extends JpaRepository<PromotionProdu
     Optional<Promotion> findActivePromotionByProductId(
             @Param("productId") String productId,
             @Param("currentDate") LocalDateTime currentDate);
-    List<PromotionProduct> findPromotionProductsByProductId(String productId);
+
+    @Query("SELECT p FROM Promotion p " +
+            "LEFT JOIN PromotionProduct pp ON pp.promotion.id = p.id " +
+            "WHERE (pp.product.id = :productId AND p.isActive = true " +
+            "       AND p.startDate <= :currentDate AND p.endDate >= :currentDate) " +
+            "   OR (p.applyToAll = true AND p.isActive = true " +
+            "       AND p.startDate <= :currentDate AND p.endDate >= :currentDate) " +
+            "ORDER BY CASE WHEN pp.product.id IS NOT NULL THEN 0 ELSE 1 END, p.applyToAll ASC")
+    List<Promotion> findPromotionApplyByProductId(
+            @Param("productId") String productId,
+            @Param("currentDate") LocalDateTime currentDate);
+
+    @Query("SELECT pp FROM PromotionProduct pp " +
+            "WHERE pp.product.id = :productId " +
+            "   OR pp.promotion.applyToAll = true")
+    List<PromotionProduct> findPromotionProductsByProductId(
+            @Param("productId") String productId);
+
+    @Query("SELECT p FROM Promotion p " +
+            "LEFT JOIN PromotionProduct pp ON pp.promotion.id = p.id " +
+            "WHERE (pp.product.id = :productId AND p.isActive = true) " +
+            "OR (p.applyToAll = true AND p.isActive = true)")
+    List<Promotion> findAllPromotionByProductId(@Param("productId") String productId);
 }

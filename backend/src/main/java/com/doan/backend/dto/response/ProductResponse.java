@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
@@ -19,6 +20,8 @@ public class ProductResponse {
     String description;
     BigDecimal price;
     CategoryResponse categoryResponse;
+    PromotionResponse promotionResponse;
+    List<PromotionResponse> promotions;
     Double rating;
     Boolean isActive;
     BigDecimal discountPercentage;

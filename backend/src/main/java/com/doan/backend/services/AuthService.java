@@ -55,7 +55,7 @@ public class AuthService {
         }
 
         String token = jwtTokenProvider.generateToken(user.getEmail(), Map.of("roles", user.getRoles()));
-        JwtResponse jwtResponse = new JwtResponse(token);
+        JwtResponse jwtResponse = new JwtResponse(token, userMapper.toUserResponse(user));
 
         return ApiResponse.<JwtResponse>builder()
                 .code(200)
