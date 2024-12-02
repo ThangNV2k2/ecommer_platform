@@ -8,12 +8,12 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PUBLIC)
 @Data
 @Builder
 @AllArgsConstructor
 public class ProductRevenueResponse {
-    private String productName;
-    private Long totalQuantity;
-    private BigDecimal revenue;
+    String product_name;
+    Integer total_quantity;
+    BigDecimal total_revenue;
 }
