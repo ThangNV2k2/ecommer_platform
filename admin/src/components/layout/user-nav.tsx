@@ -13,15 +13,18 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { clearUser } from '@/redux/slice/userSlice';
 import { RootState } from '@/redux/store';
+import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from 'react-redux';
 
 export function UserNav() {
   const userInfo = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const logout = () => {
     dispatch(clearUser());
     localStorage.removeItem('token');
+    router.push('/login');
   }
   if (userInfo) {
     return (

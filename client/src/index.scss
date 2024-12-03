@@ -481,6 +481,10 @@ code {
   color: $primary;
 }
 
+.fs-10 {
+  font-size: 10px;
+}
+
 .fs-12 {
   font-size: 12px;
 }
@@ -531,6 +535,10 @@ code {
 
 .text-primary {
   color: $primary;
+}
+
+.background-primary {
+  background-color: $primary;
 }
 
 .text-secondary {
@@ -589,6 +597,10 @@ code {
   border-radius: 0;
 }
 
+.border-none {
+  border: none !important;
+}
+
 .rounded {
   border-radius: 50%;
 }
@@ -619,6 +631,14 @@ code {
 
 .height-400 {
   height: 400px;
+}
+
+.height-300 {
+  height: 300px;
+}
+
+.max-w-80p {
+  max-width: 80%;
 }
 
 .object-cover {

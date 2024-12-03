@@ -66,6 +66,14 @@ export const navItems: NavItem[] = [
         items: [],
     },
     {
+        title: 'Chat',
+        url: '/dashboard/chat',
+        icon: 'chat',
+        shortcut: ['c', 'c'],
+        isActive: false,
+        items: []
+    },
+    {
         title: 'Account',
         url: '#',
         icon: 'billing',
