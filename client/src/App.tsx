@@ -28,6 +28,7 @@ import Contact from './component/Contact/Contact';
 import About from './component/About/About';
 import DebouncedInput from './utils/DebouncedInput';
 import { useGetAllCategoryQuery } from './redux/api/category-api';
+import ChatWidget from './component/Home/ChatWidget';
 
 const {Header, Content, Footer} = Layout;
 
@@ -259,6 +260,10 @@ const App = () => {
                     <div>Bản quyền thuộc về VERGENCY</div>
                 </Footer>
             </Layout>
+
+            {userInfo && (
+                <ChatWidget />
+            )}
         </div>
     );
 };

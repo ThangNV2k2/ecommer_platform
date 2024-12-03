@@ -43,3 +43,10 @@ export enum InvoiceStatusEnum {
     PAID = "PAID",
     CANCELED = "CANCELED"
 }
+
+export enum ChatRoomStatus {
+    OPEN = "OPEN",
+    CLOSED = "CLOSED",
+    PENDING = "PENDING",
+    ARCHIVED = "ARCHIVED"
+}

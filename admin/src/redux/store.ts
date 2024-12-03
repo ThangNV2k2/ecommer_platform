@@ -11,6 +11,7 @@ import { discountApi } from "@/redux/api/discount-api";
 import { orderApi } from "@/redux/api/order-api";
 import { shippingAddressApi } from "@/redux/api/shipping-address";
 import { invoiceApi } from "@/redux/api/invoice-api";
+import { chatApi } from "@/redux/api/chat-api";
 
 
 export const store = configureStore({
@@ -25,12 +26,14 @@ export const store = configureStore({
         [orderApi.reducerPath]: orderApi.reducer,
         [shippingAddressApi.reducerPath]: shippingAddressApi.reducer,
         [invoiceApi.reducerPath]: invoiceApi.reducer,
+        [chatApi.reducerPath]: chatApi.reducer,
         user: userReducer,
     },
 
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(authApi.middleware, userApi.middleware, categoryApi.middleware, productApi.middleware,
-            promotionApi.middleware, imageApi.middleware, discountApi.middleware, orderApi.middleware, shippingAddressApi.middleware, invoiceApi.middleware),
+            promotionApi.middleware, imageApi.middleware, discountApi.middleware, orderApi.middleware, shippingAddressApi.middleware,
+            invoiceApi.middleware, chatApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>;
