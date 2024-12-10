@@ -1,6 +1,9 @@
-package com.doan.backend.dto.response;
+package com.doan.backend.dto.response.CategoryStatistics;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
@@ -10,8 +13,9 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class ProductStatisticResponse {
+public class CategoryStatisticResponse {
+    String id;
+    String categoryName;
     String productName;
     LocalDateTime date;
     String size;

@@ -1,4 +1,4 @@
-package com.doan.backend.dto.response.CustomerStatistic;
+package com.doan.backend.dto.response.CustomerStatistics;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,11 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomerRevenueResponse {
-    private String userId;
     private String name;
     private String email;
     private Integer totalOrder;
-    private Double totalValue;
+    private BigDecimal totalValue;
     private List<CustomerStatistic> statistics = new ArrayList<>();
 }
 

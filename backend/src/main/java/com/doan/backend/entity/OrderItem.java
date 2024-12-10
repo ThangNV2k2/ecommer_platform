@@ -1,6 +1,6 @@
 package com.doan.backend.entity;
 
-import com.doan.backend.dto.response.ProductRevenueResponse;
+import com.doan.backend.dto.response.ProductStatistics.ProductRevenueResponse;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

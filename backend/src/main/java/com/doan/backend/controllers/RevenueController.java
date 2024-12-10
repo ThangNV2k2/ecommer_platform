@@ -1,9 +1,9 @@
 package com.doan.backend.controllers;
 
 import com.doan.backend.dto.response.ApiResponse;
-import com.doan.backend.dto.response.CategoryRevenueResponse;
-import com.doan.backend.dto.response.CustomerStatistic.CustomerStatisticResponse;
-import com.doan.backend.dto.response.ProductRevenueResponse;
+import com.doan.backend.dto.response.CategoryStatistics.CategoryRevenueResponse;
+import com.doan.backend.dto.response.CustomerStatistics.CustomerRevenueResponse;
+import com.doan.backend.dto.response.ProductStatistics.ProductRevenueResponse;
 import com.doan.backend.services.RevenueService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,30 +26,6 @@ import java.util.List;
 public class RevenueController {
     RevenueService revenueService;
 
-    @GetMapping("/product/day")
-    public ApiResponse<List<ProductRevenueResponse>> getRevenueProductByDay(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return revenueService.getRevenueProductByDay(startDate,endDate);
-    }
-
-    @GetMapping("/product/month")
-    public ApiResponse<List<ProductRevenueResponse>> getRevenueProductByMonth(
-            @RequestParam("month") int month, @RequestParam("year") int year) {
-        return revenueService.getRevenueProductByMonth(month, year);
-    }
-
-    @GetMapping("/product/quarter")
-    public ApiResponse<List<ProductRevenueResponse>> getRevenueProductByQuarter(
-            @RequestParam("quarter") int quarter, @RequestParam("year") int year) {
-        return revenueService.getRevenueProductByQuarter(quarter, year);
-    }
-
-    @GetMapping("/product/year")
-    public ApiResponse<List<ProductRevenueResponse>> getRevenueProductByYear(@RequestParam("year") int year) {
-        return revenueService.getRevenueProductByYear(year);
-    }
-
     @GetMapping("/product/jpa")
     public ApiResponse<List<ProductRevenueResponse>> getProductRevenue(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -66,7 +42,7 @@ public class RevenueController {
     }
 
     @GetMapping("/customer/jpa")
-    public ApiResponse<List<CustomerStatisticResponse>> getCustomerRevenue(
+    public ApiResponse<List<CustomerRevenueResponse>> getCustomerRevenue(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return revenueService.getCustomerRevenue(startDate,endDate);

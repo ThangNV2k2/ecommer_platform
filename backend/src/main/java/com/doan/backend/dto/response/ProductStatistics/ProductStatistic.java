@@ -1,4 +1,4 @@
-package com.doan.backend.dto.response.CustomerStatistic;
+package com.doan.backend.dto.response.ProductStatistics;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,8 +13,10 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
-public class CustomerStatistic {
-    private String orderId;
-    private Double value;
-    private LocalDateTime date;
+public class ProductStatistic {
+    LocalDateTime date;
+    String size;
+    BigDecimal price;
+    Integer quantity;
+    BigDecimal discountPercentage;
 }

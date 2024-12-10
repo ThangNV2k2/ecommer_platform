@@ -1,4 +1,4 @@
-package com.doan.backend.dto.response;
+package com.doan.backend.dto.response.CategoryStatistics;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
-public class CategoryStatisticResponse {
-    String categoryName;
+public class CategoryStatistic {
     String productName;
     LocalDateTime date;
     String size;

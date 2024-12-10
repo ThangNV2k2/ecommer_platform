@@ -1,4 +1,4 @@
-package com.doan.backend.dto.response;
+package com.doan.backend.dto.response.ProductStatistics;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class CategoryRevenueResponse {
-    String categoryName;
-    List<CategoryStatisticResponse> statistics;
+public class ProductRevenueResponse {
+    String productName;
+    List<ProductStatistic> statistics;
 }
