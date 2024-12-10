@@ -6,13 +6,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder
 @AllArgsConstructor
-public class ProductRevenueResponse {
+public class CategoryStatisticResponse {
+    String categoryName;
     String productName;
-    List<ProductStatisticResponse> statistics;
+    LocalDateTime date;
+    String size;
+    BigDecimal price;
+    Integer quantity;
+    BigDecimal discountPercentage;
 }

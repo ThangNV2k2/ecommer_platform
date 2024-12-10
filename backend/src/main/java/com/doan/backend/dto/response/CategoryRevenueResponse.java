@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class ProductRevenueResponse {
-    String productName;
-    List<ProductStatisticResponse> statistics;
+public class CategoryRevenueResponse {
+    String categoryName;
+    List<CategoryStatisticResponse> statistics;
 }

@@ -1,6 +1,8 @@
 package com.doan.backend.controllers;
 
 import com.doan.backend.dto.response.ApiResponse;
+import com.doan.backend.dto.response.CategoryRevenueResponse;
+import com.doan.backend.dto.response.CustomerStatistic.CustomerStatisticResponse;
 import com.doan.backend.dto.response.ProductRevenueResponse;
 import com.doan.backend.services.RevenueService;
 import lombok.AccessLevel;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -32,12 +33,6 @@ public class RevenueController {
         return revenueService.getRevenueProductByDay(startDate,endDate);
     }
 
-//    @GetMapping("/product/week")
-//    public ApiResponse<List<ProductRevenueResponse>> getRevenueByProductAndWeek(
-//            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-//        return revenueService.getRevenueByProductAndWeek(date);
-//    }
-//
     @GetMapping("/product/month")
     public ApiResponse<List<ProductRevenueResponse>> getRevenueProductByMonth(
             @RequestParam("month") int month, @RequestParam("year") int year) {
@@ -55,10 +50,25 @@ public class RevenueController {
         return revenueService.getRevenueProductByYear(year);
     }
 
-//    @GetMapping("/product/range")
-//    public ApiResponse<List<ProductRevenueResponse>> getRevenueByProductBetweenDates(
-//            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-//            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-//        return revenueService.getRevenueByProductBetweenDates(startDate, endDate);
-//    }
+    @GetMapping("/product/jpa")
+    public ApiResponse<List<ProductRevenueResponse>> getProductRevenue(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        return revenueService.getProductRevenue(startDate,endDate);
+    }
+
+    @GetMapping("/category/jpa")
+    public ApiResponse<List<CategoryRevenueResponse>> getCategoryRevenue(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return revenueService.getCategoryRevenue(startDate,endDate);
+    }
+
+    @GetMapping("/customer/jpa")
+    public ApiResponse<List<CustomerStatisticResponse>> getCustomerRevenue(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return revenueService.getCustomerRevenue(startDate,endDate);
+    }
 }
