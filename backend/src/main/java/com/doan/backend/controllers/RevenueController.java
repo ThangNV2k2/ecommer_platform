@@ -26,7 +26,7 @@ import java.util.List;
 public class RevenueController {
     RevenueService revenueService;
 
-    @GetMapping("/product/jpa")
+    @GetMapping("/product")
     public ApiResponse<List<ProductRevenueResponse>> getProductRevenue(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
@@ -34,14 +34,14 @@ public class RevenueController {
         return revenueService.getProductRevenue(startDate,endDate);
     }
 
-    @GetMapping("/category/jpa")
+    @GetMapping("/category")
     public ApiResponse<List<CategoryRevenueResponse>> getCategoryRevenue(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return revenueService.getCategoryRevenue(startDate,endDate);
     }
 
-    @GetMapping("/customer/jpa")
+    @GetMapping("/customer")
     public ApiResponse<List<CustomerRevenueResponse>> getCustomerRevenue(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
