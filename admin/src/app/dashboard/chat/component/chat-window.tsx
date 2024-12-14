@@ -66,9 +66,9 @@ const ChatWindow: FC<ChatWindowProps> = ({ selectedUser }) => {
                                 </Avatar>
                             )}
                             <Button onClick={() => setVisibleMessageId(visibleMessageId === msg.id ? null : msg.id)}
-                                className={`inline-block px-4 rounded-lg max-w-xs text-white ${msg.sender.id === selectedUser.id ? 'bg-orange-300' : 'bg-primary'}`}
+                                className={`px-4 rounded-lg max-w-xs h-auto text-white ${msg.sender.id === selectedUser.id ? 'bg-orange-300' : 'bg-primary'}`}
                             >
-                                <p className="text-sm">{msg.content}</p>
+                                {msg.content}
                             </Button>
                         </div>
                         {visibleMessageId === msg.id && (

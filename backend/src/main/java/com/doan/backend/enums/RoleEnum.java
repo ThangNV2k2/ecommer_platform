@@ -4,5 +4,6 @@ public enum RoleEnum {
     ADMIN,
     CUSTOMER,
     STAFF,
-    SHIPPER
+    SHIPPER,
+    CHATBOT
 }

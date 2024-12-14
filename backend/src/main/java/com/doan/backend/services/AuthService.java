@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -125,6 +126,16 @@ public class AuthService {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userDetails.getUsername()));
         } else {
             throw new Unauthorized("Unauthorized access");
+        }
+    }
+
+    public User getChatBotUser() {
+        List<User> users = userRepository.findByRoles(RoleEnum.CHATBOT);
+
+        if (!users.isEmpty()) {
+            return users.getFirst();
+        } else {
+            throw new RuntimeException("Chatbot user not found");
         }
     }
 }

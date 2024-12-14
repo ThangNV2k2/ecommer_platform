@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Input, Button, List, Space, Typography, Row, Col, Popover, Avatar } from 'antd';
+import { Input, Button, List, Space, Typography, Popover, Avatar, Image } from 'antd';
 import { useGetChatRoomQuery, useSendMessageMutation } from '../../redux/api/chat-api';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { useWebSocket } from '../../hook/useWebSocket ';
-import { MessageOutlined, SendOutlined, UserOutlined } from '@ant-design/icons';
+import { MessageOutlined, SendOutlined, UserOutlined, CloseOutlined } from '@ant-design/icons';
 import "../../sass/scroll.scss"
+import { UserInfo } from '../../types/user-info';
+import { RoleEnum } from '../../types/enums';
+import bot from '../../img/bot.png';
+
 const { Text } = Typography;
 
 interface Message {
@@ -24,9 +28,12 @@ const ChatWidget: React.FC = () => {
     const messages = getChatRoom?.result?.messages ?? [];
     const [visibleMessageId, setVisibleMessageId] = useState<string | null>(null);
 
+    const [popoverVisible, setPopoverVisible] = useState(false);
+
     const handleSubscription = useCallback((message: any) => {
         refetch();
     }, [refetch]);
+
     const chatListRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -44,26 +51,28 @@ const ChatWidget: React.FC = () => {
         }
     };
 
+    const checkChatBot = (user: UserInfo) => {
+        const rolesSet = new Set(user.roles);
+        return rolesSet.has(RoleEnum.CHATBOT);
+    }
+
     const chatContent = (
         <div className='flex flex-column justify-space-between'>
             <List
                 ref={chatListRef}
                 dataSource={messages}
                 renderItem={(message, index) => (
-                    <List.Item key={index} className="border-none"
-                        style={{ padding: '4px 8px' }}
-                    >
+                    <List.Item key={index} className="border-none" style={{ padding: '4px 8px' }}>
                         <Space className={`flex w-100 ${message.sender.id === userInfo?.id ? 'justify-end' : 'justify-start'}`}>
                             {message.sender.id !== userInfo?.id && (
-                                <Avatar size="small" icon={<UserOutlined />} />
+                                <Avatar size="small" icon={!checkChatBot(message.sender) ? <UserOutlined /> : <Image src={bot} alt='bot' />} />
                             )}
                             <div
                                 style={{
-                                    borderRadius: '8px',
                                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                                     wordBreak: 'break-word',
                                 }}
-                                className={`p-1 ${message.sender.id === userInfo?.id ? 'background-primary text-white' : 'background-card max-w-80p'}`}
+                                className={`p-1 border-radius-8 max-w-280 ${message.sender.id === userInfo?.id ? 'background-primary text-white' : 'background-card'}`}
                                 onClick={() => setVisibleMessageId(visibleMessageId === message.id ? null : message.id)}
                             >
                                 <span>{message.content}</span>
@@ -76,7 +85,7 @@ const ChatWidget: React.FC = () => {
                         </Space>
                     </List.Item>
                 )}
-                className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-500 scrollbar-rounded-md height-300 overflow-y-scroll mb-2'
+                className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-500 scrollbar-rounded-md height-380 overflow-y-scroll mb-2'
             />
 
             <div className='w-100 flex gap-1'>
@@ -101,16 +110,22 @@ const ChatWidget: React.FC = () => {
                     <Space>
                         <MessageOutlined />
                         <Text strong>Chat</Text>
+                        <Button
+                            type="text"
+                            icon={<CloseOutlined />}
+                            onClick={() => setPopoverVisible(false)}
+                            className='absolute top-1 right-1'
+                        />
                     </Space>
                 }
                 trigger="click"
                 placement="topRight"
-                arrowPointAtCenter
+                open={popoverVisible}
                 overlayStyle={{
-                    borderRadius: '8px',
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                    width: '350px',
+                    width: '400px',
                 }}
+                className='border-radius-8'
             >
                 <Button
                     type="primary"
@@ -123,11 +138,11 @@ const ChatWidget: React.FC = () => {
                         right: '20px',
                         borderRadius: '50%',
                         padding: '0',
-                        width: '60px',
-                        height: '60px',
+                        width: '50px',
+                        height: '50px',
                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        zIndex: 1000,
                     }}
+                    onClick={() => setPopoverVisible(true)}
                 />
             </Popover>
         </div>

@@ -589,6 +589,38 @@ code {
   position: absolute;
 }
 
+.top-0 {
+  top: 0;
+}
+
+.left-0 {
+  left: 0;
+}
+
+.right-0 {
+  right: 0;
+}
+
+.bottom-0 {
+  bottom: 0;
+}
+
+.top-1 {
+  top: 0.5rem;
+}
+
+.left-1 {
+  left: 0.5rem;
+}
+
+.right-1 {
+  right: 0.5rem;
+}
+
+.bottom-1 {
+  bottom: 0.5rem;
+}
+
 .shadow {
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);;
 }
@@ -633,12 +665,8 @@ code {
   height: 400px;
 }
 
-.height-300 {
-  height: 300px;
-}
-
-.max-w-80p {
-  max-width: 80%;
+.height-380 {
+  height: 380px;
 }
 
 .object-cover {
@@ -647,6 +675,14 @@ code {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.border-radius-8 {
+  border-radius: 8px;
+}
+
+.max-w-280 {
+  max-width: 280px;
 }
 
 @media (max-width: 768px) {
