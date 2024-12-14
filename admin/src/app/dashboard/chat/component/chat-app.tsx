@@ -1,7 +1,6 @@
 "use client";
 
 import { FC, useEffect, useState } from 'react';
-
 import SidebarUser from '@/app/dashboard/chat/component/sidebar-user';
 import ChatWindow from '@/app/dashboard/chat/component/chat-window';
 import { useGetUsersQuery } from '@/redux/api/user-api';

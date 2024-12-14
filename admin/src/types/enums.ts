@@ -9,7 +9,8 @@ export enum RoleEnum {
     ADMIN = "ADMIN",
     CUSTOMER = "CUSTOMER",
     STAFF = "STAFF",
-    SHIPPER = "SHIPPER"
+    SHIPPER = "SHIPPER",
+    CHATBOT = "CHATBOT"
 }
 
 export enum DiscountTypeEnum {

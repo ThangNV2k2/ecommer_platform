@@ -93,6 +93,8 @@ export function DataTable<TData, TValue>({
             sorting,
         },
         onSortingChange: setSorting,
+        pageCount: Math.ceil(total / size),
+        
     })
 
     return (
@@ -184,8 +186,8 @@ export function DataTable<TData, TValue>({
                             aria-label="Go to first page"
                             variant="outline"
                             className="hidden h-8 w-8 p-0 lg:flex"
-                            onClick={() => table.setPageIndex(0)}
-                            disabled={!table.getCanPreviousPage()}
+                            onClick={() => setPage(0)}
+                            disabled={page === 0}
                         >
                             <DoubleArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
                         </Button>
@@ -193,8 +195,8 @@ export function DataTable<TData, TValue>({
                             aria-label="Go to previous page"
                             variant="outline"
                             className="h-8 w-8 p-0"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
+                            onClick={() => setPage(page - 1)}
+                            disabled={page < 1}
                         >
                             <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
                         </Button>
@@ -202,8 +204,8 @@ export function DataTable<TData, TValue>({
                             aria-label="Go to next page"
                             variant="outline"
                             className="h-8 w-8 p-0"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
+                            onClick={() => setPage(page + 1)}
+                            disabled={page >= table.getPageCount() - 1}
                         >
                             <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
                         </Button>
@@ -211,8 +213,8 @@ export function DataTable<TData, TValue>({
                             aria-label="Go to last page"
                             variant="outline"
                             className="hidden h-8 w-8 p-0 lg:flex"
-                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                            disabled={!table.getCanNextPage()}
+                            onClick={() => setPage(table.getPageCount() - 1)}
+                            disabled={page >= table.getPageCount() - 1}
                         >
                             <DoubleArrowRightIcon className="h-4 w-4" aria-hidden="true" />
                         </Button>
