@@ -26,6 +26,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
@@ -42,6 +43,7 @@ public class Order {
     OrderStatusEnum status;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_id")
     Invoice invoice;
 
     @Column(name = "total_price_before_discount")

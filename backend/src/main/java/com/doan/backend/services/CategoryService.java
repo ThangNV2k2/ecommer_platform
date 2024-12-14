@@ -9,7 +9,6 @@ import com.doan.backend.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +37,11 @@ public class CategoryService {
     }
 
     public ApiResponse<String> updateCategory(String id, CategoryRequest categoryRequest) {
+        Optional<Category> categoryName = categoryRepository.findByName(categoryRequest.getName());
+
+        if (categoryName.isPresent() && !categoryName.get().getId().equals(id)) {
+            throw new IllegalArgumentException("Category name already exists");
+        }
         Category category = categoryMapper.toCategory(categoryRequest);
         Optional<Category> categoryOptional = categoryRepository.findById(id);
 
@@ -59,10 +63,9 @@ public class CategoryService {
     public ApiResponse<CategoryResponse> createCategory(CategoryRequest categoryRequest) {
         boolean exists = categoryRepository.existsByName(categoryRequest.getName());
 
-        if(exists) {
+        if (exists) {
             throw new IllegalArgumentException("Category name already exists");
-        }
-        else {
+        } else {
             Category newCategory = categoryRepository.save(categoryMapper.toCategory(categoryRequest));
             return ApiResponse.<CategoryResponse>builder()
                     .code(200)
@@ -95,9 +98,8 @@ public class CategoryService {
         }
     }
 
-    public ApiResponse<Page<CategoryResponse>> getPageAllCategories(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Category> categoryPage = categoryRepository.findAll(pageable);
+    public ApiResponse<Page<CategoryResponse>> getPageAllCategories(String name, Pageable pageable) {
+        Page<Category> categoryPage = categoryRepository.findByNameContainingIgnoreCase(name, pageable);
 
         Page<CategoryResponse> categoryResponsePage = categoryPage.map(categoryMapper::toCategoryResponse);
 

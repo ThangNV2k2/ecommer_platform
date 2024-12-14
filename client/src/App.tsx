@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Layout, Menu, Button, Row, Col, Drawer, Image, Badge} from 'antd';
+import {Layout, Menu, Button, Row, Col, Drawer, Image, Badge, Spin, Input, Dropdown} from 'antd';
 import logo from './img/logo.png';
 import {
     FacebookOutlined,
@@ -8,7 +8,7 @@ import {
     MailOutlined,
     MenuOutlined, SearchOutlined, UserOutlined, ShoppingCartOutlined,
 } from '@ant-design/icons';
-import {Navigate, Route, BrowserRouter as Router, Routes, useNavigate} from 'react-router-dom';
+import {Route, BrowserRouter as Router, Routes, useNavigate, useSearchParams} from 'react-router-dom';
 import Registration from './component/Auth/Register';
 import {Account} from "./component/Auth/Account";
 import Login from "./component/Auth/Login";
@@ -17,8 +17,18 @@ import {useDispatch, useSelector} from "react-redux";
 import {useLazyGetUserInfoQuery} from "./redux/api/user-api";
 import {setUser} from "./redux/slice/userSlice";
 import {RootState} from "./redux/store";
-import ProtectedRoute from "./component/Auth/ProtectedRoute";
 import HomePage from "./component/Home/HomePage";
+import ProductDetail from "./component/Home/ProductDetail";
+import {useGetCartQuery} from "./redux/api/cart";
+import {setCart} from "./redux/slice/cartSlice";
+import Cart from "./component/Home/Cart";
+import ShippingAddress from "./component/Auth/ShippingAddress";
+import Checkout from './component/Home/Checkout';
+import Contact from './component/Contact/Contact';
+import About from './component/About/About';
+import DebouncedInput from './utils/DebouncedInput';
+import { useGetAllCategoryQuery } from './redux/api/category-api';
+import ChatWidget from './component/Home/ChatWidget';
 
 const {Header, Content, Footer} = Layout;
 
@@ -36,16 +46,61 @@ const App = () => {
 
     const dispatch = useDispatch();
     const userInfo = useSelector((state: RootState) => state.user.user);
-    const [getUserInfo] = useLazyGetUserInfoQuery();
+    const cart = useSelector((state: RootState) => state.cart.cart);
+    const [getUserInfo, {isFetching: isFetchingUser}] = useLazyGetUserInfoQuery();
+    const {data: cartData} = useGetCartQuery(userInfo?.id ?? "", {
+        skip: !userInfo?.id
+    });
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { data: categoriesData, isFetching: categoriesIsFetching } = useGetAllCategoryQuery();
+
+    const [showSearch, setShowSearch] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
+
+    const handleChangeSearchValue = (value: string) => {
+        setSearchValue(value);
+        const categoryId = searchParams.get('categoryId') || '';
+        setSearchParams({ categoryId, search: searchValue });
+    }
+
+    const renderCategories = () => {
+        if (categoriesIsFetching) {
+            return <Spin size="large" />;
+        }
+
+        if (categoriesData?.result && categoriesData.result.length > 0) {
+            return categoriesData.result.map((category) => (
+                <Menu.Item key={category.id} onClick={() => navigate(`?categoryId=${category.id}`)}>
+                    {category.name.toUpperCase()}
+                </Menu.Item>
+            ));
+        }
+
+        return <Menu.Item disabled>No categories available</Menu.Item>;
+    };
+
+    const shopMenu = (
+        <Menu>
+            {renderCategories()}
+        </Menu>
+    );
 
     const handleGetUserInfo = async () => {
         try {
             const result = await getUserInfo().unwrap();
-            if(result?.result) {
+            if (result?.result) {
                 dispatch(setUser(result.result));
             }
         } catch (error) {
             console.error("Error getting user info:", error);
+        }
+    }
+
+    const handleNavigateAccount = () => {
+        if (userInfo) {
+            navigate('/account');
+        } else {
+            navigate('/account/login');
         }
     }
 
@@ -55,6 +110,12 @@ const App = () => {
             void handleGetUserInfo();
         }
     }, [dispatch, getUserInfo, userInfo]);
+
+    useEffect(() => {
+        if (cartData?.result) {
+            dispatch(setCart(cartData.result));
+        }
+    }, [cartData?.result, dispatch]);
 
     return (
         <div className="container">
@@ -67,7 +128,7 @@ const App = () => {
                                     <Button
                                         type="primary"
                                         shape="circle"
-                                        icon={<PhoneOutlined style={{ fontSize: 24 }} />}
+                                        icon={<PhoneOutlined style={{fontSize: 24}}/>}
                                     />
                                     <span className="text-primary fs-16 fw-600 ml-1">0373357405</span>
                                 </Col>
@@ -83,10 +144,27 @@ const App = () => {
                                 </Col>
 
                                 <Col xs={8} sm={8} md={6} lg={6} xl={6} className="flex justify-end align-center gap-1">
-                                    <Button type="text" shape="circle" icon={<SearchOutlined className="text-primary" style={{ fontSize: 24 }} />} />
-                                    <Button type="text" shape="circle" icon={<UserOutlined className="text-primary" style={{ fontSize: 24 }} />} onClick={() => navigate('/account')} />
-                                    <Badge count={0} showZero>
-                                        <Button type="text" shape="circle" icon={<ShoppingCartOutlined className="text-primary" style={{ fontSize: 24 }} />} />
+                                    {!showSearch ? (
+                                        <Button type="text" shape="circle"
+                                            icon={<SearchOutlined className="text-primary" style={{ fontSize: 24 }} />} 
+                                            onClick={() => setShowSearch(true)}
+                                            />
+                                    ): (
+                                        <DebouncedInput
+                                            placeholder="Search"
+                                            value={searchValue}
+                                            onDebouncedChange={handleChangeSearchValue}
+                                            delay={500}
+                                        />
+                                    )}
+                                    <Button type="text" shape="circle"
+                                            icon={<UserOutlined className="text-primary" style={{fontSize: 24}}/>}
+                                            onClick={handleNavigateAccount}/>
+                                    <Badge count={cart?.cartItems.length ?? 0} showZero>
+                                        <Button type="text" shape="circle"
+                                                icon={<ShoppingCartOutlined className="text-primary"
+                                                                            onClick={() => navigate('/cart')}
+                                                                            style={{fontSize: 24}}/>}/>
                                     </Badge>
                                 </Col>
                             </Row>
@@ -106,33 +184,47 @@ const App = () => {
                 {/*    </Menu>*/}
                 {/*</Drawer>*/}
 
-                <Content className="bg-white">
+                <Content className="bg-white w-100">
                     <Row align="middle" justify="center" className="height-50" gutter={[24, 24]}>
                         <Col xs={24} sm={24} md={18} lg={24} xl={24} className="w-100 flex justify-center">
                             <Menu mode="horizontal" defaultSelectedKeys={['home']} className="fw-500">
                                 <Menu.Item key="home" onClick={() => navigate('/')}>HOME</Menu.Item>
-                                <Menu.Item key="shop" onClick={() => navigate('/shop')}>SHOP</Menu.Item>
+                                <Dropdown overlay={shopMenu} trigger={['hover']}>
+                                    <Menu.Item key="shop">SHOP</Menu.Item>
+                                </Dropdown>
                                 <Menu.Item key="blog" onClick={() => navigate('/blog')}>BLOG</Menu.Item>
                                 <Menu.Item key="contact" onClick={() => navigate('/contact')}>CONTACT</Menu.Item>
                                 <Menu.Item key="about" onClick={() => navigate('/about')}>ABOUT</Menu.Item>
-                                <Menu.Item key="about" onClick={() => navigate('/group')}>GROUP</Menu.Item>
-                                <Menu.Item key="about" onClick={() => navigate('/telegram')}>TELEGRAM</Menu.Item>
+                                <Menu.Item key="group" onClick={() => navigate('/group')}>GROUP</Menu.Item>
                             </Menu>
                         </Col>
                     </Row>
                     <Row align="middle" justify="center" gutter={[24, 24]} className="my-5">
-                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
-                            <Routes>
-                                <Route path="/" element={<HomePage />} />
-                                <Route path="/account" element={<Account />}>
-                                    <Route index element={<Account />} />
-                                </Route>
-
-                                <Route path="/account/login" element={<Login />} />
-                                <Route path="/account/register" element={<Registration />} />
-                                <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-                            </Routes>
-                        </Col>
+                        {
+                            isFetchingUser ? (
+                                <div className="flex justify-center w-100">
+                                    <Spin size="large" />
+                                </div>
+                            ) : (
+                                    <Col xs={24} sm={24} md={24} lg={24} xl={18}>
+                                        <Routes>
+                                            <Route path="/" element={<HomePage />} />
+                                            <Route path="/product/:id" element={<ProductDetail />} />
+                                            <Route path="/cart" element={<Cart />} />
+                                            <Route path="/account" element={<Account />}>
+                                                <Route index element={<Account />} />
+                                            </Route>
+                                            <Route path="/contact" element={<Contact />} />
+                                            <Route path="account/address" element={<ShippingAddress />} />
+                                            <Route path="checkout" element={<Checkout />} />
+                                            <Route path="/about" element={<About />} />
+                                            <Route path="/account/login" element={<Login />} />
+                                            <Route path="/account/register" element={<Registration />} />
+                                            <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+                                        </Routes>
+                                    </Col>
+                           )
+                        }
                     </Row>
                 </Content>
 
@@ -168,6 +260,10 @@ const App = () => {
                     <div>Bản quyền thuộc về VERGENCY</div>
                 </Footer>
             </Layout>
+
+            {userInfo && (
+                <ChatWidget />
+            )}
         </div>
     );
 };

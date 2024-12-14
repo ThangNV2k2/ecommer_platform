@@ -37,7 +37,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] GET_PUBLIC_ENDPOINTS = {
-            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**", "discounts/**", "order/user/**", "promotion/client/**", "invoices/order/**", "invoices/get-id/**", "payment/payos/**","revenue/**"
+            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**", "discounts/**", "order/user/**", "promotion/client/**", "invoices/order/**", "invoices/get-id/**", "payment/payos/**", "reviews/**", "product-image/**"
     };
 
     private static final String[] PUT_PUBLIC_ENDPOINTS = {
@@ -74,7 +74,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, POST_PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.DELETE, DELETE_Public_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.PUT, PUT_PUBLIC_ENDPOINTS).permitAll()
-
+                        .requestMatchers("chat/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

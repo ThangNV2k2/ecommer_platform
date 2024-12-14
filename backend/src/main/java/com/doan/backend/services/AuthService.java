@@ -8,10 +8,11 @@ import com.doan.backend.dto.response.JwtResponse;
 import com.doan.backend.dto.response.UserResponse;
 import com.doan.backend.entity.User;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.exception.Unauthorized;
+import com.doan.backend.mapper.UserMapper;
 import com.doan.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import com.doan.backend.mapper.UserMapper;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -54,7 +56,7 @@ public class AuthService {
         }
 
         String token = jwtTokenProvider.generateToken(user.getEmail(), Map.of("roles", user.getRoles()));
-        JwtResponse jwtResponse = new JwtResponse(token);
+        JwtResponse jwtResponse = new JwtResponse(token, userMapper.toUserResponse(user));
 
         return ApiResponse.<JwtResponse>builder()
                 .code(200)
@@ -108,18 +110,32 @@ public class AuthService {
     }
 
     public ApiResponse<UserResponse> getUser() {
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userMapper.toUserResponse(getUserByToken()))
+                .build();
+
+    }
+
+    public User getUserByToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            User user = userRepository.findByEmail(userDetails.getUsername())
+            return userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userDetails.getUsername()));
-            return ApiResponse.<UserResponse>builder()
-                    .code(200)
-                    .result(userMapper.toUserResponse(user))
-                    .build();
         } else {
-            throw new BadCredentialsException("User not authenticated");
+            throw new Unauthorized("Unauthorized access");
+        }
+    }
+
+    public User getChatBotUser() {
+        List<User> users = userRepository.findByRoles(RoleEnum.CHATBOT);
+
+        if (!users.isEmpty()) {
+            return users.getFirst();
+        } else {
+            throw new RuntimeException("Chatbot user not found");
         }
     }
 }

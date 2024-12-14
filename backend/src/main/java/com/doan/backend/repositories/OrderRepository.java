@@ -12,16 +12,22 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
     Iterable<Order> findByUserId(String userId);
+
     Iterable<Order> findByStatus(OrderStatusEnum status);
+
     Iterable<Order> findByUserIdAndStatus(String userId, OrderStatusEnum status);
+
     Boolean existsByUserIdAndStatus(String userId, OrderStatusEnum status);
-    @Query("SELECT o FROM Order o JOIN o.orderItems oi JOIN o.user u " +
+
+    @Query("SELECT DISTINCT o FROM Order o " +
+            "JOIN o.orderItems oi " +
+            "JOIN o.user u " +
             "WHERE (:productName IS NULL OR oi.product.name LIKE %:productName%) " +
-            "AND (:customerName IS NULL OR u.name LIKE %:customerName%) " +
+            "AND (:customerEmail IS NULL OR u.email LIKE %:customerEmail%) " +
             "AND (:status IS NULL OR o.status = :status)")
     Page<Order> findOrdersForAdmin(
             @Param("productName") String productName,
-            @Param("customerName") String customerName,
+            @Param("customerEmail") String customerEmail,
             @Param("status") OrderStatusEnum status,
             Pageable pageable
     );

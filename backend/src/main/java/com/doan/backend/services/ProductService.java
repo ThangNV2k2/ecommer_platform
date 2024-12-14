@@ -3,11 +3,13 @@ package com.doan.backend.services;
 import com.doan.backend.dto.request.ProductRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.ProductResponse;
+import com.doan.backend.dto.response.PromotionResponse;
 import com.doan.backend.entity.Category;
 import com.doan.backend.entity.Product;
 import com.doan.backend.entity.Promotion;
 import com.doan.backend.entity.PromotionProduct;
 import com.doan.backend.mapper.ProductMapper;
+import com.doan.backend.mapper.PromotionMapper;
 import com.doan.backend.repositories.CategoryRepository;
 import com.doan.backend.repositories.ProductRepository;
 import com.doan.backend.repositories.PromotionProductRepository;
@@ -31,7 +33,7 @@ public class ProductService {
     ProductRepository productRepository;
     CategoryRepository categoryRepository;
     ProductMapper productMapper;
-    PromotionService promotionService;
+    PromotionMapper promotionMapper;
     PromotionRepository promotionRepository;
     PromotionProductRepository promotionProductRepository;
 
@@ -60,8 +62,8 @@ public class ProductService {
 
     public ApiResponse<Void> createProduct(ProductRequest productRequest) {
         Product product = productMapper.toProduct(productRequest);
-        savePromotionProducts(product, productRequest.getPromotionIds());
-        productRepository.save(product);
+        Product productSave = productRepository.save(product);
+        savePromotionProducts(productSave, productRequest.getPromotionIds());
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Product created successfully")
@@ -78,7 +80,6 @@ public class ProductService {
         List<PromotionProduct> existingPromotionProducts = promotionProductRepository.findPromotionProductsByProductId(product.getId());
         promotionProductRepository.deleteAll(existingPromotionProducts);
         savePromotionProducts(product, productRequest.getPromotionIds());
-
 
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
@@ -134,8 +135,18 @@ public class ProductService {
 
         Page<ProductResponse> productResponsePage = products.map(product -> {
             ProductResponse response = productMapper.toProductResponse(product);
-            BigDecimal discountPercentage = promotionProductRepository.findActivePromotionByProductId(product.getId(), LocalDateTime.now()).map(Promotion::getDiscountPercentage).orElse(BigDecimal.ZERO);
-            response.setDiscountPercentage(discountPercentage);
+
+            List<Promotion> promotionApply = promotionProductRepository.findPromotionApplyByProductId(product.getId(), LocalDateTime.now());
+            Optional<Promotion> promotionOptional = promotionApply.stream().findFirst();
+            List<PromotionResponse> promotions = promotionProductRepository.findAllPromotionByProductId(product.getId()).stream().map(promotionMapper::toPromotionResponse).toList();
+
+            response.setDiscountPercentage(
+                    promotionOptional.map(Promotion::getDiscountPercentage).orElse(BigDecimal.ZERO)
+            );
+            response.setPromotionResponse(
+                    promotionOptional.map(promotionMapper::toPromotionResponse).orElse(null)
+            );
+            response.setPromotions(promotions);
             return response;
         });
         return ApiResponse.<Page<ProductResponse>>builder()

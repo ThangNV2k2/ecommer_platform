@@ -32,6 +32,11 @@ public class OrderController {
         return orderService.clientEditOrder(clientUpdateOrderRequest);
     }
 
+    @GetMapping("/user/{userId}")
+    public ApiResponse<Iterable<OrderResponse>> getOrdersByUserId(@PathVariable String userId) {
+        return orderService.getOrderByUserId(userId);
+    }
+
     @PutMapping("/admin/edit/{orderId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<OrderResponse> adminEditOrder(
@@ -40,19 +45,14 @@ public class OrderController {
         return orderService.adminEditOrder(orderId, orderRequest);
     }
 
-    @GetMapping("/user/{userId}")
-    public ApiResponse<Iterable<OrderResponse>> getOrdersByUserId(@PathVariable String userId) {
-        return orderService.getOrderByUserId(userId);
-    }
-
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Page<OrderResponse>> getOrdersForAdmin(
             @RequestParam(required = false) String productName,
-            @RequestParam(required = false) String customerName,
+            @RequestParam(required = false) String customerEmail,
             @RequestParam(required = false) OrderStatusEnum status,
             Pageable pageable
     ) {
-        return orderService.getOrdersForAdmin(productName, customerName, status, pageable);
+        return orderService.getOrdersForAdmin(productName, customerEmail, status, pageable);
     }
 }

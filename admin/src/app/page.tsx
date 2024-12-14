@@ -16,7 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     if (userInfo) {
-      router.push("/admin");
+      router.push('/dashboard/overview');
     }
     else {
       const token = localStorage.getItem('token');
@@ -29,7 +29,7 @@ export default function Home() {
             const userRoles = result.result.roles;
 
             const hasRequiredRole = [RoleEnum.ADMIN, RoleEnum.STAFF, RoleEnum.SHIPPER].some(role =>
-              userRoles.includes(role)
+              Array.from(userRoles).includes(role)
             );
             if (hasRequiredRole) {
               dispatch(setUser(result.result));

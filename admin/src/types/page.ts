@@ -1,11 +1,12 @@
+import { OrderStatusEnum } from "@/types/enums";
+import { SortType } from "@/types/sort";
 
-export interface Pageable {
-    pageNumber: number;
-    pageSize: number;
-    sort: Sort;
-    offset: number;
-    paged: boolean;
-    unpaged: boolean;
+export interface PaginationParams {
+    page: number;
+    size: number;
+    sortBy?: string;
+    sortDirection?: SortType;
+    search: string;
 }
 
 export interface Sort {
@@ -16,7 +17,7 @@ export interface Sort {
 
 export interface PageResponse<T> {
     content: T[];
-    pageable: Pageable;
+    pageable: PaginationParams;
     totalElements: number;
     totalPages: number;
     last: boolean;
@@ -26,4 +27,14 @@ export interface PageResponse<T> {
     numberOfElements: number;
     first: boolean;
     empty: boolean;
+}
+
+export interface PaginationParamsExtra {
+    page: number;
+    size: number;
+    sortBy?: string;
+    sortDirection?: SortType;
+    productName: string;
+    customerEmail: string;
+    status: OrderStatusEnum;
 }

@@ -19,6 +19,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, String> {
     @Query("SELECT i FROM Invoice i " +
             "JOIN i.order o " +
             "JOIN o.user u " +
-            "WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :customerName, '%'))")
-    Page<Invoice> findByAllSearchName(@Param("customerName") String customerName, Pageable pageable);
+            "WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :customerEmail, '%'))")
+    Page<Invoice> findByAllSearchEmail(@Param("customerEmail") String customerEmail, Pageable pageable);
 }

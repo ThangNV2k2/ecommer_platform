@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseApi } from "./auth-api";
-import {BaseResponse} from "../../types/base-response";
-import {UserInfo} from "../../types/user-info";
+import { BaseResponse } from "@/types/base-response";
+import { User, UserInfo } from "@/types/user-info";
+import { PageResponse, PaginationParams } from "@/types/page";
 
 export const getToken = () => {
     return `Bearer ${localStorage.getItem("token")}`;
@@ -22,7 +23,19 @@ export const userApi = createApi({
                 method: "GET"
             })
         }),
+        getAllUser: builder.query<BaseResponse<PageResponse<User>>, PaginationParams>({
+            query: ({ page = 0, size = 10, sortBy = 'name', sortDirection = 'asc', search = '' }) => ({
+                url: `users?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}&name=${search}`,
+                method: "GET",
+            }),
+        }),
+        getUsers: builder.query<BaseResponse<User[]>, void>({
+            query: () => ({
+                url: "users/get-all",
+                method: "GET",
+            }),
+        }),
     }),
 });
 
-export const { useLazyGetUserInfoQuery } = userApi;
+export const { useLazyGetUserInfoQuery, useGetAllUserQuery, useGetUsersQuery } = userApi;

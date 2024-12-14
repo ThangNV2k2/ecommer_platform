@@ -6,10 +6,15 @@ import com.doan.backend.entity.Invoice;
 import com.doan.backend.enums.InvoiceStatusEnum;
 import com.doan.backend.mapper.InvoiceMapper;
 import com.doan.backend.repositories.InvoiceRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class InvoiceService {
 
     InvoiceRepository invoiceRepository;
@@ -36,11 +41,13 @@ public class InvoiceService {
                 .build();
     }
 
-    public ApiResponse<Iterable<InvoiceResponse>> getAllInvoiceSearchName(String customerName, Pageable pageable) {
-        return ApiResponse.<Iterable<InvoiceResponse>>builder()
+    public ApiResponse<Page<InvoiceResponse>> getAllInvoiceSearchEmail(String customerEmail, Pageable pageable) {
+        Page<Invoice> invoices = invoiceRepository.findByAllSearchEmail(customerEmail, pageable);
+        Page<InvoiceResponse> invoiceResponses = invoices.map(invoiceMapper::toInvoiceResponse);
+        return ApiResponse.<Page<InvoiceResponse>>builder()
                 .code(200)
                 .message("Success")
-                .result(invoiceMapper.toInvoiceResponseIterable(invoiceRepository.findByAllSearchName(customerName, pageable)))
+                .result(invoiceResponses)
                 .build();
     }
 
@@ -48,5 +55,5 @@ public class InvoiceService {
         invoice.setStatus(invoiceStatusEnum);
         return invoiceRepository.save(invoice);
     }
-    
+
 }

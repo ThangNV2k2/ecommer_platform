@@ -13,12 +13,12 @@ interface ProductFilterRequest {
 
 export const productApi = createApi({
     reducerPath: "productApi",
-    baseQuery: fetchBaseQuery({ baseUrl: baseApi }),
+    baseQuery: fetchBaseQuery({baseUrl: baseApi}),
     endpoints: (builder) => ({
         getProductFilter: builder.query<BaseResponse<PageResponse<ProductResponse>>, ProductFilterRequest>({
             query: (productFilter) => {
-                const { search, categoryId, page, limit } = productFilter;
-                let url = `product?search=${search}&page=${page}&limit=${limit}`;
+                const {search, categoryId, page, limit} = productFilter;
+                let url = `product?name=${search}&page=${page}&limit=${limit}`;
                 if (categoryId) {
                     url += `&categoryId=${categoryId}`;
                 }
@@ -27,10 +27,9 @@ export const productApi = createApi({
                     method: "GET"
                 };
             },
-            // Kết hợp với `merge` để lưu trữ và kết hợp dữ liệu từ các trang
-            serializeQueryArgs: ({ queryArgs }) => {
-                const { search, categoryId } = queryArgs;
-                // Tạo key cho cache dựa trên search và categoryId
+
+            serializeQueryArgs: ({queryArgs}) => {
+                const {search, categoryId} = queryArgs;
                 return `${search}-${categoryId}`;
             },
             merge: (currentCache: BaseResponse<PageResponse<ProductResponse>>, newData: BaseResponse<PageResponse<ProductResponse>>) => {
@@ -40,14 +39,20 @@ export const productApi = createApi({
                     currentCache.result.totalPages = newData.result.totalPages || currentCache.result.totalPages;
                 }
             },
-            forceRefetch: ({ currentArg, previousArg }) => {
+            forceRefetch: ({currentArg, previousArg}) => {
                 return (
                     (currentArg?.search !== previousArg?.search) ||
                     (currentArg?.categoryId !== previousArg?.categoryId)
                 );
             }
         }),
+        getProductById: builder.query<BaseResponse<ProductResponse>, string>({
+            query: (id) => ({
+                url: `product/${id}`,
+                method: "GET",
+            })
+        }),
     }),
 });
 
-export const { useGetProductFilterQuery, useLazyGetProductFilterQuery } = productApi;
+export const {useGetProductFilterQuery, useLazyGetProductFilterQuery, useGetProductByIdQuery} = productApi;

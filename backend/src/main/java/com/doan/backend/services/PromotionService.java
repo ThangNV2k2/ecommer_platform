@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -98,6 +99,18 @@ public class PromotionService {
         }
 
         return product.getPrice();
+    }
+
+    public ApiResponse<List<PromotionResponse>> getCurrentPromotionsExcludeApplyToAll() {
+        List<PromotionResponse> promotions = promotionRepository.findActiveCurrentPromotionsExcludeApplyToAll(LocalDateTime.now())
+                .stream()
+                .map(promotionMapper::toPromotionResponse)
+                .toList();
+        return ApiResponse.<List<PromotionResponse>>builder()
+                .code(200)
+                .message("Promotions retrieved successfully")
+                .result(promotions)
+                .build();
     }
 
 }
