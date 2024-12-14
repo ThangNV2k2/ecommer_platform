@@ -39,4 +39,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
             "AND oi.product.id = :productId")
     boolean existOrderCompletedByUserId(@Param("userId") String userId,
                                         @Param("productId") String productId);
+
+
 }
