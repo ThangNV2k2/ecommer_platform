@@ -36,7 +36,7 @@ const SidebarUser: FC<SidebarUserProps> = ({ users, onSelectUser, setSearchValue
                             </Avatar>
                             <div className="ml-3 flex flex-col items-start">
                                 <span>{user.name}</span>
-                                <span className="text-xs text-sidebar-accent">{user.email}</span>
+                            <span className="text-xs text-muted-foreground">{user.email}</span>
                             </div>
                     </Button>
                 ))}

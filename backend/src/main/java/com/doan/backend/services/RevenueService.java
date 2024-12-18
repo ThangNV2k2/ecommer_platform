@@ -1,6 +1,6 @@
 package com.doan.backend.services;
 
-import com.doan.backend.dto.response.*;
+import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.CategoryStatistics.CategoryRevenueResponse;
 import com.doan.backend.dto.response.CategoryStatistics.CategoryStatistic;
 import com.doan.backend.dto.response.CategoryStatistics.CategoryStatisticResponse;
@@ -43,10 +43,11 @@ public class RevenueService {
                                     product.getQuantity(),
                                     product.getDiscountPercentage()
                             ))
-                            .collect(Collectors.toList()); // Danh sách thống kê chi tiết
-                    return new ProductRevenueResponse(name,statistics);
+                            .collect(Collectors.toList());
+                    return new ProductRevenueResponse(name, statistics);
                 }).toList();
         return ApiResponse.<List<ProductRevenueResponse>>builder()
+                .code(200)
                 .result(productRevenueResponses)
                 .build();
     }
@@ -68,8 +69,8 @@ public class RevenueService {
                                     category.getQuantity(),
                                     category.getDiscountPercentage()
                             ))
-                            .collect(Collectors.toList()); // Danh sách thống kê chi tiết
-                    return new CategoryRevenueResponse(name,statistics);
+                            .collect(Collectors.toList());
+                    return new CategoryRevenueResponse(name, statistics);
                 }).toList();
         return ApiResponse.<List<CategoryRevenueResponse>>builder()
                 .code(200)
@@ -77,8 +78,8 @@ public class RevenueService {
                 .build();
     }
 
-    public ApiResponse<List<CustomerRevenueResponse>> getCustomerRevenue(LocalDate startDate, LocalDate endDate){
-        List<CustomerStatisticResponse> responses = orderItemRepository.getCustomerRevenue(startDate.atStartOfDay(),endDate.atStartOfDay());
+    public ApiResponse<List<CustomerRevenueResponse>> getCustomerRevenue(LocalDate startDate, LocalDate endDate) {
+        List<CustomerStatisticResponse> responses = orderItemRepository.getCustomerRevenue(startDate.atStartOfDay(), endDate.atStartOfDay());
 
         List<CustomerRevenueResponse> customerRevenueResponses = responses.stream()
                 .collect(Collectors.groupingBy(CustomerStatisticResponse::getUserId))
@@ -96,8 +97,8 @@ public class RevenueService {
                                     order.getValue(),
                                     order.getDate()
                             ))
-                            .collect(Collectors.toList()); // Danh sách thống kê chi tiết
-                    return new CustomerRevenueResponse(name,email,totalOrder,totalValue,statistics);
+                            .collect(Collectors.toList());
+                    return new CustomerRevenueResponse(name, email, totalOrder, totalValue, statistics);
                 }).toList();
 
         return ApiResponse.<List<CustomerRevenueResponse>>builder()

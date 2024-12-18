@@ -33,7 +33,7 @@ const ProductTable = () => {
     });
 
     const { data: allProduct, isFetching, error, refetch } = useGetProductFilterQuery(pagination);
-    const { data: allCategory} = useGetAllCategoriesQuery();
+    const { data: allCategory } = useGetAllCategoriesQuery();
     const { data: allPromotion } = useGetAllPromotionQuery();
     const [messageError, setMessageError] = useState("");
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -140,13 +140,15 @@ const ProductTable = () => {
     };
 
     if (error) {
-        <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-                {getErrorMessage(error)}
-            </AlertDescription>
-        </Alert>
+        return (
+            <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                    {getErrorMessage(error)}
+                </AlertDescription>
+            </Alert>
+        )
     }
 
     return (

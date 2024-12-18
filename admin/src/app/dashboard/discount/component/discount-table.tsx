@@ -103,7 +103,7 @@ const DiscountTable = () => {
 
     if (error) {
         return (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className='mx-4 w-100'>
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{getErrorMessage(error)}</AlertDescription>
