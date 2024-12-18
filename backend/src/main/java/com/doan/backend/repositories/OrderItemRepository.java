@@ -18,61 +18,61 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, String> {
 
 
     @Query("""
-        SELECT new com.doan.backend.dto.response.ProductStatistics.ProductStatisticResponse(
-            p.id,
-            p.name,
-            o.updatedAt,
-            s.name,
-            oi.price,
-            oi.quantity,
-            COALESCE(pr.discountPercentage, 0)
-        )
-        FROM OrderItem oi
-        JOIN oi.order o
-        JOIN oi.product p
-        JOIN oi.size s
-        LEFT JOIN oi.promotion pr
-        WHERE (o.updatedAt BETWEEN :startDate AND :endDate)
-        AND o.status=com.doan.backend.enums.OrderStatusEnum.COMPLETED
-    """)
+                SELECT new com.doan.backend.dto.response.ProductStatistics.ProductStatisticResponse(
+                    p.id,
+                    p.name,
+                    o.updatedAt,
+                    s.name,
+                    oi.price,
+                    oi.quantity,
+                    COALESCE(pr.discountPercentage, 0) 
+                )
+                FROM OrderItem oi
+                JOIN oi.order o
+                JOIN oi.product p
+                JOIN oi.size s
+                LEFT JOIN oi.promotion pr
+                WHERE (o.updatedAt BETWEEN :startDate AND :endDate)
+                AND o.status=com.doan.backend.enums.OrderStatusEnum.COMPLETED
+            """)
     List<ProductStatisticResponse> getProductRevenue(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("""
-        SELECT new com.doan.backend.dto.response.CategoryStatistics.CategoryStatisticResponse(
-            c.id,
-            c.name,
-            p.name,
-            o.updatedAt,
-            s.name,
-            oi.price,
-            oi.quantity,
-            COALESCE(pr.discountPercentage, 0)
-        )
-        FROM OrderItem oi
-        JOIN oi.order o
-        JOIN oi.product p
-        JOIN p.category c ON p.category.id = c.id
-        JOIN oi.size s
-        LEFT JOIN oi.promotion pr
-        WHERE o.updatedAt BETWEEN :startDate AND :endDate
-        AND o.status=com.doan.backend.enums.OrderStatusEnum.COMPLETED
-    """)
+                SELECT new com.doan.backend.dto.response.CategoryStatistics.CategoryStatisticResponse(
+                    c.id,
+                    c.name,
+                    p.name,
+                    o.updatedAt,
+                    s.name,
+                    oi.price,
+                    oi.quantity,
+                    COALESCE(pr.discountPercentage, 0)
+                )
+                FROM OrderItem oi
+                JOIN oi.order o
+                JOIN oi.product p
+                JOIN p.category c ON p.category.id = c.id
+                JOIN oi.size s
+                LEFT JOIN oi.promotion pr
+                WHERE o.updatedAt BETWEEN :startDate AND :endDate
+                AND o.status=com.doan.backend.enums.OrderStatusEnum.COMPLETED
+            """)
     List<CategoryStatisticResponse> getCategoryRevenue(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("""
-    SELECT new com.doan.backend.dto.response.CustomerStatistics.CustomerStatisticResponse(
-        u.id,
-        u.name,
-        u.email,
-        o.id,
-        o.totalPriceAfterDiscount,
-        i.updatedAt)
-    FROM Invoice i
-    INNER JOIN i.order o
-    INNER JOIN o.user u
-    INNER JOIN u.roles r
-    WHERE i.status = 'PAID' AND r = 'CUSTOMER'
-          AND (o.updatedAt BETWEEN :startDate AND :endDate)
-    """)
+            SELECT new com.doan.backend.dto.response.CustomerStatistics.CustomerStatisticResponse(
+                u.id,
+                u.name,
+                u.email,
+                o.id,
+                o.totalPriceAfterDiscount,
+                o.updatedAt)
+            FROM Invoice i
+            INNER JOIN i.order o
+            INNER JOIN o.user u
+            INNER JOIN u.roles r
+            WHERE o.status = com.doan.backend.enums.OrderStatusEnum.COMPLETED AND r = 'CUSTOMER'
+                  AND (o.updatedAt BETWEEN :startDate AND :endDate)
+            """)
     List<CustomerStatisticResponse> getCustomerRevenue(LocalDateTime startDate, LocalDateTime endDate);
 }

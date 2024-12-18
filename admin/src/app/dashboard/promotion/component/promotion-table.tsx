@@ -65,7 +65,7 @@ const PromotionTable = () => {
         {
             accessorKey: "endDate",
             enableSorting: true,
-            header: ({ column }) => <DataTableColumnHeader column={column} title="End Date"/>,
+            header: ({ column }) => <DataTableColumnHeader column={column} title="End Date" />,
             cell: ({ row }) => formatDateString(row.original.endDate),
         },
         {
@@ -111,13 +111,15 @@ const PromotionTable = () => {
     };
 
     if (error) {
-        <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-                {getErrorMessage(error)}
-            </AlertDescription>
-        </Alert>
+        return (
+            <Alert variant="destructive" className='mx-4 w-100'>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                    {getErrorMessage(error)}
+                </AlertDescription>
+            </Alert>
+        )
     }
 
     return (

@@ -64,7 +64,7 @@ const UserPage = () => {
             header: "Loyalty Tier",
             cell: ({ row }) => (
                 <div>
-                    {row.original.loyaltyTier ?? LoyaltyTierEnum.BRONZE}
+                    {row.original.loyaltyTier ?? ""}
                 </div>
             )
         },
@@ -73,9 +73,9 @@ const UserPage = () => {
             header: "Roles",
             cell: ({ row }) => (
                 <div>
-                    {row?.original?.roles?.size > 0 ? Array.from(row.original.roles).map(role => (
+                    {Array.from(row.original.roles).map(role => (
                         <Badge key={role}>{role}</Badge>
-                    )) : "No Role"}
+                    ))}
                 </div>
             )
         },
@@ -111,13 +111,15 @@ const UserPage = () => {
     };
 
     if (error) {
-        <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-                {getErrorMessage(error)}
-            </AlertDescription>
-        </Alert>
+        return (
+            <Alert variant="destructive" className='mx-4 w-100'>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                    {getErrorMessage(error)}
+                </AlertDescription>
+            </Alert>
+        )
     }
 
     return (
