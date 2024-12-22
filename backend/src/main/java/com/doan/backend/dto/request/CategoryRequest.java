@@ -1,5 +1,6 @@
 package com.doan.backend.dto.request;
 
+import com.doan.backend.enums.StatusEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -17,6 +18,6 @@ public class CategoryRequest {
     @NotBlank(message = "Name is required")
     String name;
     String description;
-    @NotNull(message = "isActive is required")
-    Boolean isActive;
+    @NotNull(message = "Status is required")
+    StatusEnum status;
 }

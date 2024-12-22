@@ -8,6 +8,7 @@ import com.doan.backend.entity.Category;
 import com.doan.backend.entity.Product;
 import com.doan.backend.entity.Promotion;
 import com.doan.backend.entity.PromotionProduct;
+import com.doan.backend.enums.StatusEnum;
 import com.doan.backend.mapper.ProductMapper;
 import com.doan.backend.mapper.PromotionMapper;
 import com.doan.backend.repositories.CategoryRepository;
@@ -60,17 +61,18 @@ public class ProductService {
         }
     }
 
-    public ApiResponse<Void> createProduct(ProductRequest productRequest) {
+    public ApiResponse<String> createProduct(ProductRequest productRequest) {
         Product product = productMapper.toProduct(productRequest);
         Product productSave = productRepository.save(product);
         savePromotionProducts(productSave, productRequest.getPromotionIds());
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<String>builder()
                 .code(200)
+                .result(productSave.getId())
                 .message("Product created successfully")
                 .build();
     }
 
-    public ApiResponse<Void> updateProduct(String id, ProductRequest productRequest) {
+    public ApiResponse<String> updateProduct(String id, ProductRequest productRequest) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -84,19 +86,23 @@ public class ProductService {
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
         product.setPrice(productRequest.getPrice());
-        product.setIsActive(productRequest.getIsActive());
+        product.setStatus(productRequest.getStatus());
         product.setMainImage(productRequest.getMainImage());
         product.setCategory(category);
 
         productRepository.save(product);
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<String>builder()
                 .code(200)
+                .result(product.getId())
                 .message("Product updated successfully")
                 .build();
     }
 
     public ApiResponse<Void> deleteProduct(String id) {
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        product.setStatus(StatusEnum.DELETED);
+        productRepository.save(product);
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Product deleted successfully")
@@ -104,7 +110,7 @@ public class ProductService {
     }
 
     public ApiResponse<ProductResponse> getProductById(String id) {
-        ProductResponse productResponse = productRepository.findById(id)
+        ProductResponse productResponse = productRepository.findByIdAndStatusNot(id, StatusEnum.DELETED)
                 .map(productMapper::toProductResponse)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -124,11 +130,11 @@ public class ProductService {
     public ApiResponse<Page<ProductResponse>> searchProducts(String name, String categoryId, Pageable pageable) {
         Page<Product> products;
         if (name != null && categoryId != null) {
-            products = productRepository.findByNameContainingIgnoreCaseAndCategory_Id(name, categoryId, pageable);
+            products = productRepository.findByNameContainingIgnoreCaseAndCategory_IdAndStatusNot(name, categoryId, StatusEnum.DELETED, pageable);
         } else if (name != null) {
-            products = productRepository.findByNameContainingIgnoreCase(name, pageable);
+            products = productRepository.findByNameContainingIgnoreCaseAndStatusNot(name, StatusEnum.DELETED, pageable);
         } else if (categoryId != null) {
-            products = productRepository.findByCategory_Id(categoryId, pageable);
+            products = productRepository.findByCategory_IdAndStatusNot(categoryId, StatusEnum.DELETED, pageable);
         } else {
             products = productRepository.findAll(pageable);
         }

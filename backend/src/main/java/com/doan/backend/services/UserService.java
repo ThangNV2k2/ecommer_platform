@@ -1,8 +1,10 @@
 package com.doan.backend.services;
 
+import com.doan.backend.dto.request.UserRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.UserResponse;
 import com.doan.backend.entity.User;
+import com.doan.backend.enums.StatusEnum;
 import com.doan.backend.mapper.UserMapper;
 import com.doan.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class UserService {
 
     public ApiResponse<Page<UserResponse>> getAllUser(String name, Pageable pageable) {
 
-        Page<UserResponse> userResponses = userRepository.findByNameContainingIgnoreCase(name, pageable).map(userMapper::toUserResponse);
+        Page<UserResponse> userResponses = userRepository.findByNameContainingIgnoreCaseAndStatusNot(name, StatusEnum.DELETED, pageable).map(userMapper::toUserResponse);
         return ApiResponse.<Page<UserResponse>>builder()
                 .code(200)
                 .message("Get all user successfully")
@@ -40,15 +42,41 @@ public class UserService {
     }
 
     public ApiResponse<Void> deleteUser(String id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus(StatusEnum.DELETED);
+        userRepository.save(user);
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Delete user successfully")
                 .build();
     }
 
+    public ApiResponse<UserResponse> updateUser(String id, UserRequest userRequest) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setName(userRequest.getName());
+        user.setEmail(userRequest.getEmail());
+        user.setRoles(userRequest.getRoles());
+        user.setLoyaltyTier(userRequest.getLoyaltyTier());
+        userRepository.save(user);
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .message("Update user successfully")
+                .result(userMapper.toUserResponse(user))
+                .build();
+    }
+
+    public ApiResponse<UserResponse> createUser(UserRequest userRequest) {
+        User user = userMapper.toUser(userRequest);
+        userRepository.save(user);
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .message("Create user successfully")
+                .result(userMapper.toUserResponse(user))
+                .build();
+    }
+
     public ApiResponse<List<UserResponse>> getAll() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findByStatusNot(StatusEnum.DELETED);
 
         return ApiResponse.<List<UserResponse>>builder()
                 .code(200)

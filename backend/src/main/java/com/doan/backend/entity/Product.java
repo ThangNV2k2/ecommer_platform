@@ -1,5 +1,6 @@
 package com.doan.backend.entity;
 
+import com.doan.backend.enums.StatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -42,8 +43,8 @@ public class Product {
     @Column(name = "main_image")
     String mainImage;
 
-    @Column(name = "is_active")
-    Boolean isActive = true;
+    @Column(name = "status", nullable = false)
+    StatusEnum status;
 
     @Column(name = "created_at")
     @CreationTimestamp

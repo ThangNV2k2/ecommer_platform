@@ -5,14 +5,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { OrderResponse } from '@/types/order';
 import CreateOrUpdateOrder from '@/app/dashboard/order/component/create-update-order';
+import { CustomAlertProps } from '@/components/ui/CustomAlert';
 
 interface CellActionProps {
     data: OrderResponse;
     refetch: () => void;
-    setError: (message: string) => void;
+    setAlert: (alert: CustomAlertProps) => void;
 }
 
-export const CellActionOrder: React.FC<CellActionProps> = ({ data, refetch, setError }) => {
+export const CellActionOrder: React.FC<CellActionProps> = ({ data, refetch, setAlert }) => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     return (
@@ -21,7 +22,7 @@ export const CellActionOrder: React.FC<CellActionProps> = ({ data, refetch, setE
                 isOpen={showUpdateModal}
                 onClose={() => setShowUpdateModal(false)}
                 order={data}
-                setMessageError={setError}
+                setAlert={setAlert}
                 refetch={refetch}
             />
             <DropdownMenu modal={false}>

@@ -1,7 +1,9 @@
 package com.doan.backend.dto.response;
 
+import com.doan.backend.enums.StatusEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -16,7 +18,7 @@ public class CategoryResponse {
 
     String description;
 
-    Boolean isActive;
+    StatusEnum status;
 
     LocalDateTime createdAt;
 

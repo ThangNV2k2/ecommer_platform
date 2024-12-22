@@ -1,4 +1,5 @@
 import {CategoryResponse} from "./category";
+import { StatusEnum } from "./enums";
 
 export interface ProductResponse {
     id: string;
@@ -7,7 +8,7 @@ export interface ProductResponse {
     price: number;
     category: CategoryResponse;
     rating: number;
-    isActive: boolean;
+    status: StatusEnum;
     discountPercentage: number;
     mainImage: string;
 }

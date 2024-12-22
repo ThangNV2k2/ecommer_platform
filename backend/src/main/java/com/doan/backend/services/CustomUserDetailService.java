@@ -2,6 +2,7 @@ package com.doan.backend.services;
 
 import com.doan.backend.entity.User;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.enums.StatusEnum;
 import com.doan.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,7 +30,7 @@ public class CustomUserDetailService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                user.getIsActive(),
+                user.getStatus().equals(StatusEnum.ACTIVE),
                 true,
                 true,
                 true,

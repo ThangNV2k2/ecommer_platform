@@ -9,6 +9,7 @@ import { Spinner } from "@/components/spinner";
 import { DataTable, DataTableColumnHeader } from "@/components/table/table-data";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { CustomAlert, CustomAlertProps } from "@/components/ui/CustomAlert";
 import { formatDateString } from "@/constants/date";
 import { getErrorMessage } from "@/constants/get-error";
 import { useGetPromotionFilterQuery } from "@/redux/api/promotion-api";
@@ -29,7 +30,10 @@ const PromotionTable = () => {
     });
 
     const { data: allCategory, isFetching, error, refetch } = useGetPromotionFilterQuery(pagination);
-    const [messageError, setMessageError] = useState("");
+    const [alert, setAlert] = useState<CustomAlertProps>({
+        variant: "default",
+        message: "",
+    });
     const [showCreateModal, setShowCreateModal] = useState(false);
     const columns = useMemo<ColumnDef<PromotionResponse>[]>(() => [
         {
@@ -90,7 +94,7 @@ const PromotionTable = () => {
         },
         {
             id: 'actions',
-            cell: ({ row }) => <CellActionPromotion data={row.original} refetch={refetch} setError={setMessageError} />
+            cell: ({ row }) => <CellActionPromotion data={row.original} refetch={refetch} setAlert={setAlert} />
         }
     ], []);
 
@@ -112,31 +116,25 @@ const PromotionTable = () => {
 
     if (error) {
         return (
-            <Alert variant="destructive" className='mx-4 w-100'>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>
-                    {getErrorMessage(error)}
-                </AlertDescription>
-            </Alert>
+            <CustomAlert
+                show={true}
+                variant="destructive"
+                message={getErrorMessage(error)}
+                onClose={() => setAlert({ ...alert, show: false })}
+            />
         )
     }
 
     return (
         <PageContainer scrollable>
-            {messageError && (
-                <Alert variant="destructive" onClose={() => setMessageError("")}>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>
-                        {messageError}
-                    </AlertDescription>
-                </Alert>
-            )}
+            <CustomAlert
+                {...alert}
+                onClose={() => setAlert({ ...alert, show: false })}
+            />
             <CreateOrUpdatePromotion
                 isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
-                setMessageError={setMessageError}
+                setAlert={setAlert}
                 refetch={refetch}
             />
             <div className="w-full px-4">

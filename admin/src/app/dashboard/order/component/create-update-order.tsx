@@ -15,16 +15,17 @@ import UserSelect from '@/app/dashboard/order/component/user-select';
 import ShippingAddressSelect from '@/app/dashboard/order/component/shipping-address-select';
 import { useGetCurrentDiscountQuery } from '@/redux/api/discount-api';
 import DiscountSelect from '@/app/dashboard/order/component/discount-select';
+import { CustomAlertProps } from '@/components/ui/CustomAlert';
 
 interface CreateOrUpdateOrderProps {
     isOpen: boolean;
     onClose: () => void;
     order?: OrderResponse;
-    setMessageError: (message: string) => void;
+    setAlert: (alert: CustomAlertProps) => void;
     refetch: () => void;
 }
 
-const CreateOrUpdateOrder = ({ isOpen, onClose, order, setMessageError, refetch }: CreateOrUpdateOrderProps) => {
+const CreateOrUpdateOrder = ({ isOpen, onClose, order, setAlert, refetch }: CreateOrUpdateOrderProps) => {
     const { register, handleSubmit, reset, formState: { errors }, control, watch } = useForm({
         defaultValues: {
             userId: order?.user.id || '',
@@ -50,10 +51,11 @@ const CreateOrUpdateOrder = ({ isOpen, onClose, order, setMessageError, refetch 
             } else {
                 await createOrder(data).unwrap();
             }
+            setAlert({ show: true, variant: "success", message: order ? "Order updated successfully" : "Order created successfully" });
             refetch();
             handleClose();
         } catch (error: any) {
-            setMessageError(`Order Error: ${error.data?.message || 'An error occurred'}`);
+            setAlert({ show: true, variant: "destructive", message: error.message });
             handleClose();
         }
     };

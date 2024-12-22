@@ -2,6 +2,7 @@ package com.doan.backend.dto.response;
 
 import com.doan.backend.enums.LoyaltyTierEnum;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.enums.StatusEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,7 +18,7 @@ public class UserResponse {
     String id;
     String email;
     String name;
-    Boolean isActive;
+    StatusEnum status;
     LoyaltyTierEnum loyaltyTier;
     Set<RoleEnum> roles;
     LocalDateTime createdAt;

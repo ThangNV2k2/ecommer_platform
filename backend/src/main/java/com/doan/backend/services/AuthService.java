@@ -8,6 +8,7 @@ import com.doan.backend.dto.response.JwtResponse;
 import com.doan.backend.dto.response.UserResponse;
 import com.doan.backend.entity.User;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.enums.StatusEnum;
 import com.doan.backend.exception.Unauthorized;
 import com.doan.backend.mapper.UserMapper;
 import com.doan.backend.repositories.UserRepository;
@@ -51,8 +52,12 @@ public class AuthService {
             throw new BadCredentialsException("Invalid password");
         }
 
-        if (!user.getIsActive()) {
+        if (user.getStatus().equals(StatusEnum.INACTIVE)) {
             throw new BadCredentialsException("Account is not activated");
+        }
+
+        if (user.getStatus().equals(StatusEnum.DELETED)) {
+            throw new BadCredentialsException("Account is deleted");
         }
 
         String token = jwtTokenProvider.generateToken(user.getEmail(), Map.of("roles", user.getRoles()));
@@ -77,7 +82,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .name(registerRequest.getName())
                 .roles(registerRequest.getRoles() != null ? registerRequest.getRoles() : Set.of(RoleEnum.CUSTOMER))
-                .isActive(false)
+                .status(StatusEnum.INACTIVE)
                 .verificationToken(verificationToken)
                 .build();
 
@@ -99,7 +104,7 @@ public class AuthService {
         User user = userRepository.findByVerificationToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
 
-        user.setIsActive(true);
+        user.setStatus(StatusEnum.ACTIVE);
         user.setVerificationToken(null);
         userRepository.save(user);
 
@@ -139,4 +144,3 @@ public class AuthService {
         }
     }
 }
-

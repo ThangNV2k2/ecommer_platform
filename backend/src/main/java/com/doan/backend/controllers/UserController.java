@@ -1,5 +1,6 @@
 package com.doan.backend.controllers;
 
+import com.doan.backend.dto.request.UserRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.UserResponse;
 import com.doan.backend.services.UserService;
@@ -38,5 +39,23 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<List<UserResponse>> getAll() {
         return userService.getAll();
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<UserResponse> updateUser(@PathVariable String id, @RequestBody UserRequest userRequest) {
+        return userService.updateUser(id, userRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<Void> deleteUser(@PathVariable String id) {
+        return userService.deleteUser(id);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<UserResponse> createUser(@RequestBody UserRequest userRequest) {
+        return userService.createUser(userRequest);
     }
 }

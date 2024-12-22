@@ -22,12 +22,12 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping("/{id}")
-    ApiResponse<ProductResponse> getProductById(@PathVariable String id) {
+    public ApiResponse<ProductResponse> getProductById(@PathVariable String id) {
         return productService.getProductById(id);
     }
 
     @GetMapping
-    ApiResponse<Page<ProductResponse>> searchProducts(
+    public ApiResponse<Page<ProductResponse>> searchProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String categoryId,
             Pageable pageable) {
@@ -36,13 +36,13 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    ApiResponse<Void> createProduct(@RequestBody @Validated ProductRequest productRequest) {
+    public ApiResponse<String> createProduct(@RequestBody @Validated ProductRequest productRequest) {
         return productService.createProduct(productRequest);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    ApiResponse<Void> updateProduct(
+    public ApiResponse<String> updateProduct(
             @PathVariable String id,
             @RequestBody @Validated ProductRequest productRequest) {
         return productService.updateProduct(id, productRequest);
@@ -53,5 +53,4 @@ public class ProductController {
     ApiResponse<Void> deleteProduct(@PathVariable String id) {
         return productService.deleteProduct(id);
     }
-
 }

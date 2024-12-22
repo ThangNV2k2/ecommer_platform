@@ -1,5 +1,6 @@
 package com.doan.backend.dto.response;
 
+import com.doan.backend.enums.StatusEnum;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class ProductResponse {
     PromotionResponse promotionResponse;
     List<PromotionResponse> promotions;
     Double rating;
-    Boolean isActive;
+    StatusEnum status;
     BigDecimal discountPercentage;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

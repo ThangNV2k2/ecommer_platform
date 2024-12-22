@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,11 +21,12 @@ public class ProductInventoryService {
     ProductInventoryMapper productInventoryMapper;
 
     public ApiResponse<ProductInventoryResponse> createProductInventory(ProductInventoryRequest productInventoryRequest) {
-        if(productInventoryRepository.existsByProductIdAndSizeId(productInventoryRequest.getIdProduct(), productInventoryRequest.getIdSize())) {
+        if (productInventoryRepository.existsByProductIdAndSizeId(productInventoryRequest.getIdProduct(), productInventoryRequest.getIdSize())) {
             throw new RuntimeException("Product inventory already exists");
         }
         ProductInventoryResponse productInventoryResponse = productInventoryMapper.toProductInventoryResponse(productInventoryRepository.save(productInventoryMapper.toProductInventory(productInventoryRequest)));
         return ApiResponse.<ProductInventoryResponse>builder()
+                .code(200)
                 .message("Create product inventory successfully")
                 .result(productInventoryResponse)
                 .build();
@@ -47,7 +49,7 @@ public class ProductInventoryService {
         }
 
         ProductInventory productInventory = productInventoryOptional.get();
-        if(!productInventory.getProduct().getId().equals(productInventoryRequest.getIdProduct()) || !productInventory.getSize().getId().equals(productInventoryRequest.getIdSize())) {
+        if (!productInventory.getProduct().getId().equals(productInventoryRequest.getIdProduct()) || !productInventory.getSize().getId().equals(productInventoryRequest.getIdSize())) {
             throw new RuntimeException("Product inventory already exists");
         }
 
@@ -55,6 +57,7 @@ public class ProductInventoryService {
 
         ProductInventoryResponse productInventoryResponse = productInventoryMapper.toProductInventoryResponse(productInventoryRepository.save(productInventory));
         return ApiResponse.<ProductInventoryResponse>builder()
+                .code(200)
                 .message("Update product inventory successfully")
                 .result(productInventoryResponse)
                 .build();
@@ -63,8 +66,18 @@ public class ProductInventoryService {
     public ApiResponse<String> deleteProductInventory(String id) {
         productInventoryRepository.deleteById(id);
         return ApiResponse.<String>builder()
+                .code(200)
                 .message("Delete product inventory successfully")
                 .result(id)
+                .build();
+    }
+
+    public ApiResponse<Iterable<ProductInventoryResponse>> getProductInventoryByListProductId(List<String> productIds) {
+        Iterable<ProductInventoryResponse> productInventoryResponses = productInventoryMapper.toProductInventoryResponse(productInventoryRepository.findByProductIdIn(productIds));
+        return ApiResponse.<Iterable<ProductInventoryResponse>>builder()
+                .code(200)
+                .message("Get product inventory by list product id successfully")
+                .result(productInventoryResponses)
                 .build();
     }
 }

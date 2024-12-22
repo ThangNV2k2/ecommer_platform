@@ -8,10 +8,12 @@ import { Spinner } from "@/components/spinner";
 import { DataTable, DataTableColumnHeader } from "@/components/table/table-data";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { CustomAlert, CustomAlertProps } from "@/components/ui/CustomAlert";
 import { formatDateString } from "@/constants/date";
 import { getErrorMessage } from "@/constants/get-error";
 import { useGetAllCategoryQuery } from "@/redux/api/category-api";
 import { CategoryResponse } from "@/types/category";
+import { StatusEnum } from "@/types/enums";
 import { PaginationParams } from "@/types/page";
 import { ColumnDef, ColumnSort } from "@tanstack/react-table";
 import { AlertCircle } from "lucide-react";
@@ -28,7 +30,10 @@ const CategoryPage = () => {
     });
 
     const { data: allCategory, isFetching, error, refetch } = useGetAllCategoryQuery(pagination);
-    const [messageError, setMessageError] = useState("");
+    const [alert, setAlert] = useState<CustomAlertProps>({
+        variant: "default",
+        message: "",
+    });
     const [showCreateModal, setShowCreateModal] = useState(false);
     const columns = useMemo<ColumnDef<CategoryResponse>[]>(() => [
         {
@@ -37,11 +42,11 @@ const CategoryPage = () => {
             header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
         },
         {
-            accessorKey: "isActive",
-            header: "Active",
+            accessorKey: "status",
+            header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
             cell: ({ row }) => (
                 <div>
-                    {row.original.isActive ? "Active" : "Inactive"}
+                    {row.original.status === StatusEnum.ACTIVE ? "Active" : "Inactive"}
                 </div>
             )
         },
@@ -63,7 +68,7 @@ const CategoryPage = () => {
         },
         {
             id: 'actions',
-            cell: ({ row }) => <CellAction data={row.original} refetch={refetch} setError={setMessageError} />
+            cell: ({ row }) => <CellAction data={row.original} refetch={refetch} setAlert={setAlert} />
         }
     ], []);
 
@@ -83,35 +88,13 @@ const CategoryPage = () => {
         }
     };
 
-    if (error) {
-        return (
-            <Alert variant="destructive" className='mx-4 w-100'>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>
-                    {getErrorMessage(error)}
-                </AlertDescription>
-            </Alert>
-        )
-    }
-
-    console.log("allCategory", allCategory);
-
     return (
         <PageContainer scrollable>
-            {messageError && (
-                <Alert variant="destructive" onClose={() => setMessageError("")}>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>
-                        {messageError}
-                    </AlertDescription>
-                </Alert>
-            )}
+            <CustomAlert {...alert} onClose={() => setAlert({ message: "", variant: "default" })} />
             <CreateOrUpdateCategory
                 isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
-                setMessageError={setMessageError}
+                setAlert={setAlert}
                 refetch={refetch}
             />
             <div className="w-full px-4">

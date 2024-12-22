@@ -22,6 +22,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import UserDetailsPopover from "@/app/dashboard/order/component/user-detail";
 import OrderItemDetailsPopover from "@/app/dashboard/order/component/order-item-detail";
 import { formatPrice } from "@/constants/format";
+import { CustomAlert, CustomAlertProps } from "@/components/ui/CustomAlert";
 
 const OrderTable = () => {
     const [pagination, setPagination] = useState<PaginationParamsExtra>({
@@ -36,7 +37,10 @@ const OrderTable = () => {
 
     const { data: ordersData, isFetching, error, refetch } = useGetOrdersForAdminQuery(pagination);
     
-    const [messageError, setMessageError] = useState("");
+    const [alert, setAlert] = useState<CustomAlertProps>({
+        variant: "default",
+        message: "",
+    });
     // const [showCreateModal, setShowCreateModal] = useState(false);
 
     const columns = useMemo<ColumnDef<OrderResponse>[]>(() => [
@@ -108,7 +112,7 @@ const OrderTable = () => {
         },
         {
             id: 'actions',
-            cell: ({ row }) => <CellActionOrder data={row.original} refetch={refetch} setError={setMessageError} />
+            cell: ({ row }) => <CellActionOrder data={row.original} refetch={refetch} setAlert={setAlert} />
         }
     ], []);
 
@@ -130,27 +134,20 @@ const OrderTable = () => {
 
     if (error) {
         return (
-            <Alert variant="destructive" className='mx-4 w-100'>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>
-                    {getErrorMessage(error)}
-                </AlertDescription>
-            </Alert>
+            <CustomAlert
+                show={true}
+                variant="destructive"
+                message={getErrorMessage(error)}
+            />
         );
     }
 
     return (
         <PageContainer scrollable>
-            {messageError && (
-                <Alert variant="destructive" onClose={() => setMessageError("")}>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>
-                        {messageError}
-                    </AlertDescription>
-                </Alert>
-            )}
+            <CustomAlert
+                {...alert}
+                onClose={() => setAlert({ variant: "default", message: "" })}
+            />
 
             {/* <CreateOrUpdateOrder
                 isOpen={showCreateModal}

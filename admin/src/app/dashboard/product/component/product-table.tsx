@@ -6,22 +6,27 @@ import CreateOrUpdateProduct from '@/app/dashboard/product/component/create-upda
 import PromotionDetail from '@/app/dashboard/product/component/promotion';
 import DebouncedInput from '@/components/debounce-input/debounce-input';
 import PageContainer from '@/components/layout/page-container';
+import CustomSelect from '@/components/Select/select';
 import { Spinner } from '@/components/spinner';
 import { DataTable, DataTableColumnHeader } from '@/components/table/table-data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { CustomAlert, CustomAlertProps } from '@/components/ui/CustomAlert';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { formatDateString } from '@/constants/date';
 import { getErrorMessage } from '@/constants/get-error';
 import { useGetAllCategoriesQuery } from '@/redux/api/category-api';
 import { useGetProductFilterQuery } from '@/redux/api/product-api';
+import { useLazyGetProductInventoryByProductIdsQuery } from '@/redux/api/product-inventory-api';
 import { useGetAllPromotionQuery } from '@/redux/api/promotion-api';
+import { StatusEnum } from '@/types/enums';
 import { PaginationParams } from '@/types/page';
 import { ProductResponse } from '@/types/product';
+import { ProductInventoryResponse } from '@/types/product-inventory';
 import { ColumnDef, ColumnSort } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { AlertCircle } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const ProductTable = () => {
     const [pagination, setPagination] = useState<PaginationParams>({
@@ -33,9 +38,35 @@ const ProductTable = () => {
     });
 
     const { data: allProduct, isFetching, error, refetch } = useGetProductFilterQuery(pagination);
+    const [getProductInventoryByProductIds, { data: productInventory, isFetching: isFetchingProductInventory }] = useLazyGetProductInventoryByProductIdsQuery();
+    const [mapProductInventory, setMapProductInventory] = useState<Map<string, ProductInventoryResponse>>(new Map());
+
+    useEffect(() => {
+        if (allProduct?.result?.content) {
+            const productIds = allProduct.result.content.map(product => product.id);
+            void getProductInventoryByProductIds({ productIds });
+        }
+    }, [allProduct]);
+
+    useEffect(() => {
+        if (productInventory?.result) {
+            const map = new Map<string, ProductInventoryResponse>();
+            productInventory.result.forEach(pi => {
+                if (!map.has(pi.idProduct)) {
+                    map.set(pi.idProduct, pi);
+                }
+            });
+            setMapProductInventory(map);
+        }
+    }, [productInventory]);
+
+
     const { data: allCategory } = useGetAllCategoriesQuery();
     const { data: allPromotion } = useGetAllPromotionQuery();
-    const [messageError, setMessageError] = useState("");
+    const [alert, setAlert] = useState<CustomAlertProps>({
+        variant: "default",
+        message: "",
+    });
     const [showCreateModal, setShowCreateModal] = useState(false);
     const columns = useMemo<ColumnDef<ProductResponse>[]>(() => [
         {
@@ -50,9 +81,9 @@ const ProductTable = () => {
             cell: ({ row }) => <div>{row.original.price.toFixed(2)}</div>,
         },
         {
-            accessorKey: "isActive",
-            header: "Active",
-            cell: ({ row }) => <div>{row.original.isActive ? "Active" : "Inactive"}</div>
+            accessorKey: "status",
+            header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+            cell: ({ row }) => <div>{row.original.status === StatusEnum.ACTIVE ? "Active" : "Inactive"}</div>
         },
         {
             accessorKey: "categoryResponse.name",
@@ -108,6 +139,59 @@ const ProductTable = () => {
             cell: ({ row }) => <div>{row.original.rating}</div>
         },
         {
+            accessorKey: "size",
+            header: "Size",
+            cell: ({ row }) => {
+                if (isFetchingProductInventory) {
+                    return <Spinner size="small" />;
+                }
+                const products = productInventory?.result?.filter((pi) => pi.idProduct === row.original.id);
+                if (!products || products.length === 0) {
+                    return (
+                        <div>Not available</div>
+                    )
+                }
+
+                return (
+                    <CustomSelect
+                        options={products.map((pi) => ({
+                            label: pi.size.name.toLocaleUpperCase(),
+                            value: pi.size.id,
+                        }))}
+                        value={mapProductInventory.get(row.original.id)?.size.id ?? ""}
+                        onChange={(value) => {
+                            const productInventory = mapProductInventory.get(row.original.id);
+                            if (productInventory) {
+                                setMapProductInventory((prev) => {
+                                    const newMap = new Map(prev);
+                                    newMap.set(row.original.id, products.find((pi) => pi.size.id === value) ?? productInventory);
+                                    return newMap;
+                                });
+                            }
+                        }}
+                        placeholder='Select size'
+                    />);
+            }
+        },
+        {
+            accessorKey: "quantity",
+            header: "Quantity",
+            cell: ({ row }) => {
+                if (isFetchingProductInventory) {
+                    return <Spinner size="small" />;
+                }
+                const productInventory = mapProductInventory.get(row.original.id);
+                if (!productInventory) {
+                    return (
+                        <></>
+                    )
+                }
+                return (
+                    <div>{productInventory.quantity}</div>
+                );
+            }
+        },
+        {
             accessorKey: "description",
             header: "Description",
         },
@@ -119,9 +203,20 @@ const ProductTable = () => {
         },
         {
             id: 'actions',
-            cell: ({ row }) => <CellActionProduct data={row.original} refetch={refetch} setError={setMessageError} categories={allCategory?.result ?? []} promotions={allPromotion?.result ?? []} />
+            cell: ({ row }) => <CellActionProduct 
+                                    data={row.original}
+                                    refetch={() => {
+                                        refetch().then(() => {
+                                            void getProductInventoryByProductIds({ productIds: allProduct?.result?.content.map(product => product.id) ?? [] });
+                                        });
+                                    }}
+                                    setAlert={setAlert}
+                                    categories={allCategory?.result ?? []}
+                                    promotions={allPromotion?.result ?? []}
+                                    productInventory={productInventory?.result?.filter((pi) => pi.idProduct === row.original.id) ?? []} 
+                                />,
         }
-    ], [allCategory, allPromotion, refetch]);
+    ], [allCategory, allPromotion, refetch, mapProductInventory, isFetchingProductInventory, productInventory]);
 
     const handleSortingChange = (newSorting?: ColumnSort) => {
         if (newSorting) {
@@ -153,20 +248,15 @@ const ProductTable = () => {
 
     return (
         <PageContainer scrollable>
-            {messageError && (
-                <Alert variant="destructive" onClose={() => setMessageError("")}>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>
-                        {messageError}
-                    </AlertDescription>
-                </Alert>
-            )}
+            <CustomAlert {...alert} onClose={() => setAlert({ variant: "default", message: "" })} />
             <CreateOrUpdateProduct
                 isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
-                setMessageError={setMessageError}
-                refetch={refetch}
+                refetch={() => {
+                    refetch().then(() => {
+                        void getProductInventoryByProductIds({ productIds: allProduct?.result?.content.map(product => product.id) ?? [] });
+                    });
+                }}
                 categories={allCategory?.result ?? []}
                 promotions={allPromotion?.result ?? []}
             />

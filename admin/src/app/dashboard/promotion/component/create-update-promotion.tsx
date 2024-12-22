@@ -3,6 +3,7 @@
 import { DateTimePicker12h } from "@/components/date-time-picker-24h";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CustomAlertProps } from "@/components/ui/CustomAlert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,11 +15,11 @@ interface CreateOrUpdatePromotionProps {
     isOpen: boolean;
     onClose: () => void;
     promotion?: PromotionResponse;
-    setMessageError: (message: string) => void;
+    setAlert: (alert: CustomAlertProps) => void;
     refetch: () => void;
 }
 
-const CreateOrUpdatePromotion = ({ isOpen, onClose, promotion, setMessageError, refetch }: CreateOrUpdatePromotionProps) => {
+const CreateOrUpdatePromotion = ({ isOpen, onClose, promotion, setAlert, refetch }: CreateOrUpdatePromotionProps) => {
     const { register, handleSubmit, reset, formState: { errors }, control } = useForm({
         defaultValues: {
             name: promotion?.name ?? "",
@@ -41,10 +42,11 @@ const CreateOrUpdatePromotion = ({ isOpen, onClose, promotion, setMessageError, 
             } else {
                 await createPromotion(data).unwrap();
             }
+            setAlert({ show: true, variant: "success", message: promotion ? "Promotion updated successfully" : "Promotion added successfully" });
             refetch();
             handleClose();
         } catch (error: any) {
-            setMessageError(data.name + ": " + (error.data?.message ?? "An error occurred"));
+            setAlert({ show: true, variant: "destructive", message: error.data?.message ?? "An error occurred" });
             handleClose();
         }
     };

@@ -16,6 +16,7 @@ import { AlertCircle } from "lucide-react";
 import CellActionDiscount from "@/app/dashboard/discount/component/cell-action";
 import CreateOrUpdateDiscount from "@/app/dashboard/discount/component/create-update-discount";
 import { DiscountTypeEnum } from "@/types/enums";
+import { CustomAlert, CustomAlertProps } from "@/components/ui/CustomAlert";
 
 const DiscountTable = () => {
     const [pagination, setPagination] = useState<PaginationParams>({
@@ -26,8 +27,12 @@ const DiscountTable = () => {
         search: "",
     });
 
-    const { data: allDiscounts, isFetching, error, refetch } = useGetDiscountSearchByCodeQuery(pagination);
-    const [messageError, setMessageError] = useState("");
+    const { data: allDiscounts, isFetching, refetch } = useGetDiscountSearchByCodeQuery(pagination);
+    const [alert, setAlert] = useState<CustomAlertProps>({
+        show: false,
+        variant: "default",
+        message: "",
+    });
     const [showCreateModal, setShowCreateModal] = useState(false);
 
     const columns = useMemo<ColumnDef<DiscountResponse>[]>(() => [
@@ -81,7 +86,7 @@ const DiscountTable = () => {
         },
         {
             id: 'actions',
-            cell: ({ row }) => <CellActionDiscount data={row.original} refetch={refetch} setError={setMessageError} />
+            cell: ({ row }) => <CellActionDiscount data={row.original} refetch={refetch} setAlert={setAlert} />
         },
     ], []);
 
@@ -101,29 +106,13 @@ const DiscountTable = () => {
         }
     };
 
-    if (error) {
-        return (
-            <Alert variant="destructive" className='mx-4 w-100'>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{getErrorMessage(error)}</AlertDescription>
-            </Alert>
-        );
-    }
-
     return (
         <div>
-            {messageError && (
-                <Alert variant="destructive" onClose={() => setMessageError("")}>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{messageError}</AlertDescription>
-                </Alert>
-            )}
+            <CustomAlert {...alert} onClose={() => setAlert({ message: "", variant: "default" })} />
             <CreateOrUpdateDiscount
                 isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
-                setMessageError={setMessageError}
+                setAlert={setAlert}
                 refetch={refetch}
             />
             <div className="w-full px-4">

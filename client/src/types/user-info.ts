@@ -1,4 +1,4 @@
-import { LoyaltyTierEnum, RoleEnum } from "./enums";
+import { LoyaltyTierEnum, RoleEnum, StatusEnum } from "./enums";
 
 export interface PhoneNumber {
     id: string;
@@ -15,7 +15,7 @@ export interface UserInfo {
     id: string;
     email: string;
     name: string;
-    isActive: boolean;
+    status: StatusEnum;
     loyaltyTier: LoyaltyTierEnum;
     roles: Set<RoleEnum>;
     createdAt: Date;

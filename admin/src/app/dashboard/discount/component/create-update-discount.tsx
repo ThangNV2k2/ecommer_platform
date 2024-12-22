@@ -12,12 +12,13 @@ import { DateTimePicker12h } from "@/components/date-time-picker-24h";
 import { Alert } from "@/components/ui/alert";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DiscountTypeEnum } from "@/types/enums";
+import { CustomAlertProps } from "@/components/ui/CustomAlert";
 
 interface CreateOrUpdateDiscountProps {
     isOpen: boolean;
     onClose: () => void;
     discount?: DiscountResponse;
-    setMessageError: (message: string) => void;
+    setAlert: (alert: CustomAlertProps) => void;
     refetch: () => void;
 }
 
@@ -25,7 +26,7 @@ const CreateOrUpdateDiscount = ({
     isOpen,
     onClose,
     discount,
-    setMessageError,
+    setAlert,
     refetch,
 }: CreateOrUpdateDiscountProps) => {
     const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm({
@@ -54,10 +55,19 @@ const CreateOrUpdateDiscount = ({
             } else {
                 await createDiscount(data).unwrap();
             }
+            setAlert({
+                show: true,
+                variant: "success",
+                message: discount ? "Discount updated successfully" : "Discount created successfully",
+            });
             refetch();
             handleClose();
         } catch (error: any) {
-            setMessageError(error.data?.message ?? "An error occurred");
+            setAlert({
+                show: true,
+                variant: "destructive",
+                message: error.data?.message ?? "An error occurred",
+            })
             handleClose();
         }
     };

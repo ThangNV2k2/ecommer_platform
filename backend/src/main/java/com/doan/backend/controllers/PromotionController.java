@@ -24,7 +24,6 @@ import java.util.List;
 public class PromotionController {
     PromotionService promotionService;
 
-
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ApiResponse<PromotionResponse> createPromotion(@RequestBody @Validated PromotionRequest promotionRequest) {

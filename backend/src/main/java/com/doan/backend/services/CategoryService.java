@@ -4,6 +4,7 @@ import com.doan.backend.dto.request.CategoryRequest;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.CategoryResponse;
 import com.doan.backend.entity.Category;
+import com.doan.backend.enums.StatusEnum;
 import com.doan.backend.mapper.CategoryMapper;
 import com.doan.backend.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,21 +24,19 @@ public class CategoryService {
     CategoryRepository categoryRepository;
 
     public ApiResponse<String> deleteCategory(String id) {
-        Optional<Category> categoryOptional = categoryRepository.findById(id);
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
 
-        if (categoryOptional.isPresent()) {
-            categoryRepository.deleteById(id);
-            return ApiResponse.<String>builder()
-                    .code(200)
-                    .message("Category deleted successfully")
-                    .build();
-        } else {
-            throw new RuntimeException("Category not found");
-        }
+        category.setStatus(StatusEnum.DELETED);
+        categoryRepository.save(category);
+        return ApiResponse.<String>builder()
+                .code(200)
+                .result(category.getId())
+                .message("Category deleted successfully")
+                .build();
     }
 
     public ApiResponse<String> updateCategory(String id, CategoryRequest categoryRequest) {
-        Optional<Category> categoryName = categoryRepository.findByName(categoryRequest.getName());
+        Optional<Category> categoryName = categoryRepository.findByNameAndStatusNot(categoryRequest.getName(), StatusEnum.DELETED);
 
         if (categoryName.isPresent() && !categoryName.get().getId().equals(id)) {
             throw new IllegalArgumentException("Category name already exists");
@@ -49,7 +48,7 @@ public class CategoryService {
             Category categoryToUpdate = categoryOptional.get();
             categoryToUpdate.setName(category.getName());
             categoryToUpdate.setDescription(category.getDescription());
-            categoryToUpdate.setIsActive(category.getIsActive());
+            categoryToUpdate.setStatus(category.getStatus());
             categoryRepository.save(categoryToUpdate);
             return ApiResponse.<String>builder()
                     .code(200)
@@ -61,7 +60,7 @@ public class CategoryService {
     }
 
     public ApiResponse<CategoryResponse> createCategory(CategoryRequest categoryRequest) {
-        boolean exists = categoryRepository.existsByName(categoryRequest.getName());
+        boolean exists = categoryRepository.existsByNameAndStatusNot(categoryRequest.getName(), StatusEnum.DELETED);
 
         if (exists) {
             throw new IllegalArgumentException("Category name already exists");
@@ -76,7 +75,7 @@ public class CategoryService {
     }
 
     public ApiResponse<List<CategoryResponse>> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findByStatusNot(StatusEnum.DELETED);
         return ApiResponse.<List<CategoryResponse>>builder()
                 .code(200)
                 .message("Categories retrieved successfully")
@@ -99,7 +98,7 @@ public class CategoryService {
     }
 
     public ApiResponse<Page<CategoryResponse>> getPageAllCategories(String name, Pageable pageable) {
-        Page<Category> categoryPage = categoryRepository.findByNameContainingIgnoreCase(name, pageable);
+        Page<Category> categoryPage = categoryRepository.findByNameContainingIgnoreCaseAndStatusNot(name, StatusEnum.DELETED, pageable);
 
         Page<CategoryResponse> categoryResponsePage = categoryPage.map(categoryMapper::toCategoryResponse);
 
