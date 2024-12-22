@@ -2,6 +2,7 @@ package com.doan.backend.services.oauth2;
 
 import com.doan.backend.entity.User;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.enums.StatusEnum;
 import com.doan.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,7 +40,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setName(name);
-            newUser.setIsActive(true);
+            newUser.setStatus(StatusEnum.ACTIVE);
             newUser.setRoles(Set.of(RoleEnum.CUSTOMER));
             newUser.setGoogleId((String) attributes.get("sub"));
             return userRepository.save(newUser);

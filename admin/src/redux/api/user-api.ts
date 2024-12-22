@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseApi } from "./auth-api";
 import { BaseResponse } from "@/types/base-response";
-import { User, UserInfo } from "@/types/user-info";
+import { User, UserInfo, UserRequest } from "@/types/user-info";
 import { PageResponse, PaginationParams } from "@/types/page";
 
 export const getToken = () => {
@@ -35,7 +35,32 @@ export const userApi = createApi({
                 method: "GET",
             }),
         }),
+        createUser: builder.mutation<BaseResponse<User>, UserRequest>({
+            query: (body) => ({
+                url: "users",
+                method: "POST",
+                body,
+            }),
+        }),
+
+        updateUser: builder.mutation<BaseResponse<User>, {
+            id: string;
+            user: UserRequest;
+        }>({
+            query: (body) => ({
+                url: `users/${body.id}`,
+                method: "PUT",
+                body: body.user,
+            }),
+        }),
+
+        deleteUser: builder.mutation<BaseResponse<User>, string>({
+            query: (id) => ({
+                url: `users/${id}`,
+                method: "DELETE",
+            }),
+        }),
     }),
 });
 
-export const { useLazyGetUserInfoQuery, useGetAllUserQuery, useGetUsersQuery } = userApi;
+export const { useLazyGetUserInfoQuery, useGetAllUserQuery, useGetUsersQuery, useCreateUserMutation, useDeleteUserMutation, useUpdateUserMutation } = userApi;

@@ -2,6 +2,7 @@
 import CreateOrUpdateProduct from '@/app/dashboard/product/component/create-update-product';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
+import { CustomAlertProps } from '@/components/ui/CustomAlert';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,6 +13,7 @@ import {
 import { useDeleteProductMutation } from '@/redux/api/product-api';
 import { CategoryResponse } from '@/types/category';
 import { ProductResponse } from '@/types/product';
+import { ProductInventoryResponse } from '@/types/product-inventory';
 import { PromotionResponse } from '@/types/promotion';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { useState } from 'react';
@@ -19,12 +21,13 @@ import { useState } from 'react';
 interface CellActionProps {
     data: ProductResponse;
     refetch: () => void;
-    setError: (message: string) => void;
+    setAlert: (alert: CustomAlertProps) => void;
     categories: CategoryResponse[];
     promotions: PromotionResponse[];
+    productInventory: ProductInventoryResponse[];
 }
 
-export const CellActionProduct: React.FC<CellActionProps> = ({ data, refetch, setError, categories, promotions }) => {
+export const CellActionProduct: React.FC<CellActionProps> = ({ data, refetch, setAlert, categories, promotions, productInventory }) => {
     const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
     
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -33,10 +36,19 @@ export const CellActionProduct: React.FC<CellActionProps> = ({ data, refetch, se
     const onConfirm = () => {
         deleteProduct(data.id).unwrap()
             .then(() => {
+                setAlert({
+                    show: true,
+                    message: `Product ${data.name} has been deleted`,
+                    variant: "success"
+                });
                 setOpen(false);
                 refetch();
             }).catch((error) => {
-                setError(error.data.message);
+                setAlert({
+                    show: true,
+                    message: error.message,
+                    variant: "destructive"
+                });
                 setOpen(false);
             });
     };
@@ -55,10 +67,10 @@ export const CellActionProduct: React.FC<CellActionProps> = ({ data, refetch, se
                 isOpen={showUpdateModal}
                 onClose={() => setShowUpdateModal(false)}
                 product={data}
-                setMessageError={setError}
                 refetch={refetch}
                 categories={categories}
                 promotions={promotions}
+                productInventory={productInventory}
             />
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>

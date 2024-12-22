@@ -1,14 +1,16 @@
+import { StatusEnum } from "@/types/enums";
+
 export interface CategoryRequest {
     name: string;
     description: string;
-    isActive: boolean;
+    status: StatusEnum;
 }
 
 export interface CategoryResponse {
     id: string;
     name: string;
     description: string;
-    isActive: boolean;
+    status: StatusEnum;
     createdAt: Date;
     updatedAt: Date;
 }

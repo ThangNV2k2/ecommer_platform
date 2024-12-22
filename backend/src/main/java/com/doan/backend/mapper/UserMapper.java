@@ -1,6 +1,6 @@
 package com.doan.backend.mapper;
 
-import com.doan.backend.dto.request.RegisterRequest;
+import com.doan.backend.dto.request.UserRequest;
 import com.doan.backend.dto.response.UserResponse;
 import com.doan.backend.dto.response.UserReviewResponse;
 import com.doan.backend.entity.User;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    User toUser(RegisterRequest registerUser);
+    User toUser(UserRequest userRequest);
 
     UserResponse toUserResponse(User user);
 

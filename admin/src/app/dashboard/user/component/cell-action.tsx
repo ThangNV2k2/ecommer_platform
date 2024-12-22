@@ -1,6 +1,6 @@
 'use client';
-import CreateOrUpdateCategory from '@/app/dashboard/category/_component/create-update-category';
-import CreateOrUpdatePromotion from '@/app/dashboard/promotion/component/create-update-promotion';
+
+import CreateOrUpdateUser from '@/app/dashboard/user/component/create-update-user';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import { CustomAlertProps } from '@/components/ui/CustomAlert';
@@ -11,30 +11,38 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { useDeletePromotionMutation } from '@/redux/api/promotion-api';
-import { PromotionResponse } from '@/types/promotion';
+import { useDeleteUserMutation } from '@/redux/api/user-api';
+import { User } from '@/types/user-info';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { useState } from 'react';
 
 interface CellActionProps {
-    data: PromotionResponse;
+    data: User;
     refetch: () => void;
     setAlert: (alert: CustomAlertProps) => void;
 }
 
-export const CellActionPromotion: React.FC<CellActionProps> = ({ data, refetch, setAlert }) => {
-    const [deletePromotion, { isLoading: isDeleting }] = useDeletePromotionMutation();
+export const CellActionUser: React.FC<CellActionProps> = ({ data, refetch, setAlert }) => {
+    const [deletePromotion, { isLoading: isDeleting }] = useDeleteUserMutation();
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [open, setOpen] = useState(false);
 
     const onConfirm = () => {
         deletePromotion(data.id).unwrap()
             .then(() => {
-                setAlert({ show: true, variant: 'success', message: 'Promotion deleted successfully' });
+                setAlert({
+                    show: true,
+                    message: "User deleted successfully",
+                    variant: "success"
+                });
                 setOpen(false);
                 refetch();
             }).catch((error) => {
-                setAlert({ show: true, variant: 'destructive', message: error.data?.message ?? 'An error occurred' });
+                setAlert({
+                    show: true,
+                    message: error.data?.message ?? "An error occurred",
+                    variant: "destructive"
+                });
                 setOpen(false);
             });
     };
@@ -47,12 +55,12 @@ export const CellActionPromotion: React.FC<CellActionProps> = ({ data, refetch, 
                 onConfirm={onConfirm}
                 loading={isDeleting}
                 title={`Delete ${data.name}`}
-                description='Are you sure you want to delete this category?'
+                description='Are you sure you want to delete this user?'
             />
-            <CreateOrUpdatePromotion
+            <CreateOrUpdateUser
                 isOpen={showUpdateModal}
                 onClose={() => setShowUpdateModal(false)}
-                promotion={data}
+                user={data}
                 setAlert={setAlert}
                 refetch={refetch}
             />

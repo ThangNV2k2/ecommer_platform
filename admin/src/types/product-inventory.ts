@@ -6,3 +6,9 @@ export interface ProductInventoryResponse {
     size: SizeResponse;
     quantity: number;
 }
+
+export interface ProductInventoryRequest {
+    idProduct: string;
+    idSize: string;
+    quantity: number;
+}

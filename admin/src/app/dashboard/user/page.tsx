@@ -5,7 +5,7 @@ import { PaginationParams } from "@/types/page";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { User } from "@/types/user-info";
-import { LoyaltyTierEnum } from "@/types/enums";
+import { LoyaltyTierEnum, StatusEnum } from "@/types/enums";
 import { Badge } from "@/components/ui/badge";
 import {
     ColumnDef,
@@ -20,6 +20,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { getErrorMessage } from "@/constants/get-error";
 import { formatDateString } from "@/constants/date";
+import { CellActionUser } from "@/app/dashboard/user/component/cell-action";
+import CreateOrUpdateUser from "@/app/dashboard/user/component/create-update-user";
+import { CustomAlert, CustomAlertProps } from "@/components/ui/CustomAlert";
 
 const UserPage = () => {
     // const router = useRouter();
@@ -37,7 +40,12 @@ const UserPage = () => {
         sortDirection: "asc",
         search: "",
     });
-    const { data: allUser, isFetching, error } = useGetAllUserQuery(pagination);
+    const { data: allUser, isFetching, error, refetch } = useGetAllUserQuery(pagination);
+    const [alert, setAlert] = useState<CustomAlertProps>({
+        variant: "default",
+        message: "",
+    });
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     const columns = useMemo<ColumnDef<User>[]>(() => [
         {
@@ -51,11 +59,11 @@ const UserPage = () => {
             header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
         },
         {
-            accessorKey: "isActive",
+            accessorKey: "status",
             header: "Active",
             cell: ({ row }) => (
                 <div>
-                    {row.original.isActive ? "Active" : "Inactive"}
+                    {row.original.status === StatusEnum.ACTIVE ? "Active" : "Inactive"}
                 </div>
             )
         },
@@ -91,7 +99,11 @@ const UserPage = () => {
             enableSorting: true,
             header: ({ column }) => <DataTableColumnHeader column={column} title="Updated" />,
             cell: ({ row }) => formatDateString(row.original.updatedAt),
-        }
+        },
+        {
+                    id: 'actions',
+                    cell: ({ row }) => <CellActionUser data={row.original} refetch={refetch} setAlert={setAlert} />
+                }
     ], []);
 
     const handleSortingChange = (newSorting?: ColumnSort) => {
@@ -112,18 +124,26 @@ const UserPage = () => {
 
     if (error) {
         return (
-            <Alert variant="destructive" className='mx-4 w-100'>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>
-                    {getErrorMessage(error)}
-                </AlertDescription>
-            </Alert>
+            <CustomAlert
+                show
+                message={getErrorMessage(error)}
+                variant="destructive"
+            />
         )
     }
 
     return (
         <PageContainer scrollable>
+            <CustomAlert
+                {...alert}
+                onClose={() => setAlert({ message: "", show: false, variant: "default" })}
+            />
+            <CreateOrUpdateUser
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                setAlert={setAlert}
+                refetch={refetch}
+            />
             <div className="w-full px-4">
                 <div className="flex items-center py-4 justify-between">
                     <DebouncedInput
@@ -138,7 +158,7 @@ const UserPage = () => {
                         className="max-w-sm"
 
                     />
-                    <Button size="lg">
+                    <Button size="lg" onClick={() => setShowCreateModal(true)}>
                         Add User
                     </Button>
                 </div>

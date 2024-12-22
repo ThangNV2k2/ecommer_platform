@@ -2,11 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CustomAlertProps } from "@/components/ui/CustomAlert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateCategoryMutation, useUpdateCategoryMutation } from "@/redux/api/category-api";
 import { CategoryResponse } from "@/types/category";
+import { StatusEnum } from "@/types/enums";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -14,16 +16,16 @@ interface CreateOrUpdateCategoryProps {
     isOpen: boolean;
     onClose: () => void;
     category?: CategoryResponse;
-    setMessageError: (message: string) => void;
+    setAlert: (alert: CustomAlertProps) => void;
     refetch: () => void;
 }
 
-const CreateOrUpdateCategory = ({ isOpen, onClose, category, setMessageError, refetch }: CreateOrUpdateCategoryProps) => {
+const CreateOrUpdateCategory = ({ isOpen, onClose, category, setAlert, refetch }: CreateOrUpdateCategoryProps) => {
     const { register, handleSubmit, reset, formState: { errors }, control } = useForm({
         defaultValues: {
             name: category?.name ?? "",
             description: category?.description ?? "",
-            isActive: category?.isActive ?? true,
+            status: category?.status ? category.status === StatusEnum.ACTIVE : true,
         },
     });
 
@@ -35,13 +37,13 @@ const CreateOrUpdateCategory = ({ isOpen, onClose, category, setMessageError, re
             reset({
                 name: category.name,
                 description: category.description,
-                isActive: category.isActive,
+                status: category?.status ? category.status === StatusEnum.ACTIVE : true,
             });
         } else {
             reset({
                 name: "",
                 description: "",
-                isActive: true,
+                status: true,
             });
         }
     }, [category, reset]);
@@ -49,14 +51,38 @@ const CreateOrUpdateCategory = ({ isOpen, onClose, category, setMessageError, re
     const onSubmit = async (data: any) => {
         try {
             if (category) {
-                await updateCategory({ id: category.id, category: data }).unwrap();
+                await updateCategory({ id: category.id, category: {
+                    name: data.name,
+                    description: data.description,
+                    status: data.status ? StatusEnum.ACTIVE : StatusEnum.INACTIVE,
+                } }).unwrap().then(() => {
+                    setAlert({
+                        show: true,
+                        variant: "success",
+                        message: data.name + " updated successfully",
+                    });
+                });
             } else {
-                await createCategory(data).unwrap();
+                await createCategory({
+                    name: data.name,
+                    description: data.description,
+                    status: data.status ? StatusEnum.ACTIVE : StatusEnum.INACTIVE,
+                }).unwrap().then(() => {
+                    setAlert({
+                        show: true,
+                        variant: "success",
+                        message: data.name + " added successfully",
+                    });
+                });
             }
             refetch();
             handleClose();
         } catch (error: any) {
-            setMessageError(data.name + ": " + (error.data?.message ?? "An error occurred"));
+            setAlert({
+                show: true,
+                variant: "destructive",
+                message: data.name + ": " + (error.data?.message ?? "An error occurred"),
+            })
             handleClose();
         }
     };
@@ -98,15 +124,15 @@ const CreateOrUpdateCategory = ({ isOpen, onClose, category, setMessageError, re
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="isActive" className="text-right">
-                            Active
+                        <Label htmlFor="status" className="text-right">
+                            Status
                         </Label>
                         <Controller
-                            name="isActive"
+                            name="status"
                             control={control}
                             render={({ field }) => (
                                 <Checkbox
-                                    id="isActive"
+                                    id="status"
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
                                     className="mr-2"

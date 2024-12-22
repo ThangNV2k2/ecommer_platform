@@ -1,5 +1,6 @@
 package com.doan.backend.entity;
 
+import com.doan.backend.enums.StatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,8 +30,8 @@ public class Category {
     @Column(name = "description")
     String description;
 
-    @Column(name = "is_active", nullable = false)
-    Boolean isActive;
+    @Column(name = "status", nullable = false)
+    StatusEnum status;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

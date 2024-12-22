@@ -2,6 +2,7 @@
 import CreateOrUpdateCategory from '@/app/dashboard/category/_component/create-update-category';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
+import { CustomAlertProps } from '@/components/ui/CustomAlert';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,10 +18,10 @@ import { useState } from 'react';
 interface CellActionProps {
     data: CategoryResponse;
     refetch: () => void;
-    setError: (message: string) => void;
+    setAlert: (alert: CustomAlertProps) => void;
 }
 
-export const CellAction: React.FC<CellActionProps> = ({ data, refetch, setError }) => {
+export const CellAction: React.FC<CellActionProps> = ({ data, refetch, setAlert }) => {
     const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [open, setOpen] = useState(false);
@@ -28,10 +29,19 @@ export const CellAction: React.FC<CellActionProps> = ({ data, refetch, setError 
     const onConfirm = () => {
         deleteCategory(data.id).unwrap()
         .then(() => {
+            setAlert({
+                variant: 'success',
+                message: 'Category deleted successfully',
+                show: true,
+            });
             setOpen(false);
             refetch();
         }).catch((error) => {
-            setError(error.data.message);
+            setAlert({
+                variant: 'destructive',
+                message: error.data.message,
+                show: true,
+            });
             setOpen(false);
         });
      };
@@ -50,7 +60,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data, refetch, setError 
                 isOpen={showUpdateModal}
                 onClose={() => setShowUpdateModal(false)}
                 category={data}
-                setMessageError={setError}
+                setAlert={setAlert}
                 refetch={refetch}
             />
             <DropdownMenu modal={false}>

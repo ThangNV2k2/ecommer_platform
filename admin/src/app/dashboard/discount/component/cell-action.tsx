@@ -8,14 +8,15 @@ import { useDeleteDiscountMutation } from "@/redux/api/discount-api";
 import { AlertModal } from "@/components/modal/alert-modal";
 import { DiscountResponse } from "@/types/discount";
 import CreateOrUpdateDiscount from "@/app/dashboard/discount/component/create-update-discount";
+import { CustomAlertProps } from "@/components/ui/CustomAlert";
 
 interface CellActionDiscountProps {
     data: DiscountResponse;
     refetch: () => void;
-    setError: (message: string) => void;
+    setAlert: (alert: CustomAlertProps) => void;
 }
 
-const CellActionDiscount = ({ data, refetch, setError }: CellActionDiscountProps) => {
+const CellActionDiscount = ({ data, refetch, setAlert }: CellActionDiscountProps) => {
     const [deleteDiscount, { isLoading }] = useDeleteDiscountMutation();
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [open, setOpen] = useState(false);
@@ -23,10 +24,11 @@ const CellActionDiscount = ({ data, refetch, setError }: CellActionDiscountProps
     const handleDelete = () => {
         deleteDiscount(data.id).unwrap()
             .then(() => {
+                setAlert({ show: true, variant: "success", message: "Discount deleted successfully" });
                 setOpen(false);
                 refetch();
             }).catch((error) => {
-                setError(error.data.message);
+                setAlert({ show: true, variant: "destructive", message: error.message });
                 setOpen(false);
             });
     };
@@ -67,7 +69,7 @@ const CellActionDiscount = ({ data, refetch, setError }: CellActionDiscountProps
                 isOpen={showUpdateModal}
                 onClose={() => setShowUpdateModal(false)}
                 refetch={refetch}
-                setMessageError={setError}
+                setAlert={setAlert}
                 discount={data}
             />
         </>

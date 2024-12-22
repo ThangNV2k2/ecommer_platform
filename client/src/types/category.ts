@@ -1,3 +1,5 @@
+import { StatusEnum } from "./enums";
+
 export interface CategoryRequest {
     name: string;
     description: string;
@@ -8,7 +10,7 @@ export interface CategoryResponse {
     id: string;
     name: string;
     description: string;
-    isActive: boolean;
+    status: StatusEnum;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -2,6 +2,7 @@ package com.doan.backend.repositories;
 
 import com.doan.backend.entity.User;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.enums.StatusEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +23,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     List<User> findByRoles(RoleEnum role);
 
-    Page<User> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<User> findByNameContainingIgnoreCaseAndStatusNot(String name, StatusEnum status, Pageable pageable);
 
+    List<User> findByStatusNot(StatusEnum status);
 }

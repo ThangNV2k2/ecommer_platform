@@ -1,3 +1,9 @@
+export enum StatusEnum {
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+    DELETE = "DELETE"
+}
+
 export enum LoyaltyTierEnum {
     BRONZE = "BRONZE",
     SILVER = "SILVER",

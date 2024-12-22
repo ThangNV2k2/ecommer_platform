@@ -2,6 +2,7 @@ package com.doan.backend.entity;
 
 import com.doan.backend.enums.LoyaltyTierEnum;
 import com.doan.backend.enums.RoleEnum;
+import com.doan.backend.enums.StatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -36,8 +37,8 @@ public class User {
     @Column(name = "google_id")
     String googleId;
 
-    @Column(name = "is_active")
-    Boolean isActive;
+    @Column(name = "status")
+    StatusEnum status;
 
     @Column(name = "verification_token")
     String verificationToken;

@@ -28,7 +28,7 @@ export const productApi = createApi({
             }),
         }),
 
-        createProduct: builder.mutation<BaseResponse<void>, ProductRequest>({
+        createProduct: builder.mutation<BaseResponse<string>, ProductRequest>({
             query: (newProduct) => ({
                 url: 'product',
                 method: 'POST',
@@ -36,7 +36,7 @@ export const productApi = createApi({
             }),
         }),
 
-        updateProduct: builder.mutation<BaseResponse<void>, { id: string; product: ProductRequest }>({
+        updateProduct: builder.mutation<BaseResponse<string>, { id: string; product: ProductRequest }>({
             query: ({ id, product }) => ({
                 url: `product/${id}`,
                 method: 'PUT',
@@ -44,13 +44,12 @@ export const productApi = createApi({
             }),
         }),
 
-        deleteProduct: builder.mutation<BaseResponse<void>, string>({
+        deleteProduct: builder.mutation<BaseResponse<string>, string>({
             query: (id) => ({
                 url: `product/${id}`,
                 method: 'DELETE',
             }),
         }),
-
     }),
 });
 

@@ -51,3 +51,9 @@ export enum ChatRoomStatus {
     PENDING = "PENDING",
     ARCHIVED = "ARCHIVED"
 }
+
+export enum StatusEnum {
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+    DELETE = "DELETE"
+}

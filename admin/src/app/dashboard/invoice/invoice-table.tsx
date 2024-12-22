@@ -15,6 +15,7 @@ import { getErrorMessage } from "@/constants/get-error";
 import { AlertCircle } from "lucide-react";
 import { InvoiceStatusEnum } from "@/types/enums";
 import { formatPrice } from "@/constants/format";
+import { CustomAlert } from "@/components/ui/CustomAlert";
 
 const InvoiceTable = () => {
     const [pagination, setPagination] = useState<PaginationParams>({
@@ -26,8 +27,6 @@ const InvoiceTable = () => {
     });
 
     const { data: allInvoices, isFetching, error, refetch } = useGetInvoiceQuery(pagination);
-    const [messageError, setMessageError] = useState("");
-    const [showCreateModal, setShowCreateModal] = useState(false);
 
     const columns = useMemo<ColumnDef<InvoiceResponse>[]>(() => [
         {
@@ -63,10 +62,6 @@ const InvoiceTable = () => {
             header: ({ column }) => <DataTableColumnHeader column={column} title="Created At" />,
             cell: ({ row }) => formatDateString(row.original.createdAt),
         },
-        // {
-        //     id: "actions",
-        //     cell: ({ row }) => <CellActionInvoice data={row.original} refetch={refetch} setError={setMessageError} />,
-        // },
     ], []);
 
     const handleSortingChange = (newSorting?: ColumnSort) => {
@@ -87,29 +82,16 @@ const InvoiceTable = () => {
 
     if (error) {
         return (
-            <Alert variant="destructive" className='mx-4 w-100'>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{getErrorMessage(error)}</AlertDescription>
-            </Alert>
+            <CustomAlert
+                variant="destructive"
+                message={getErrorMessage(error)}
+                onClose={() => refetch()}
+            />
         );
     }
 
     return (
         <div>
-            {messageError && (
-                <Alert variant="destructive" onClose={() => setMessageError("")}>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{messageError}</AlertDescription>
-                </Alert>
-            )}
-            {/* <CreateOrUpdateInvoice
-                isOpen={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-                setMessageError={setMessageError}
-                refetch={refetch}
-            /> */}
             <div className="w-full px-4">
                 <div className="flex items-center py-4 justify-between">
                     <DebouncedInput
@@ -123,9 +105,9 @@ const InvoiceTable = () => {
                         }
                         className="max-w-sm"
                     />
-                    <Button size="lg" onClick={() => setShowCreateModal(true)}>
+                    {/* <Button size="lg" onClick={() => setShowCreateModal(true)}>
                         Add Invoice
-                    </Button>
+                    </Button> */}
                 </div>
                 <div>
                     {isFetching ? (
