@@ -1,4 +1,5 @@
 import { formatDateString } from "@/constants/date";
+import { StatusEnum } from "@/types/enums";
 import { User } from "@/types/user-info";
 
 const UserDetailsPopover = ({ user }: { user: User }) => {
@@ -40,8 +41,19 @@ const UserDetailsPopover = ({ user }: { user: User }) => {
                     Status:
                 </span>
                 <span className="col-span-2">
-                    <span className={`text-sm px-2 py-1 rounded-md ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {user.isActive ? 'Active' : 'Inactive'}
+                    <span
+                        className={`text-sm px-2 py-1 rounded-md font-medium ${user.status === StatusEnum.ACTIVE
+                                ? 'bg-green-50 text-green-600'
+                                : user.status === StatusEnum.INACTIVE
+                                    ? 'bg-yellow-50 text-yellow-600'
+                                    : 'bg-red-50 text-red-600'
+                            }`}
+                    >
+                        {user.status === StatusEnum.ACTIVE
+                            ? 'Active'
+                            : user.status === StatusEnum.INACTIVE
+                                ? 'Inactive'
+                                : 'Deleted'}
                     </span>
                 </span>
 

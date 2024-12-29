@@ -13,7 +13,6 @@ export default function Home() {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.user.user);
   const [getUserInfo] = useLazyGetUserInfoQuery();
-
   useEffect(() => {
     if (userInfo) {
       router.push('/dashboard/overview');

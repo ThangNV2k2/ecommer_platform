@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit"
+import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import { authApi } from "./api/auth-api"
 import { setupListeners } from "@reduxjs/toolkit/query"
 import {userApi} from "./api/user-api";
@@ -15,32 +15,63 @@ import { chatApi } from "@/redux/api/chat-api";
 import { revenueApi } from "@/redux/api/statistics-api";
 import { sizeApi } from "@/redux/api/size-api";
 import { productInventoryApi } from "@/redux/api/product-inventory-api";
+import { persistReducer, persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
+const persistConfig = {
+    key: 'root',
+    storage,
+    whitelist: ['user'],
+};
+
+const rootReducer = combineReducers({
+    [authApi.reducerPath]: authApi.reducer,
+    [userApi.reducerPath]: userApi.reducer,
+    [categoryApi.reducerPath]: categoryApi.reducer,
+    [productApi.reducerPath]: productApi.reducer,
+    [promotionApi.reducerPath]: promotionApi.reducer,
+    [imageApi.reducerPath]: imageApi.reducer,
+    [discountApi.reducerPath]: discountApi.reducer,
+    [orderApi.reducerPath]: orderApi.reducer,
+    [shippingAddressApi.reducerPath]: shippingAddressApi.reducer,
+    [invoiceApi.reducerPath]: invoiceApi.reducer,
+    [chatApi.reducerPath]: chatApi.reducer,
+    [revenueApi.reducerPath]: revenueApi.reducer,
+    [sizeApi.reducerPath]: sizeApi.reducer,
+    [productInventoryApi.reducerPath]: productInventoryApi.reducer,
+    user: userReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-    reducer: {
-        [authApi.reducerPath]: authApi.reducer,
-        [userApi.reducerPath]: userApi.reducer,
-        [categoryApi.reducerPath]: categoryApi.reducer,
-        [productApi.reducerPath]: productApi.reducer,
-        [promotionApi.reducerPath]: promotionApi.reducer,
-        [imageApi.reducerPath]: imageApi.reducer,
-        [discountApi.reducerPath]: discountApi.reducer,
-        [orderApi.reducerPath]: orderApi.reducer,
-        [shippingAddressApi.reducerPath]: shippingAddressApi.reducer,
-        [invoiceApi.reducerPath]: invoiceApi.reducer,
-        [chatApi.reducerPath]: chatApi.reducer,
-        [revenueApi.reducerPath]: revenueApi.reducer,
-        [sizeApi.reducerPath]: sizeApi.reducer,
-        [productInventoryApi.reducerPath]: productInventoryApi.reducer,
-        user: userReducer,
-    },
-
+    reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(authApi.middleware, userApi.middleware, categoryApi.middleware, productApi.middleware,
-            promotionApi.middleware, imageApi.middleware, discountApi.middleware, orderApi.middleware, shippingAddressApi.middleware,
-            invoiceApi.middleware, chatApi.middleware, revenueApi.middleware, sizeApi.middleware, productInventoryApi.middleware),
-})
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+            },
+        }).concat(
+            authApi.middleware,
+            userApi.middleware,
+            categoryApi.middleware,
+            productApi.middleware,
+            promotionApi.middleware,
+            imageApi.middleware,
+            discountApi.middleware,
+            orderApi.middleware,
+            shippingAddressApi.middleware,
+            invoiceApi.middleware,
+            chatApi.middleware,
+            revenueApi.middleware,
+            sizeApi.middleware,
+            productInventoryApi.middleware
+        ),
+});
 
 export type RootState = ReturnType<typeof store.getState>;
-setupListeners(store.dispatch)
+export type AppDispatch = typeof store.dispatch;
+
+export const persistor = persistStore(store);
+
+setupListeners(store.dispatch);

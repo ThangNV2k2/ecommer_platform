@@ -35,11 +35,18 @@ const CreateOrUpdateUser = ({ isOpen, onClose, user, setAlert, refetch }: Create
     const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
     const onSubmit = async (data: any) => {
+        debugger;
         try {
             if (user) {
-                await updateUser({ id: user.id, user: data }).unwrap();
+                await updateUser({ id: user.id, user: {
+                    ...data,
+                    roles: [data.role]
+                } }).unwrap();
             } else {
-                await createUser(data).unwrap();
+                await createUser({
+                    ...data,
+                    roles: [data.role]
+                }).unwrap();
             }
             setAlert({
                 show: true,
@@ -47,14 +54,15 @@ const CreateOrUpdateUser = ({ isOpen, onClose, user, setAlert, refetch }: Create
                 variant: "success"
             });
             refetch();
-            handleClose();
         } catch (error: any) {
             setAlert({
                 show: true,
                 message: data.name + ": " + (error.data?.message ?? "An error occurred"),
                 variant: "destructive"
             });
-            handleClose();
+        } finally {
+            reset();
+            onClose();
         }
     };
 

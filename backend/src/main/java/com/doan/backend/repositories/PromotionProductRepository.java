@@ -17,7 +17,8 @@ public interface PromotionProductRepository extends JpaRepository<PromotionProdu
             "WHERE pp.product.id = :productId " +
             "AND pp.promotion.isActive = true " +
             "AND pp.promotion.startDate <= :currentDate " +
-            "AND pp.promotion.endDate >= :currentDate")
+            "AND pp.promotion.endDate >= :currentDate " +
+            "ORDER BY pp.promotion.startDate DESC LIMIT 1")
     Optional<Promotion> findActivePromotionByProductId(
             @Param("productId") String productId,
             @Param("currentDate") LocalDateTime currentDate);

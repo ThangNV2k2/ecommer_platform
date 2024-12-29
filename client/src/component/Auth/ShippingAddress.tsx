@@ -7,6 +7,7 @@ import {ShippingAddressResponse} from "../../types/shipping-address";
 import {
     DeleteOutlined,
     EditOutlined,
+    EnvironmentOutlined,
     GlobalOutlined,
     HomeOutlined,
     PhoneOutlined,
@@ -18,14 +19,6 @@ import ConfirmModal from "../../utils/ConfirmModal";
 import CreateOrUpdateShippingAddressModal from "./CreateOrUpdateShippingAddressModal";
 
 const {Text, Title} = Typography;
-
-interface ShippingAddress {
-    recipientName: string;
-    phoneNumber: string;
-    addressDetail: string;
-    country: string;
-    isDefault: boolean;
-}
 
 const ShippingAddress = () => {
     const userInfo = useSelector((state: RootState) => state.user.user);
@@ -127,6 +120,10 @@ const ShippingAddress = () => {
                                     <Space>
                                         <HomeOutlined/>
                                         <Text>{address.addressDetail}</Text>
+                                    </Space>
+                                    <Space>
+                                        <EnvironmentOutlined/>
+                                        <Text>{`${address.ward} - ${address.district} - ${address.city}`}</Text>
                                     </Space>
                                     <Space>
                                         <GlobalOutlined/>

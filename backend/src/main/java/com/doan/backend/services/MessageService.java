@@ -15,6 +15,7 @@ import com.doan.backend.repositories.MessageRepository;
 import com.doan.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -34,7 +35,8 @@ public class MessageService {
     UserRepository userRepository;
     ChatRoomUserRepository chatRoomUserRepository;
 
-    private static final String BOT_API_URL = "http://localhost:8000/chat";
+    @Value("${chatbot.url}")
+    String BOT_API_URL = null;
 
     public ApiResponse<Void> sendMessage(MessageRequest messageRequest) {
         User user = authService.getUserByToken();

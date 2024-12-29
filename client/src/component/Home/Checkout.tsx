@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { Field, FieldProps, Form as FormikForm, Formik } from 'formik';
+import { Field, FieldProps, Form as FormikForm, Formik, FormikProps } from 'formik';
 import { useCreateOrderFromCartMutation } from "../../redux/api/order";
 import { useEffect, useState } from "react";
 import * as Yup from 'yup';
@@ -17,6 +17,10 @@ import "../../sass/checkout.scss";
 import { showCustomNotification } from "../../utils/notification";
 import { useDispatch } from "react-redux";
 import { clearCart } from "../../redux/slice/cartSlice";
+import { GHTKFee, GHTKFeeRequest, ShippingAddressRequest } from "../../types/shipping-address";
+import { baseApi } from "../../redux/api/auth-api";
+import axios, { AxiosResponse } from "axios";
+import { BaseResponse } from "../../types/base-response";
 
 const { Title, Text } = Typography;
 
@@ -30,6 +34,25 @@ interface CreateOrderFromCartRequest {
     discountId: string | null;
 }
 
+const getGHTKShippingFee = async (gHTKFeeRequest: GHTKFeeRequest) => {
+    try {
+        const url = `${baseApi}/ghtk/shipping-costs`;
+
+        const response = await axios.post(url, {
+            addressDetail: gHTKFeeRequest.addressDetail,
+            city: gHTKFeeRequest.city,
+            district: gHTKFeeRequest.district,
+            ward: gHTKFeeRequest.ward,
+            value: gHTKFeeRequest.value,
+        });
+
+        const res = response as AxiosResponse<BaseResponse<GHTKFee>>
+        return res.data.result?.fee;
+    } catch (error) {
+        console.error("Error fetching GHTK shipping fee:", error);
+    }
+};
+
 const Checkout = () => {
     const navigate = useNavigate();
     const cartData = useSelector((state: RootState) => state.cart.cart);
@@ -39,6 +62,7 @@ const Checkout = () => {
     const [createOrderFromCart, { isLoading: createOrderFromCartLoading }] = useCreateOrderFromCartMutation();
     const [selectedDiscount, setSelectedDiscount] =
         useState<DiscountResponse>();
+    const [shippingFee, setShippingFee] = useState<number>(35000);
 
     const [showDiscountModal, setShowDiscountModal] = useState(false);
     const [showShippingAddressModal, setShowShippingAddressModal] =
@@ -48,6 +72,33 @@ const Checkout = () => {
         shippingAddressId: "",
         discountId: "",
     });
+
+    const fetchShippingFee = async (addressId: string) => {
+        const selectedAddress = shippingAddressData?.result?.find(
+            (address) => address.id === addressId
+        );
+        if (selectedAddress) {
+            const fee = await getGHTKShippingFee({
+                addressDetail: selectedAddress.addressDetail,
+                city: selectedAddress.city,
+                district: selectedAddress.district,
+                ward: selectedAddress.ward,
+                value: calculateSubtotal(),
+            });
+            setShippingFee(35000);
+        }
+    };
+
+    const handleAddressChange = (addressId: string, form: FormikProps<any>) => {
+        form.setFieldValue("shippingAddressId", addressId);
+        fetchShippingFee(addressId);
+    };
+
+    useEffect(() => {
+        if (initialValues.shippingAddressId) {
+            fetchShippingFee(initialValues.shippingAddressId);
+        }
+    }, [initialValues.shippingAddressId]);
 
     useEffect(() => {
         if (shippingAddressData?.result) {
@@ -110,7 +161,7 @@ const Checkout = () => {
     const calculateTotal = () => {
         const subtotal = calculateSubtotal();
         const discount = calculateDiscountAmount();
-        return subtotal - discount;
+        return subtotal - discount + shippingFee;
     };
 
     return (
@@ -187,7 +238,9 @@ const Checkout = () => {
                                                             </>
                                                         )}
                                                         onBlur={() => form.setFieldTouched('shippingAddressId', true)}
-                                                        onChange={(value) => form.setFieldValue('shippingAddressId', value)}
+                                                        onChange={(value) => {
+                                                            handleAddressChange(value, form)
+                                                        }}
                                                         value={field.value}
 
                                                     >
@@ -229,6 +282,11 @@ const Checkout = () => {
                                                 </Text>
                                             </div>
                                         )}
+
+                                        <div className="summary-row">
+                                            <Text>Shipping Fee:</Text>
+                                            <Text>{shippingFee.toLocaleString()}₫</Text>
+                                        </div>
 
                                         <Divider />
 

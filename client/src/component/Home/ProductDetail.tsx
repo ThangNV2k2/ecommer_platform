@@ -105,7 +105,9 @@ const ProductDetail = () => {
     }
 
     if (productLoading || productInventoryLoading || productImagesLoading || productReviewsLoading) {
-        return <Spin tip="Loading..." />;
+        return <div className="flex justify-center w-100">
+            <Spin size="large" />
+        </div>;
     }
 
     if (!product?.result) return <Text type="danger">Product not found</Text>;

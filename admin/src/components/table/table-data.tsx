@@ -22,7 +22,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -31,16 +31,21 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ArrowUpDown, ChevronDown, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from "@radix-ui/react-icons"
+import { getTableSavedPageSize, getTableSavedSortingState } from "@/components/table/helper"
+import { Spinner } from "@/components/spinner"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
     onChangeSorting?: (sorting?: ColumnSort) => void
-    size: number
-    page: number
+    size?: number
+    page?: number
     setSize: (size: number) => void
     setPage: (page: number) => void
     total: number
+    pathKey?: string
+    keepSortState?: boolean
+    loading?: boolean
 }
 
 const optionSizes = [10, 20, 30, 50]
@@ -72,9 +77,32 @@ export function DataTable<TData, TValue>({
     setSize,
     setPage,
     total,
+    pathKey = "",
+    keepSortState = true,
+    loading = false,
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = useState<SortingState>([])
+    const [{ pageIndex, pageSize }, setPagination] = useState(() =>
+        getTableSavedPageSize(pathKey, page, size)
+    );
 
+    useEffect(() => {
+        if (setPage) {
+            setPage(pageIndex);
+        }
+    }, [pageIndex]);
+
+    useEffect(() => {
+        if (setSize) {
+            setSize(pageSize);
+        }
+    }, [pageSize]);
+
+    const savedSortState = useMemo(
+        () => (keepSortState ? getTableSavedSortingState(pathKey) : []),
+        [pathKey, keepSortState]
+    );
+
+    const [sorting, setSorting] = useState<SortingState>(savedSortState);
     useEffect(() => {
         if (sorting.length > 0) {
             onChangeSorting?.(sorting[0]);
@@ -94,55 +122,69 @@ export function DataTable<TData, TValue>({
         },
         onSortingChange: setSorting,
         pageCount: Math.ceil(total / size),
+        initialState: {
+            pagination: {
+                pageSize: size,
+                pageIndex: page,
+            },
+        },
+    });
+
+    useEffect(() => {
         
-    })
+        console.log(table.getRowModel().rows);
+    }, [table])
 
     return (
         <>
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+            {loading ? (
+                <Spinner size="large" className="mt-10" />) : (
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <TableHead key={header.id}>
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                            </TableHead>
+                                        )
+                                    })}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && "selected"}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
+
             <div className="flex items-center justify-between py-4">
                 <div className="flex items-center space-x-4">
                     <div className="text-sm text-muted-foreground mr-2">

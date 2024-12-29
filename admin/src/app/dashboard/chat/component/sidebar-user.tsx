@@ -14,7 +14,6 @@ interface SidebarUserProps {
 }
 
 const SidebarUser: FC<SidebarUserProps> = ({ users, onSelectUser, setSearchValue, selectedUser }) => {
-    console.log(selectedUser);
     return (
         <div className="flex flex-col w-96 p-4 rounded-lg h-ful">
             <h2 className="text-xl font-semibold mb-4">Users</h2>

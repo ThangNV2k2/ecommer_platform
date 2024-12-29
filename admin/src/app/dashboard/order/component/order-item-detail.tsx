@@ -34,7 +34,7 @@ const OrderItemDetailsPopover = ({ orderItem }: { orderItem: OrderItemResponse }
                     Size:
                 </span>
                 <span className="col-span-2 text-sm text-gray-800 dark:text-gray-200">
-                    {size.name}
+                    {size.name.toLocaleUpperCase()}
                 </span>
 
                 <span className="col-span-1 text-sm font-medium text-gray-600 dark:text-gray-400">

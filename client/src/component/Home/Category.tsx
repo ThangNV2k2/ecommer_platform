@@ -9,12 +9,7 @@ interface CategoryProps {
 }
 
 const Category: React.FC<CategoryProps> = ({ categories }) => {
-    const [collapsed, setCollapsed] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
-
-    const handleToggle = () => {
-        setCollapsed(!collapsed);
-    };
 
     const onCategorySelect = (categoryId: string) => {
         const search = searchParams.get('search') || '';
@@ -25,6 +20,7 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
         <Menu
             mode="inline"
             defaultSelectedKeys={['1']}
+            defaultOpenKeys={['sub1']}
             className="h-100"
             onClick={(e) => onCategorySelect(e.key)}
         >
@@ -38,7 +34,7 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
                 className="background-card"
             >
                 <Menu.Divider />
-                {!collapsed &&
+                {
                     categories.map((category) => (
                         <Menu.Item key={category.id}>
                             <span className="fs-14 fw-600 text-primary">{category.name.toUpperCase()}</span>

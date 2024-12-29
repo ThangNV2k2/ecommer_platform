@@ -8,18 +8,28 @@ import {Field, FieldProps, Form as FormikForm, Formik} from 'formik';
 import {PhoneOutlined, UserOutlined} from '@ant-design/icons';
 import "../../sass/shipping-address.scss";
 import {showCustomNotification} from "../../utils/notification";
+import {useEffect, useState} from "react";
+import axios from "axios";
+
+const {Option} = Select;
 
 const ShippingAddressSchema = Yup.object().shape({
     recipientName: Yup.string().required("Recipient Name is required"),
     phoneNumber: Yup.string().required("Phone Number is required"),
     addressDetail: Yup.string().required("Address Detail is required"),
     country: Yup.string().required("Country is required"),
+    city: Yup.string().required("City is required"),
+    district: Yup.string().required("District is required"),
+    ward: Yup.string().required("Ward is required"),
 });
 
 interface ShippingAddress {
     recipientName: string;
     phoneNumber: string;
     addressDetail: string;
+    city: string;
+    district: string;
+    ward: string;
     country: string;
     isDefault: boolean;
 }
@@ -31,6 +41,22 @@ interface ShippingAddressFormProps {
     onSuccess: () => void;
 }
 
+enum CodeAddress {
+    CITY = "1",
+    DISTRICT = "2",
+    WARD = "3",
+}
+
+const getURLAddress = (codeAddress: CodeAddress, id: string) => {
+    return `https://esgoo.net/api-tinhthanh/${codeAddress}/${id}.htm`;
+}
+
+interface AddressItem {
+    id: string;
+    name: string;
+}
+
+
 const CreateOrUpdateShippingAddressModal: React.FC<ShippingAddressFormProps> = ({
                                                                                     editingAddress,
                                                                                     isOpen,
@@ -40,18 +66,62 @@ const CreateOrUpdateShippingAddressModal: React.FC<ShippingAddressFormProps> = (
     const userInfo = useSelector((state: RootState) => state.user.user);
     const [createShippingAddress] = useCreateShippingAddressMutation();
     const [updateShippingAddress] = useUpdateShippingAddressMutation();
+
+    const [provinces, setProvinces] = useState<AddressItem[]>([]);
+    const [districts, setDistricts] = useState<AddressItem[]>([]);
+    const [wards, setWards] = useState<AddressItem[]>([]);
+
+    useEffect(() => {
+        axios.get(getURLAddress(CodeAddress.CITY, "0"))
+            .then((response) => {
+                if (response.data.error === 0) {
+                    setProvinces(response.data.data);
+                }
+            })
+            .catch((error) => console.error("Error fetching provinces:", error));
+    }, []);
+
+    const handleProvinceChange = (provinceName: string) => {
+        setDistricts([]);
+        setWards([]);
+        const provinceId = provinces.find((province) => province.name === provinceName)?.id ?? "";
+
+        axios.get(getURLAddress(CodeAddress.DISTRICT, provinceId))
+            .then((response) => {
+                if (response.data.error === 0) {
+                    setDistricts(response.data.data);
+                }
+            })
+            .catch((error) => console.error("Error fetching districts:", error));
+    };
+
+    const handleDistrictChange = (districtName: string) => {
+        setWards([]);
+        const districtId = districts.find((district) => district.name === districtName)?.id ?? "";
+        axios.get(getURLAddress(CodeAddress.WARD, districtId))
+            .then((response) => {
+                if (response.data.error === 0) {
+                    setWards(response.data.data);
+                }
+            })
+            .catch((error) => console.error("Error fetching wards:", error));
+    };
+
     const initialValues: ShippingAddress = {
         recipientName: editingAddress?.recipientName ?? "",
         phoneNumber: editingAddress?.phoneNumber ?? "",
+        city: editingAddress?.city ?? "",
+        district: editingAddress?.district ?? "",
+        ward: editingAddress?.ward ?? "",
         addressDetail: editingAddress?.addressDetail ?? "",
-        country: editingAddress?.country ?? "",
+        country: editingAddress?.country ?? "Viet Nam",
         isDefault: editingAddress?.isDefault ?? false,
     };
 
     const handleFormSubmit = async (values: ShippingAddress) => {
         if (editingAddress) {
             await updateShippingAddress({
-                id: editingAddress.id, 
+                id: editingAddress.id,
                 shippingAddressRequest: {
                     userId: userInfo?.id ?? "",
                     ...values,
@@ -137,22 +207,6 @@ const CreateOrUpdateShippingAddressModal: React.FC<ShippingAddressFormProps> = (
                         </Form.Item>
 
                         <Form.Item
-                            validateStatus={errors.addressDetail && touched.addressDetail ? 'error' : ''}
-                            help={touched.addressDetail && errors.addressDetail}
-                            className="mb-2"
-                        >
-                            <Field name="addressDetail">
-                                {({field}: FieldProps) => (
-                                    <Input.TextArea
-                                        {...field}
-                                        placeholder="Enter address detail"
-                                        rows={3}
-                                    />
-                                )}
-                            </Field>
-                        </Form.Item>
-
-                        <Form.Item
                             validateStatus={errors.country && touched.country ? 'error' : ''}
                             help={touched.country && errors.country}
                             className="mb-2"
@@ -165,12 +219,103 @@ const CreateOrUpdateShippingAddressModal: React.FC<ShippingAddressFormProps> = (
                                             value={field.value || "Vietnam"}
                                     >
                                         <Select.Option value="Vietnam">Vietnam</Select.Option>
-                                        <Select.Option value="China">China</Select.Option>
-                                        <Select.Option value="USA">USA</Select.Option>
-                                        <Select.Option value="Japan">Japan</Select.Option>
-                                        <Select.Option value="Korea">Korea</Select.Option>
-
                                     </Select>
+                                )}
+                            </Field>
+                        </Form.Item>
+
+                        <Form.Item
+                            validateStatus={errors.city && touched.city ? 'error' : ''}
+                            help={touched.city && errors.city}
+                            className="mb-2"
+                        >
+                            <Field name="city">
+                                {({field, form}: FieldProps) => (
+                                    <Select
+                                        placeholder="Select city"
+                                        onChange={(value) => {
+                                            form.setFieldValue("city", value);
+                                            form.setFieldValue("district", "");
+                                            form.setFieldValue("ward", "");
+                                            handleProvinceChange(value);
+                                        }}
+                                        onBlur={() => form.setFieldTouched('city', true)}
+                                        value={field.value || undefined}
+                                    >
+                                        {provinces.map((province) => (
+                                            <Option key={province.id} value={province.name}>
+                                                {province.name}
+                                            </Option>
+                                        ))}
+                                    </Select>
+                                )}
+                            </Field>
+                        </Form.Item>
+
+                        <Form.Item
+                            validateStatus={errors.district && touched.district ? 'error' : ''}
+                            help={touched.district && errors.district}
+                            className="mb-2"
+                        >
+                            <Field name="district">
+                                {({field, form}: FieldProps) => (
+                                    <Select
+                                        placeholder="Select district"
+                                        onChange={(value) => {
+                                            form.setFieldValue("district", value);
+                                            form.setFieldValue("ward", "");
+                                            handleDistrictChange(value);
+                                        }}
+                                        onBlur={() => form.setFieldTouched('district', true)}
+                                        value={field.value || undefined}
+                                        disabled={!form.values.city}
+                                    >
+                                        {districts.map((district) => (
+                                            <Option key={district.id} value={district.name}>
+                                                {district.name}
+                                            </Option>
+                                        ))}
+                                    </Select>
+                                )}
+                            </Field>
+                        </Form.Item>
+
+                        <Form.Item
+                            validateStatus={errors.ward && touched.ward ? 'error' : ''}
+                            help={touched.ward && errors.ward}
+                            className="mb-2"
+                        >
+                            <Field name="ward">
+                                {({field, form}: FieldProps) => (
+                                    <Select
+                                        placeholder="Select ward"
+                                        onChange={(value) => form.setFieldValue("ward", value)}
+                                        onBlur={() => form.setFieldTouched('ward', true)}
+                                        value={field.value || undefined}
+                                        disabled={!form.values.district || !form.values.city}
+                                    >
+                                        {wards.map((ward) => (
+                                            <Option key={ward.id} value={ward.name}>
+                                                {ward.name}
+                                            </Option>
+                                        ))}
+                                    </Select>
+                                )}
+                            </Field>
+                        </Form.Item>
+
+                        <Form.Item
+                            validateStatus={errors.addressDetail && touched.addressDetail ? 'error' : ''}
+                            help={touched.addressDetail && errors.addressDetail}
+                            className="mb-2"
+                        >
+                            <Field name="addressDetail">
+                                {({field}: FieldProps) => (
+                                    <Input.TextArea
+                                        {...field}
+                                        placeholder="Enter address detail"
+                                        rows={3}
+                                    />
                                 )}
                             </Field>
                         </Form.Item>
