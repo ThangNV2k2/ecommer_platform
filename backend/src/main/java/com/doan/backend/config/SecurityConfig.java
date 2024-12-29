@@ -45,7 +45,7 @@ public class SecurityConfig {
     };
 
     private static final String[] POST_PUBLIC_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/images/upload", "shipping-address/**", "cart/**", "order/**", "payment/payos"
+            "/auth/register", "/auth/login", "/images/upload", "shipping-address/**", "cart/**", "order/**", "payment/payos", "ghtk/**"
     };
 
     private static final String[] DELETE_Public_ENDPOINTS = {

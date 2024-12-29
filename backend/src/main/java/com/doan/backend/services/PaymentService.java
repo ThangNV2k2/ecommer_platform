@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.payos.PayOS;
@@ -33,6 +35,10 @@ public class PaymentService {
     InvoiceRepository invoiceRepository;
     private final InvoiceService invoiceService;
 
+    @NonFinal
+    @Value("${app.client-url}")
+    String clientUrl;
+
     public String createPaymentLink(String invoiceId) {
 
         try {
@@ -41,8 +47,8 @@ public class PaymentService {
 
             final String productName = "Pay bills " + invoice.getInvoiceNumber();
             final String description = invoice.getInvoiceNumber();
-            final String returnUrl = "http://localhost:3000/account";
-            final String cancelUrl = "https://localhost:3000/payment/cancel";
+            final String returnUrl = clientUrl + "/account";
+            final String cancelUrl = clientUrl + "/payment/cancel";
             int price = invoice.getTotalAmount().intValue();
 
             String invoiceNumberString = CodeUtils.removePrefix(invoice.getInvoiceNumber(), Constants.INVOICE_PREFIX);

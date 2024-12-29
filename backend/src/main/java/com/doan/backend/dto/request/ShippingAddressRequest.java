@@ -29,5 +29,14 @@ public class ShippingAddressRequest {
     @NotBlank(message = "Country is required")
     String country;
 
+    @NotBlank(message = "City is required")
+    String city;
+
+    @NotBlank(message = "District is required")
+    String district;
+
+    @NotBlank(message = "Ward is required")
+    String ward;
+
     Boolean isDefault;
 }

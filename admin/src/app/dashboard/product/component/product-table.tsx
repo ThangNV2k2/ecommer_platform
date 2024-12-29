@@ -32,8 +32,8 @@ const ProductTable = () => {
     const [pagination, setPagination] = useState<PaginationParams>({
         page: 0,
         size: 10,
-        sortBy: "name",
-        sortDirection: "asc",
+        sortBy: "",
+        sortDirection: undefined,
         search: "",
     });
 
@@ -278,7 +278,6 @@ const ProductTable = () => {
                     </Button>
                 </div>
                 <div>
-                    {isFetching ? <Spinner size="large" className="mt-10" /> : (
                         <DataTable
                             columns={columns}
                             data={allProduct?.result?.content ?? []}
@@ -288,8 +287,9 @@ const ProductTable = () => {
                             setPage={(page) => setPagination((prev) => ({ ...prev, page }))}
                             total={allProduct?.result?.totalElements ?? 0}
                             onChangeSorting={handleSortingChange}
+                            loading={isFetching}
+                            pathKey='product'
                         />
-                    )}
 
                 </div>
             </div>

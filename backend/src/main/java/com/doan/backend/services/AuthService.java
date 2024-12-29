@@ -42,7 +42,11 @@ public class AuthService {
 
     @NonFinal
     @Value("${app.base-url}")
-    private String baseUrl;
+    String baseUrl;
+
+    @NonFinal
+    @Value("${app.client-url}")
+    String clientUrl;
 
     public ApiResponse<JwtResponse> loginWithEmail(LoginEmailRequest loginEmailRequest) {
         User user = userRepository.findByEmail(loginEmailRequest.getEmail())
@@ -88,7 +92,7 @@ public class AuthService {
 
         User savedUser = userRepository.save(newUser);
 
-        String verificationUrl = baseUrl + "/auth/verify?token=" + verificationToken;
+        String verificationUrl = clientUrl + "/auth/verify?token=" + verificationToken;
         emailService.sendVerificationEmail(registerRequest.getEmail(), "Verify your account", verificationUrl);
 
         UserResponse userResponse = userMapper.toUserResponse(savedUser);
@@ -110,6 +114,7 @@ public class AuthService {
 
         return ApiResponse.<String>builder()
                 .code(200)
+                .result(user.getId())
                 .message("Account verified successfully")
                 .build();
     }

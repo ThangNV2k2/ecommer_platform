@@ -24,7 +24,13 @@ export const authApi = createApi({
                 body: user,
             }),
         }),
+        verifyEmail: builder.mutation<BaseResponse<string>, string>({
+            query: (token) => ({
+                url: `auth/verify?token=${token}`,
+                method: "GET",
+            }),
+        }),
     }),
 });
 
-export const {useLoginEmailMutation, useRegisterMutation} = authApi;
+export const {useLoginEmailMutation, useRegisterMutation, useVerifyEmailMutation} = authApi;

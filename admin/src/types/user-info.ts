@@ -17,7 +17,7 @@ export interface UserInfo {
     name: string;
     status: StatusEnum;
     loyaltyTier: LoyaltyTierEnum;
-    roles: Set<RoleEnum>;
+    roles: RoleEnum[];
     createdAt: Date;
     updatedAt: Date;
     phoneNumbers?: PhoneNumber[];
@@ -30,7 +30,7 @@ export interface User {
     name: string;
     status: StatusEnum;
     loyaltyTier: LoyaltyTierEnum;
-    roles: Set<RoleEnum>;
+    roles: RoleEnum[];
     createdAt: Date;
     updatedAt: Date;
     phoneNumbers?: PhoneNumber[];

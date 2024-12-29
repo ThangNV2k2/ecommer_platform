@@ -18,4 +18,5 @@ export interface ChatRoomResponse {
     customerId: string;
     status: ChatRoomStatus;
     messages: MessageResponse[];
+    userInChatRoom: UserInfo[];
 }

@@ -16,4 +16,5 @@ public class ChatRoomResponse {
     String customerId;
     ChatRoomStatus status;
     List<MessageResponse> messages;
+    List<UserResponse> userInChatRoom;
 }

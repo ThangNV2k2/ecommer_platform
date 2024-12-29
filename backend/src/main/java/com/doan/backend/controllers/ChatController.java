@@ -27,4 +27,14 @@ public class ChatController {
     public ApiResponse<ChatRoomResponse> getChatRoom(@PathVariable String customerId) {
         return chatRoomService.getChatRoom(customerId);
     }
+
+    @GetMapping("/joinChatRoom/{chatRoomId}")
+    public ApiResponse<String> joinChat(@PathVariable String chatRoomId) {
+        return chatRoomService.userJoinChatRoom(chatRoomId);
+    }
+
+    @GetMapping("/leaveChatRoom/{chatRoomId}")
+    public ApiResponse<String> leaveChat(@PathVariable String chatRoomId) {
+        return chatRoomService.userLeaveChatRoom(chatRoomId);
+    }
 }

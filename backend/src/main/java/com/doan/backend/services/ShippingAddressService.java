@@ -42,9 +42,13 @@ public class ShippingAddressService {
                 throw new RuntimeException("Default shipping address already exists");
             }
         }
+
         shippingAddress.setRecipientName(shippingAddressRequest.getRecipientName());
         shippingAddress.setPhoneNumber(shippingAddressRequest.getPhoneNumber());
         shippingAddress.setAddressDetail(shippingAddressRequest.getAddressDetail());
+        shippingAddress.setCity(shippingAddressRequest.getCity());
+        shippingAddress.setDistrict(shippingAddressRequest.getDistrict());
+        shippingAddress.setWard(shippingAddressRequest.getWard());
         shippingAddress.setCountry(shippingAddressRequest.getCountry());
         shippingAddress.setIsDefault(shippingAddressRequest.getIsDefault());
         ShippingAddressResponse shippingAddressResponse = shippingAddressMapper.toShippingAddressResponse(shippingAddressRepository.save(shippingAddress));

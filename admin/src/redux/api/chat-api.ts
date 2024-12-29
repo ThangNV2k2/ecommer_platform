@@ -27,10 +27,26 @@ export const chatApi = createApi({
                 method: 'GET',
             }),
         }),
+
+        joinChatRoom: builder.mutation<BaseResponse<string>, string>({
+            query: (customerId) => ({
+                url: `/chat/joinChatRoom/${customerId}`,
+                method: 'GET',
+            }),
+        }),
+
+        leaveChatRoom: builder.mutation<BaseResponse<string>, string>({
+            query: (chatRoomId) => ({
+                url: `/chat/leaveChatRoom/${chatRoomId}`,
+                method: 'GET',
+            }),
+        }),
     }),
 });
 
 export const {
     useSendMessageMutation,
     useGetChatRoomQuery,
+    useJoinChatRoomMutation,
+    useLeaveChatRoomMutation,
 } = chatApi;

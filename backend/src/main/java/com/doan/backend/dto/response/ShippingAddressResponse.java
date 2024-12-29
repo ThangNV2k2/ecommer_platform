@@ -19,5 +19,11 @@ public class ShippingAddressResponse {
 
     String country;
 
+    String city;
+
+    String district;
+
+    String ward;
+
     Boolean isDefault;
 }

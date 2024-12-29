@@ -1,7 +1,6 @@
 package com.doan.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -33,6 +32,15 @@ public class ShippingAddress {
 
     @Column(name = "country", nullable = false)
     String country;
+
+    @Column(name = "city", nullable = false)
+    String city;
+
+    @Column(name = "district", nullable = false)
+    String district;
+
+    @Column(name = "ward", nullable = false)
+    String ward;
 
     @Column(name = "is_default", nullable = false)
     Boolean isDefault;
