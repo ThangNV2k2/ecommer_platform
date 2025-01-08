@@ -150,12 +150,12 @@ export const getCurrentPeriodInterval = (
 export default function OverViewPage() {
   const chartRef = useRef<HTMLDivElement>(null);
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(new Date().getFullYear(), 0, 1),
+    from: new Date(new Date().getFullYear() - 1, 0, 1),
     to: new Date(),
   });
 
   const [selectedType, setSelectedType] = useState<TypeStatistics>(TypeStatistics.CUSTOMER);
-  const [selectedTime, setSelectedTime] = useState<TypeTime>(TypeTime.MONTH);
+  const [selectedTime, setSelectedTime] = useState<TypeTime>(TypeTime.YEAR);
 
   const [getProductRevenue, { isFetching: isProductFetching, data: productRevenue, error: productError }] = useLazyGetProductRevenueQuery();
   const [getCategoryRevenue, { isFetching: isCategoryFetching, data: categoryRevenue, error: categoryError }] = useLazyGetCategoryRevenueQuery();

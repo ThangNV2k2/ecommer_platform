@@ -24,8 +24,8 @@ export const userApi = createApi({
             })
         }),
         getAllUser: builder.query<BaseResponse<PageResponse<User>>, PaginationParams>({
-            query: ({ page = 0, size = 10, sortBy = 'name', sortDirection = 'asc', search = '' }) => ({
-                url: `users?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}&name=${search}`,
+            query: ({ page = 0, size = 10, sortBy, sortDirection, search = '' }) => ({
+                url: `users?page=${page}&size=${size}&sort=${sortBy},${sortDirection}&name=${search}`,
                 method: "GET",
             }),
         }),

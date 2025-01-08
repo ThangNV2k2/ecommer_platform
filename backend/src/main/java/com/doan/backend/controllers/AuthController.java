@@ -2,6 +2,7 @@ package com.doan.backend.controllers;
 
 import com.doan.backend.dto.request.LoginEmailRequest;
 import com.doan.backend.dto.request.RegisterRequest;
+import com.doan.backend.dto.request.ResetPassword;
 import com.doan.backend.dto.response.ApiResponse;
 import com.doan.backend.dto.response.JwtResponse;
 import com.doan.backend.dto.response.UserResponse;
@@ -37,5 +38,15 @@ public class AuthController {
     @GetMapping("/verify")
     ApiResponse<String> verify(@RequestParam String token) {
         return authService.verifyAccount(token);
+    }
+
+    @GetMapping("/otp")
+    ApiResponse<String> sendOtp(@RequestParam String email) {
+        return authService.sendOtp(email);
+    }
+
+    @PostMapping("/change-password")
+    ApiResponse<String> resetPassword(@RequestBody @Validated ResetPassword resetPassword) {
+        return authService.resetPassword(resetPassword);
     }
 }

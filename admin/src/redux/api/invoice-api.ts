@@ -23,8 +23,7 @@ export const invoiceApi = createApi({
                 params: {
                     page,
                     size,
-                    sortBy,
-                    sortDirection,
+                    sort: `${sortBy},${sortDirection}`,
                     customerEmail: search
                 }
             }),

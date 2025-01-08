@@ -70,7 +70,7 @@ public class OrderService {
             }
 
             List<Promotion> promotions = promotionProductRepository.findPromotionApplyByProductId(cartItem.getProduct().getId(), LocalDateTime.now());
-
+            Promotion promotion = promotions.isEmpty() ? null : promotions.getFirst();
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setSize(cartItem.getSize());
@@ -78,13 +78,16 @@ public class OrderService {
             orderItem.setPrice(itemPrice);
             orderItem.setOrder(null);
 
-            orderItem.setPromotion(promotions.isEmpty() ? null : promotions.getFirst());
+            orderItem.setPromotion(promotion);
 
             orderItems.add(orderItem);
 
             totalPriceBeforeDiscount = totalPriceBeforeDiscount.add(cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
             totalPriceAfterDiscount = totalPriceAfterDiscount.add(itemPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-
+            if (promotion != null) {
+                BigDecimal promotionValue = itemPrice.multiply(promotion.getDiscountPercentage().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP));
+                totalPriceAfterDiscount = totalPriceAfterDiscount.subtract(promotionValue.multiply(BigDecimal.valueOf(cartItem.getQuantity())));
+            }
             productInventory.setQuantity(productInventory.getQuantity() - cartItem.getQuantity());
             productInventoryRepository.save(productInventory);
         }
@@ -126,8 +129,8 @@ public class OrderService {
             if (totalPriceAfterDiscount.compareTo(BigDecimal.ZERO) <= 0) {
                 totalPriceAfterDiscount = BigDecimal.ZERO;
             }
-
         }
+        totalPriceAfterDiscount = totalPriceAfterDiscount.add(BigDecimal.valueOf(Constants.SHIPPING_FEE));
 
         Order order = new Order();
         order.setUser(cart.getUser());
@@ -154,7 +157,7 @@ public class OrderService {
             orderItemRepository.save(orderItem);
         }
 
-        String invoiceNumber = CodeUtils.generateUniqueCode(Constants.INVOICE_PREFIX, invoiceRepository.count() + 5);
+        String invoiceNumber = CodeUtils.generateUniqueCode(Constants.INVOICE_PREFIX, invoiceRepository.count() + 8);
 
         Invoice invoice = new Invoice();
         invoice.setOrder(savedOrder);

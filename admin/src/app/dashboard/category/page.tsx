@@ -16,15 +16,13 @@ import { CategoryResponse } from "@/types/category";
 import { StatusEnum } from "@/types/enums";
 import { PaginationParams } from "@/types/page";
 import { ColumnDef, ColumnSort } from "@tanstack/react-table";
-import { AlertCircle } from "lucide-react";
 import { useMemo, useState } from "react";
-
 
 const CategoryPage = () => {
     const [pagination, setPagination] = useState<PaginationParams>({
         page: 0,
         size: 10,
-        sortBy: "name",
+        sortBy: "createdAt",
         sortDirection: "asc",
         search: "",
     });

@@ -41,17 +41,8 @@ export const orderApi = createApi({
 
         getOrdersForAdmin: builder.query<BaseResponse<PageResponse<OrderResponse>>, PaginationParamsExtra>({
             query: ({ productName, customerEmail, status, page = 0, size = 10, sortBy, sortDirection }) => ({
-                url: `order/admin`,
+                url: `order/admin?productName=${productName}&customerEmail=${customerEmail}&status=${status === OrderStatusEnum.ALL ? "" : status}&page=${page}&size=${size}&sort=${sortBy},${sortDirection}`,
                 method: 'GET',
-                params: {
-                    productName,
-                    customerEmail,
-                    status : status === OrderStatusEnum.ALL ? undefined : status,
-                    page,
-                    size,
-                    sortBy,
-                    sortDirection
-                },
             }),
         }),
 

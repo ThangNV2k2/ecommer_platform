@@ -15,7 +15,7 @@ interface SidebarUserProps {
 
 const SidebarUser: FC<SidebarUserProps> = ({ users, onSelectUser, setSearchValue, selectedUser }) => {
     return (
-        <div className="flex flex-col w-96 p-4 rounded-lg h-ful">
+        <div className="flex flex-col w-96 p-4 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">Users</h2>
             <DebouncedInput
                 value={""}
@@ -23,7 +23,7 @@ const SidebarUser: FC<SidebarUserProps> = ({ users, onSelectUser, setSearchValue
                 placeholder="Search users by email"
                 className='w-full h-10 mb-4 text-primary'
             />
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-[780px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-500 scrollbar-rounded-md">
                 {users.map((user) => (
                     <Button
                         key={user.id}

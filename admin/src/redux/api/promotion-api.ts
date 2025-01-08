@@ -22,8 +22,8 @@ export const promotionApi = createApi({
             }),
         }),
         getPromotionFilter: builder.query<BaseResponse<PageResponse<PromotionResponse>>, PaginationParams>({
-            query: ({ page = 0, size = 10, sortBy = 'name', sortDirection = 'asc', search = '' }) => ({
-                url: `promotion/admin?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}&name=${search}`,
+            query: ({ page = 0, size = 10, sortBy, sortDirection, search = '' }) => ({
+                url: `promotion/admin?page=${page}&size=${size}&sort=${sortBy},${sortDirection}&name=${search}`,
                 method: "GET"
             }),
         }),

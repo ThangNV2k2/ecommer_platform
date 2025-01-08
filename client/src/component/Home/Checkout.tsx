@@ -5,7 +5,7 @@ import { Field, FieldProps, Form as FormikForm, Formik, FormikProps } from 'form
 import { useCreateOrderFromCartMutation } from "../../redux/api/order";
 import { useEffect, useState } from "react";
 import * as Yup from 'yup';
-import { Button, Col, Divider, Form, Image, Row, Select, Spin, Typography } from "antd";
+import { Button, Card, Col, Divider, Form, Image, Row, Select, Spin, Typography } from "antd";
 import { DiscountResponse } from "../../types/discount";
 import DiscountModal from "./DiscountModal";
 import { CartItemResponse } from "../../types/cart";
@@ -110,7 +110,7 @@ const Checkout = () => {
     }, [shippingAddressData]);
 
     const handleSubmit = async (values: CreateOrderFromCartRequest) => {
-        createOrderFromCart({
+        await createOrderFromCart({
             userId: userInfo?.id ?? "",
             discountId: selectedDiscount?.id,
             shippingAddressId: values.shippingAddressId,
@@ -161,6 +161,7 @@ const Checkout = () => {
     const calculateTotal = () => {
         const subtotal = calculateSubtotal();
         const discount = calculateDiscountAmount();
+        if(subtotal < discount) return shippingFee;
         return subtotal - discount + shippingFee;
     };
 
@@ -179,8 +180,8 @@ const Checkout = () => {
                         <FormikForm>
                             <Row gutter={24}>
                                 <Col xs={24} md={16}>
-                                    <div className="order-items">
-                                        <Title level={3}>Order Items</Title>
+                                    <Card className="order-items-card">
+                                        <Title level={3} className="mb-4">Order Items</Title>
                                         {cartData?.cartItems.map((item) => (
                                             <div key={item.id} className="item-card">
                                                 <Image
@@ -191,7 +192,7 @@ const Checkout = () => {
                                                 />
                                                 <div className="item-details">
                                                     <Title level={5} className="item-name">
-                                                        {item.product.name} / {item.size.name}
+                                                        {item.product.name} / {item.size.name.toUpperCase()}
                                                     </Title>
                                                     <div className="item-price">
                                                         <Text className="discounted-price">
@@ -208,66 +209,68 @@ const Checkout = () => {
                                                 </div>
                                             </div>
                                         ))}
-                                    </div>
+                                    </Card>
 
-                                    <Title level={4} className="section-title">Shipping Address</Title>
-                                    <div className="flex justify-between gap-2">
-                                        <Form.Item
-                                            validateStatus={errors.shippingAddressId && touched.shippingAddressId ? "error" : ""}
-                                            help={touched.shippingAddressId && errors.shippingAddressId}
-                                            className="mb-0 flex-4"
-                                        >
-                                            <Field name="shippingAddressId">
-                                                {({ field, form }: FieldProps) => (
-                                                    <Select
-                                                        {...field}
-                                                        placeholder="Select shipping address"
-                                                        className="w-100"
-                                                        dropdownRender={(menu) => (
-                                                            <>
-                                                                {menu}
-                                                                <Divider />
-                                                                <Button
-                                                                    type="link"
-                                                                    icon={<PlusOutlined />}
-                                                                    onClick={() => setShowShippingAddressModal(true)}
-                                                                    className="w-100"
-                                                                >
-                                                                    Add New Address
-                                                                </Button>
-                                                            </>
-                                                        )}
-                                                        onBlur={() => form.setFieldTouched('shippingAddressId', true)}
-                                                        onChange={(value) => {
-                                                            handleAddressChange(value, form)
-                                                        }}
-                                                        value={field.value}
+                                    <Card className="shipping-address-card mt-4">
+                                        <Title level={4} className="mb-4">Shipping Address</Title>
+                                        <div className="flex justify-between gap-2">
+                                            <Form.Item
+                                                validateStatus={errors.shippingAddressId && touched.shippingAddressId ? "error" : ""}
+                                                help={touched.shippingAddressId && errors.shippingAddressId}
+                                                className="mb-0 flex-4"
+                                            >
+                                                <Field name="shippingAddressId">
+                                                    {({ field, form }: FieldProps) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select shipping address"
+                                                            className="w-100"
+                                                            dropdownRender={(menu) => (
+                                                                <>
+                                                                    {menu}
+                                                                    <Divider />
+                                                                    <Button
+                                                                        type="link"
+                                                                        icon={<PlusOutlined />}
+                                                                        onClick={() => setShowShippingAddressModal(true)}
+                                                                        className="w-100"
+                                                                    >
+                                                                        Add New Address
+                                                                    </Button>
+                                                                </>
+                                                            )}
+                                                            onBlur={() => form.setFieldTouched('shippingAddressId', true)}
+                                                            onChange={(value) => {
+                                                                handleAddressChange(value, form)
+                                                            }}
+                                                            value={field.value}
 
-                                                    >
-                                                        {shippingAddressData?.result?.map(address => (
-                                                            <Select.Option key={address.id} value={address.id} >
-                                                                {address.addressDetail} ({address.recipientName})
-                                                            </Select.Option>
-                                                        ))}
-                                                    </Select>
-                                                )}
-                                            </Field>
-                                        </Form.Item>
+                                                        >
+                                                            {shippingAddressData?.result?.map(address => (
+                                                                <Select.Option key={address.id} value={address.id} >
+                                                                    {address.addressDetail} ({address.recipientName})
+                                                                </Select.Option>
+                                                            ))}
+                                                        </Select>
+                                                    )}
+                                                </Field>
+                                            </Form.Item>
 
-                                        <Button
-                                            type="default"
-                                            danger
-                                            icon={<VoucherIcon />}
-                                            onClick={() => setShowDiscountModal(true)}
-                                            className="flex-1 mb-3"
-                                        >
-                                            {selectedDiscount ? `Applied Discount:` : 'Apply Discount'}
-                                        </Button>
-                                    </div>
+                                            <Button
+                                                type="default"
+                                                danger
+                                                icon={<VoucherIcon />}
+                                                onClick={() => setShowDiscountModal(true)}
+                                                className="flex-1 mb-3"
+                                            >
+                                                {selectedDiscount ? `Applied Discount:` : 'Apply Discount'}
+                                            </Button>
+                                        </div>
+                                    </Card>
                                 </Col>
 
                                 <Col xs={24} md={8}>
-                                    <div>
+                                    <Card className="order-summary-card">
                                         <Title level={4}>Order Summary</Title>
                                         <div className="summary-row">
                                             <Text>Subtotal:</Text>
@@ -304,14 +307,13 @@ const Checkout = () => {
                                         >
                                             Complete Order
                                         </Button>
-                                    </div>
+                                    </Card>
                                 </Col>
                             </Row>
                         </FormikForm>
                     )}
                 </Formik>
             )
-
             }
 
             <CreateOrUpdateShippingAddressModal

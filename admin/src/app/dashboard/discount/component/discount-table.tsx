@@ -22,7 +22,7 @@ const DiscountTable = () => {
     const [pagination, setPagination] = useState<PaginationParams>({
         page: 0,
         size: 10,
-        sortBy: "code",
+        sortBy: "createdAt",
         sortDirection: "asc",
         search: "",
     });

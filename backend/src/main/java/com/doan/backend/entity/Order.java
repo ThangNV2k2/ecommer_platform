@@ -26,7 +26,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
@@ -48,7 +47,6 @@ public class Order {
 
     @Column(name = "total_price_before_discount")
     BigDecimal totalPriceBeforeDiscount;
-
     @Column(name = "total_price_after_discount")
     BigDecimal totalPriceAfterDiscount;
 

@@ -23,3 +23,9 @@ export interface UserInfo {
     phoneNumbers?: PhoneNumber[];
     addresses?: Address[];
 }
+
+export interface ChangePasswordRequest {
+    email: string;
+    password: string;
+    otp: string;
+}

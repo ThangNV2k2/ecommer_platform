@@ -27,3 +27,5 @@ export interface PageResponse<T> {
     first: boolean;
     empty: boolean;
 }
+
+export type SortType = "asc" | "desc";

@@ -28,7 +28,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Login: React.FC = () => {
-    const [login] = useLoginEmailMutation();
+    const [login, {isLoading: isLoginLoading}] = useLoginEmailMutation();
     const navigate = useNavigate();
 
     const initialValues: FormValues = {
@@ -132,13 +132,13 @@ const Login: React.FC = () => {
 
                             <Form.Item className='mb-2'>
                                 <Checkbox>Remember me</Checkbox>
-                                <Link style={{ float: "right" }} href="#">
+                                <Link style={{ float: "right" }} href="/account/forgot-password">
                                     Forgot password?
                                 </Link>
                             </Form.Item>
 
                             <Form.Item className='mb-2'>
-                                <Button type="primary" htmlType="submit" className="fw-600" block>
+                                <Button type="primary" htmlType="submit" className="fw-600" loading={isLoginLoading} block>
                                     Login
                                 </Button>
                             </Form.Item>

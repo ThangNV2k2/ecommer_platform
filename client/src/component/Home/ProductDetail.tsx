@@ -84,7 +84,10 @@ const ProductDetail = () => {
         }).unwrap()
             .then((response) => {
                 if (response?.result) {
-                    dispatch(addCartItem(response.result));
+                    dispatch(addCartItem({
+                        ...response.result,
+                        product: product?.result ?? response.result.product,
+                    }));
                     showCustomNotification({
                         message: response.message,
                         type: "success",

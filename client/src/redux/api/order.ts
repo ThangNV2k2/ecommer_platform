@@ -6,6 +6,7 @@ import {OrderRequest, OrderResponse, UpdateOrderRequest} from "../../types/order
 export const orderApi = createApi({
     reducerPath: "orderApi",
     baseQuery: fetchBaseQuery({ baseUrl: baseApi }),
+    keepUnusedDataFor: 5,
     endpoints: (builder) => ({
         getOrdersByUserId: builder.query<BaseResponse<OrderResponse[]>, string>({
             query: (userId: string) => ({

@@ -114,10 +114,14 @@ public class ProductService {
                 .map(productMapper::toProductResponse)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        Optional<Promotion> promotionOptional = promotionProductRepository.findActivePromotionByProductId(id, LocalDateTime.now());
+        List<Promotion> promotionApply = promotionProductRepository.findPromotionApplyByProductId(productResponse.getId(), LocalDateTime.now());
+        Optional<Promotion> promotionOptional = promotionApply.stream().findFirst();
 
         productResponse.setDiscountPercentage(
                 promotionOptional.map(Promotion::getDiscountPercentage).orElse(BigDecimal.ZERO)
+        );
+        productResponse.setPromotionResponse(
+                promotionOptional.map(promotionMapper::toPromotionResponse).orElse(null)
         );
 
         return ApiResponse.<ProductResponse>builder()

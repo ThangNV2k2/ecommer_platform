@@ -13,8 +13,9 @@ const {Title, Text} = Typography;
 export const Account = () => {
 
     const userInfo = useSelector((state: RootState) => state.user.user);
-    const {data: getOrder, isFetching: orderFetching, refetch: refetchOrder} = useGetOrdersByUserIdQuery(userInfo?.id ?? "");
-
+    const {data: getOrder, isFetching: orderFetching, refetch: refetchOrder} = useGetOrdersByUserIdQuery(userInfo?.id ?? "", {
+        skip: !userInfo
+    });
     const dispatch = useDispatch();
     const navigate = useNavigate();
 

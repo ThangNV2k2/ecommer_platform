@@ -17,7 +17,7 @@ export const discountApi = createApi({
     endpoints: (builder) => ({
         getDiscountSearchByCode: builder.query<BaseResponse<PageResponse<DiscountResponse>>, PaginationParams>({
             query: ({ page, size, sortBy, sortDirection, search  }) => ({
-                url: `discounts/admin?code=${search}&page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`,
+                url: `discounts/admin?code=${search}&page=${page}&size=${size}&sort=${sortBy},${sortDirection}`,
                 method: "GET"
             }),
         }),

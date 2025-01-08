@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Button, Row, Col, Drawer, Image, Badge, Spin, Input, Dropdown, Grid } from 'antd';
-import logo from './img/logo.png';
+import ptit from './img/ptit.jpg';
 import {
     FacebookOutlined,
     InstagramOutlined,
@@ -8,7 +8,7 @@ import {
     MailOutlined,
     MenuOutlined, SearchOutlined, UserOutlined, ShoppingCartOutlined,
 } from '@ant-design/icons';
-import { Route, BrowserRouter as Router, Routes, useNavigate, useSearchParams } from 'react-router-dom';
+import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import Registration from './component/Auth/Register';
 import { Account } from "./component/Auth/Account";
 import Login from "./component/Auth/Login";
@@ -30,6 +30,7 @@ import DebouncedInput from './utils/DebouncedInput';
 import { useGetAllCategoryQuery } from './redux/api/category-api';
 import ChatWidget from './component/Home/ChatWidget';
 import AccountActivatedPage from './component/Auth/AccountActivatedPage';
+import ForgotPassword from './component/Auth/ForgotPasswordPage';
 
 const { Header, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
@@ -56,7 +57,7 @@ const App = () => {
     const handleChangeSearchValue = (value: string) => {
         setSearchValue(value);
         const categoryId = searchParams.get('categoryId') || '';
-        setSearchParams({ categoryId, search: value }); // Sửa từ 'searchValue' thành 'value'
+        setSearchParams({ categoryId, search: value });
     }
 
     const renderCategories = () => {
@@ -113,7 +114,6 @@ const App = () => {
         }
     }, [cartData?.result, dispatch]);
 
-    // Responsive Drawer for Mobile Menu
     const showDrawer = () => {
         setDrawerVisible(true);
     };
@@ -142,7 +142,6 @@ const App = () => {
                                             <span className="text-primary fs-16 fw-600 ml-1">0373357405</span>
                                         </>
                                         : (
-
                                             <Button
                                                 type="text"
                                                 shape="circle"
@@ -155,15 +154,15 @@ const App = () => {
                                 </Col>
 
                                 <Col xs={12} sm={12} md={12} lg={6} xl={6} className="flex justify-center align-center">
-                                    <Image
-                                        src={logo}
+                                    {/* <Image
+                                        src={ptit}
                                         alt="logo"
                                         className="img-min-h-85"
                                         preview={false}
                                         onClick={() => navigate('/')}
                                         style={{ cursor: 'pointer' }}
                                         width={150}
-                                    />
+                                    /> */}
                                 </Col>
 
                                 <Col xs={8} sm={8} md={8} lg={6} xl={6} className="flex justify-end align-center gap-1">
@@ -229,6 +228,22 @@ const App = () => {
                 </Header>
 
                 <Content className="bg-white w-100">
+                    {!isMobile && (
+                        <Row align="middle" justify="center" className="height-50" gutter={[24, 24]}>
+                            <Col xs={24} sm={24} md={18} lg={24} xl={24} className="w-100 flex justify-center">
+                                <Menu mode="horizontal" defaultSelectedKeys={['home']} className="fw-500">
+                                    <Menu.Item key="home" onClick={() => navigate('/')}>HOME</Menu.Item>
+                                    <Dropdown overlay={shopMenu} trigger={['hover']}>
+                                        <Menu.Item key="shop">SHOP</Menu.Item>
+                                    </Dropdown>
+                                    <Menu.Item key="blog" onClick={() => navigate('/blog')}>BLOG</Menu.Item>
+                                    <Menu.Item key="contact" onClick={() => navigate('/contact')}>CONTACT</Menu.Item>
+                                    <Menu.Item key="about" onClick={() => navigate('/about')}>ABOUT</Menu.Item>
+                                    <Menu.Item key="group" onClick={() => navigate('/group')}>GROUP</Menu.Item>
+                                </Menu>
+                            </Col>
+                        </Row>
+                    )}
                     <Row align="middle" justify="center" gutter={[24, 24]} className="my-5">
                         {
                             isFetchingUser ? (
@@ -252,6 +267,7 @@ const App = () => {
                                         <Route path="/account/register" element={<Registration />} />
                                         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
                                         <Route path="/auth/verify" element={<AccountActivatedPage />} />
+                                        <Route path="/account/forgot-password" element={<ForgotPassword />} />
                                     </Routes>
                                 </Col>
                             )

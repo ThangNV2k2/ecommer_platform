@@ -86,13 +86,13 @@ export function DataTable<TData, TValue>({
     );
 
     useEffect(() => {
-        if (setPage) {
+        if (setPage && pageIndex !== page) {
             setPage(pageIndex);
         }
     }, [pageIndex]);
 
     useEffect(() => {
-        if (setSize) {
+        if (setSize && pageSize !== size) {
             setSize(pageSize);
         }
     }, [pageSize]);
@@ -129,11 +129,6 @@ export function DataTable<TData, TValue>({
             },
         },
     });
-
-    useEffect(() => {
-        
-        console.log(table.getRowModel().rows);
-    }, [table])
 
     return (
         <>

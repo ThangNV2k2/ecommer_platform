@@ -11,4 +11,7 @@ export interface ProductResponse {
     status: StatusEnum;
     discountPercentage: number;
     mainImage: string;
+    createdAt: Date;
 }
+
+export type ProductResponseKeys = keyof ProductResponse;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Form, Input, Button, Row, Col, Typography} from 'antd';
+import {Form, Input, Button, Row, Col, Typography, message} from 'antd';
 import { Formik, Field, Form as FormikForm, FieldProps } from 'formik';
 import * as Yup from 'yup';
 import {useRegisterMutation} from "../../redux/api/auth-api";
@@ -35,7 +35,7 @@ const validationSchema = Yup.object().shape({
 
 const Registration: React.FC = () => {
     const navigate = useNavigate();
-    const [registerAccountEmail] = useRegisterMutation();
+    const [registerAccountEmail, {isLoading: isRegisterLoading}] = useRegisterMutation();
     const initialValues: FormValues = {
         email: '',
         password: '',
@@ -48,8 +48,9 @@ const Registration: React.FC = () => {
             email: values.email,
             password: values.password,
             name: values.name,
-        }).unwrap();
+        }).unwrap()
         if(result?.result) {
+            message.success('Account created successfully. Please check your email to verify your account.');
             navigate('/account/login');
         }
     };
@@ -113,7 +114,7 @@ const Registration: React.FC = () => {
                                 </Form.Item>
 
                                 <Form.Item>
-                                    <Button type="primary" htmlType="submit" className="fw-600" block>
+                                    <Button type="primary" disabled={isRegisterLoading} htmlType="submit" className="fw-600" block>
                                         Register
                                     </Button>
                                 </Form.Item>

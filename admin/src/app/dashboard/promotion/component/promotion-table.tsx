@@ -24,8 +24,8 @@ const PromotionTable = () => {
     const [pagination, setPagination] = useState<PaginationParams>({
         page: 0,
         size: 10,
-        sortBy: "name",
-        sortDirection: "asc",
+        sortBy: "createdAt",
+        sortDirection: "desc",
         search: "",
     });
 
@@ -105,12 +105,6 @@ const PromotionTable = () => {
                 sortBy: newSorting.id,
                 sortDirection: newSorting.desc ? "desc" : "asc",
             }));
-        } else {
-            setPagination((prev) => ({
-                ...prev,
-                sortBy: "name",
-                sortDirection: "asc",
-            }));
         }
     };
 
@@ -152,7 +146,7 @@ const PromotionTable = () => {
 
                     />
                     <Button size="lg" onClick={() => setShowCreateModal(true)}>
-                        Add Category
+                        Add Promotion
                     </Button>
                 </div>
                 <div>

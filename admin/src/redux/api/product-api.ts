@@ -16,8 +16,8 @@ export const productApi = createApi({
     }),
     endpoints: (builder) => ({
         getProductFilter: builder.query<BaseResponse<PageResponse<ProductResponse>>, PaginationParams>({
-            query: ({ page = 0, size = 10, sortBy = 'name', sortDirection = 'asc', search = '' }) => ({
-                url: `product?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}&name=${search}`,
+            query: ({ page = 0, size = 10, sortBy, sortDirection, search = '' }) => ({
+                url: `product?page=${page}&size=${size}&sort=${sortBy},${sortDirection}&name=${search}`,
                 method: "GET",
             }),
         }),

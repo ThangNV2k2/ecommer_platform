@@ -33,7 +33,6 @@ const ChatWindow: FC<ChatWindowProps> = ({ selectedUser }) => {
     const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
     const [joinChatRoom, { isLoading: isJoining }] = useJoinChatRoomMutation();
     const [leaveChatRoom, { isLoading: isLeaving }] = useLeaveChatRoomMutation();
-    debugger;
 
     const [alert, setAlert] = useState<CustomAlertProps>({
             variant: "default",
@@ -139,7 +138,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ selectedUser }) => {
                     )}
                 </div>
             </div>
-            <div className="flex-1 max-h-[700px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-500 scrollbar-rounded-md mb-4 space-y-2 px-2">
+            <div className="flex-1 max-h-[720px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-500 scrollbar-rounded-md mb-4 space-y-2 px-2">
                 {messages.map((msg) => (
                     <div key={msg.id} className={`flex flex-col ${msg.sender.id === selectedUser.id ? 'items-start' : 'items-end'}`}>
                         <div className="flex items-center gap-2">

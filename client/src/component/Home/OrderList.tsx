@@ -14,8 +14,12 @@ const OrderList: React.FC<OrderListProps> = ({ orderList, refetchOrder }) => {
     const [activeTab, setActiveTab] = useState('ALL');
 
     const filteredOrders = useMemo(() => {
-        if (activeTab === 'ALL') return orderList;
-        return orderList.filter(order => order.status === activeTab);
+        const sortedOrders = [...orderList].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        if (activeTab === 'ALL') {
+            return sortedOrders;
+        }
+        return sortedOrders.filter(order => order.status === activeTab);
     }, [orderList, activeTab]);
 
     const items: TabsProps['items'] = [

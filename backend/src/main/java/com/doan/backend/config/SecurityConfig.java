@@ -37,7 +37,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] GET_PUBLIC_ENDPOINTS = {
-            "/auth/verify", "/auth/get-user", "/oauth2/**", "/category/**", "/product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**", "discounts/**", "order/user/**", "promotion/client/**", "invoices/order/**", "invoices/get-id/**", "payment/payos/**", "reviews/**", "product-image/**"
+            "auth/verify", "auth/get-user", "auth/otp", "oauth2/**", "category/**", "product/**", "size/**", "product-inventory/**", "shipping-address/**", "cart/**", "discounts/**", "order/user/**", "promotion/client/**", "invoices/order/**", "invoices/get-id/**", "payment/payos/**", "reviews/**", "product-image/**"
     };
 
     private static final String[] PUT_PUBLIC_ENDPOINTS = {
@@ -45,11 +45,11 @@ public class SecurityConfig {
     };
 
     private static final String[] POST_PUBLIC_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/images/upload", "shipping-address/**", "cart/**", "order/**", "payment/payos", "ghtk/**"
+            "auth/register", "auth/login", "images/upload", "shipping-address/**", "cart/**", "order/**", "payment/payos", "ghtk/**", "auth/change-password"
     };
 
     private static final String[] DELETE_Public_ENDPOINTS = {
-            "/images/delete", "shipping-address/**", "cart/**"
+            "images/delete", "shipping-address/**", "cart/**"
     };
 
     CustomUserDetailService customUserDetailsService;

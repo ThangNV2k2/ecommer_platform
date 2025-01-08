@@ -35,7 +35,6 @@ const CreateOrUpdateUser = ({ isOpen, onClose, user, setAlert, refetch }: Create
     const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
     const onSubmit = async (data: any) => {
-        debugger;
         try {
             if (user) {
                 await updateUser({ id: user.id, user: {

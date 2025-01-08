@@ -12,12 +12,10 @@ import { getErrorMessage } from "@/constants/get-error";
 import { PaginationParamsExtra } from "@/types/page";
 import { OrderResponse } from "@/types/order";
 import { ColumnDef, ColumnSort } from "@tanstack/react-table";
-import { AlertCircle } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { OrderStatusEnum } from "@/types/enums";
 import { useGetOrdersForAdminQuery } from "@/redux/api/order-api";
 import { CellActionOrder } from "@/app/dashboard/order/component/cell-action";
-import CreateOrUpdateOrder from "@/app/dashboard/order/component/create-update-order";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import UserDetailsPopover from "@/app/dashboard/order/component/user-detail";
 import OrderItemDetailsPopover from "@/app/dashboard/order/component/order-item-detail";
@@ -31,17 +29,15 @@ const OrderTable = () => {
         productName: "",
         customerEmail: "",
         status: OrderStatusEnum.ALL, 
-        sortBy: "user.email",
-        sortDirection: "asc",
+        sortBy: "createdAt",
+        sortDirection: "desc",
     });
-
     const { data: ordersData, isFetching, error, refetch } = useGetOrdersForAdminQuery(pagination);
     
     const [alert, setAlert] = useState<CustomAlertProps>({
         variant: "default",
         message: "",
     });
-    // const [showCreateModal, setShowCreateModal] = useState(false);
 
     const columns = useMemo<ColumnDef<OrderResponse>[]>(() => [
         {
@@ -116,21 +112,15 @@ const OrderTable = () => {
         }
     ], []);
 
-    const handleSortingChange = (newSorting?: ColumnSort) => {
-        if (newSorting) {
+    const handleSortingChange = useCallback((newSorting?: ColumnSort) => {
+        if( newSorting) {
             setPagination((prev) => ({
                 ...prev,
                 sortBy: newSorting.id,
                 sortDirection: newSorting.desc ? "desc" : "asc",
             }));
-        } else {
-            setPagination((prev) => ({
-                ...prev,
-                sortBy: "customerName",
-                sortDirection: "asc",
-            }));
         }
-    };
+    }, [setPagination]);
 
     if (error) {
         return (
@@ -142,30 +132,25 @@ const OrderTable = () => {
         );
     }
 
+    const handleCustomerEmailChange = useCallback((value: string) => {
+        setPagination((prev) => ({
+            ...prev,
+            customerEmail: value,
+        }));
+    }, []);
+
     return (
         <PageContainer scrollable>
             <CustomAlert
                 {...alert}
                 onClose={() => setAlert({ variant: "default", message: "" })}
             />
-
-            {/* <CreateOrUpdateOrder
-                isOpen={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-                setMessageError={setMessageError}
-                refetch={refetch}
-            /> */}
             <div className="w-full px-4">
                 <div className="flex items-center py-4 justify-between">
                     <DebouncedInput
                         placeholder="Search by customer email..."
                         value={pagination.customerEmail}
-                        onChange={(value) =>
-                            setPagination({
-                                ...pagination,
-                                customerEmail: value,
-                            })
-                        }
+                        onChange={handleCustomerEmailChange}
                         className="max-w-sm"
                     />
                     <DebouncedInput

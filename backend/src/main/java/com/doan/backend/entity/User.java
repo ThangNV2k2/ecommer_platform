@@ -43,6 +43,9 @@ public class User {
     @Column(name = "verification_token")
     String verificationToken;
 
+    @Column(name = "otp")
+    String otp;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "loyalty_tier")
     LoyaltyTierEnum loyaltyTier;

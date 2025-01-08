@@ -29,15 +29,10 @@ const UserPage = () => {
     // const { query } = router;
 
     const [pagination, setPagination] = useState<PaginationParams>({
-        // page: query.page ? parseInt(query.page as string) : 0,
-        // size: query.size ? parseInt(query.size as string) : 10,
-        // sortBy: (query.sortBy as string) ?? "name",
-        // sortDirection: "asc",
-        // search: (query.name as string) ?? "",
         page: 0,
         size: 10,
-        sortBy: "name",
-        sortDirection: "asc",
+        sortBy: "createdAt",
+        sortDirection: "desc",
         search: "",
     });
     const { data: allUser, isFetching, error, refetch } = useGetAllUserQuery(pagination);
@@ -112,12 +107,6 @@ const UserPage = () => {
                 ...prev,
                 sortBy: newSorting.id,
                 sortDirection: newSorting.desc ? "desc" : "asc",
-            }));
-        } else {
-            setPagination((prev) => ({
-                ...prev,
-                sortBy: "name",
-                sortDirection: "asc",
             }));
         }
     };

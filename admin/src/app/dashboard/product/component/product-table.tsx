@@ -26,14 +26,14 @@ import { ProductInventoryResponse } from '@/types/product-inventory';
 import { ColumnDef, ColumnSort } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { AlertCircle } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const ProductTable = () => {
     const [pagination, setPagination] = useState<PaginationParams>({
         page: 0,
         size: 10,
-        sortBy: "",
-        sortDirection: undefined,
+        sortBy: "createdAt",
+        sortDirection: "asc",
         search: "",
     });
 
@@ -218,21 +218,15 @@ const ProductTable = () => {
         }
     ], [allCategory, allPromotion, refetch, mapProductInventory, isFetchingProductInventory, productInventory]);
 
-    const handleSortingChange = (newSorting?: ColumnSort) => {
+    const handleSortingChange = useCallback((newSorting?: ColumnSort) => {
         if (newSorting) {
             setPagination((prev) => ({
                 ...prev,
                 sortBy: newSorting.id,
                 sortDirection: newSorting.desc ? "desc" : "asc",
             }));
-        } else {
-            setPagination((prev) => ({
-                ...prev,
-                sortBy: "name",
-                sortDirection: "asc",
-            }));
         }
-    };
+    }, [setPagination]);
 
     if (error) {
         return (
