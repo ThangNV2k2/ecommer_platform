@@ -1,5 +1,5 @@
 "use client";
-import { FC, useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { FC, useState, useEffect, useRef, useCallback } from 'react';
 import { MessageResponse } from '@/types/message';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

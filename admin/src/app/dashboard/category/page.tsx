@@ -6,11 +6,9 @@ import DebouncedInput from "@/components/debounce-input/debounce-input";
 import PageContainer from "@/components/layout/page-container";
 import { Spinner } from "@/components/spinner";
 import { DataTable, DataTableColumnHeader } from "@/components/table/table-data";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { CustomAlert, CustomAlertProps } from "@/components/ui/CustomAlert";
 import { formatDateString } from "@/constants/date";
-import { getErrorMessage } from "@/constants/get-error";
 import { useGetAllCategoryQuery } from "@/redux/api/category-api";
 import { CategoryResponse } from "@/types/category";
 import { StatusEnum } from "@/types/enums";
@@ -27,7 +25,7 @@ const CategoryPage = () => {
         search: "",
     });
 
-    const { data: allCategory, isFetching, error, refetch } = useGetAllCategoryQuery(pagination);
+    const { data: allCategory, isFetching, refetch } = useGetAllCategoryQuery(pagination);
     const [alert, setAlert] = useState<CustomAlertProps>({
         variant: "default",
         message: "",
